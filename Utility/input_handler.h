@@ -27,5 +27,5 @@ This function will return the first field of a given line
 @param line - the line to be scanned
 @return the first field, avoiding any spaces and tabs
 */
-char* getFirstField(char* line);
+char* getNextField(char* line);
 #endif 

@@ -1,30 +1,27 @@
-#include "linked_list.h"
+#include "macro_table.h"
 
 
 
 
-Node* CreateNode(){
+Node* CreateNode(char* macro_name){
     Node* new_node = malloc(sizeof(struct Node));
     if(new_node == NULL){
         printf("Error, couldn't allocate memory");
         return NULL;
     }
 
-    new_node -> data = NULL;
+    new_node -> name = (char*)malloc(sizeof(char) * (strlen(macro_name) + 1));
+    strcpy(new_node->name, macro_name);
+    new_node -> content = (char*)malloc(sizeof(char) * (MAX_LINE_LENGTH));
+    new_node -> contentLength = 0;
     new_node -> next = NULL;
-
+    
     return new_node;
 }
 
 
-void insertNode(struct Node** head_ref, void* new_data)
+void InsertNode(struct Node** head_ref, struct Node* new_node)
 {
-    /* Allocate node*/ 
-    struct Node* new_node =
-            (struct Node*) malloc(sizeof(struct Node));
-
-    /*put in the data*/
-    new_node->data  = new_data;
 
     /*Make next of new node as head*/
     new_node->next = (*head_ref);
@@ -36,10 +33,10 @@ void insertNode(struct Node** head_ref, void* new_data)
 
 
 
-struct Node *SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*)){
+struct Node *SearchNode(Node* head, char* name){
     while(head!= NULL)
     {
-        if(cmp_func(data,head -> data) == 0)
+        if(strcmp(name,head -> name) == 0)
             return head;
 
         head = head -> next;

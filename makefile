@@ -1,10 +1,11 @@
-OBJS = Assembler.o linked_list.o preassembler.o input_handler.o file_handler.o
+OBJS = Assembler.o macro_table.o preassembler.o input_handler.o file_handler.o
+
 
 Assembler: $(OBJS)
 	gcc -g -ansi -Wall -pedantic $(OBJS) -o Assembler
 
-linked_list.o: Utility/linked_list.c Utility/linked_list.h
-	gcc -c -ansi -Wall -pedantic Utility/linked_list.c -o linked_list.o
+macro_table.o: Utility/macro_table.c Utility/macro_table.h
+	gcc -c -ansi -Wall -pedantic Utility/macro_table.c -o macro_table.o
 
 preassembler.o: PreAssembler/preassembler.c PreAssembler/preassembler.h 
 	gcc -c -ansi -Wall -pedantic PreAssembler/preassembler.c -o preassembler.o
@@ -18,4 +19,4 @@ Assembler.o: Assembler.c Assembler.h
 	gcc -c -ansi -Wall -pedantic Assembler.c -o Assembler.o
 
 clean:
-	rm -f $(OBJS) Assembler
+	rm -f $(OBJS) *.am *.testam Assembler

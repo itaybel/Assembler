@@ -5,7 +5,7 @@
 
 #include "../Utility/input_handler.h"
 #include "../Utility/file_handler.h"
-#include "../Utility/linked_list.h"
+#include "../Utility/macro_table.h"
 
 /*
 This function is responsible of creating the am files after laying out the macros

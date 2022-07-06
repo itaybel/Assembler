@@ -16,7 +16,7 @@ int startWith(char* str1, char* str2){
     return strncmp(str1, str2, strlen(str2)) == 0;
 }
 
-char* getFirstField(char* string){
+char* getNextField(char* string){
     int i = 0;
     int j = 0;
     char* firstField;
