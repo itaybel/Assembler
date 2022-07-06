@@ -17,7 +17,9 @@ linklist_t CreateLinkList();
 
 void DestroyLinkList(linklist_t head);
 
-Struct Node *InserNode(linklist_t head, struct Node *node_to_insert);
+/*Struct Node *InserNode(linklist_t head, struct Node *node_to_insert);*/
+
+void InserNode(struct Node** head_ref,int new_data);
 
 /*struct Node *RemoveNode(linklist_t head, struct Node *node_to_remove);*/
 
