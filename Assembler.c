@@ -7,7 +7,7 @@ int main(int argc, char** argv){
         return 0;
     }
     for(i = 1; i < argc; i++){
-        createAmFile(argv[i]);
+        CreateAmFile(argv[i]);
     }
     return 0;
 }
