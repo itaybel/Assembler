@@ -17,35 +17,23 @@ Node* CreateNode(){
 }
 
 
-void InsertNode(struct Node** head_ref, void* new_data)
-    {
-        struct Node* new_node =
-                (struct Node*) malloc(sizeof(struct Node));
+void insertNode(struct Node** head_ref,
+           void* new_data)
+{
+    /* Allocate node*/ 
+    struct Node* new_node =
+            (struct Node*) malloc(sizeof(struct Node));
 
-        struct Node *last = *head_ref;
+    /*put in the data*/
+    new_node->data  = new_data;
 
-        /*Put in the data*/
-        new_node->data  = new_data;
+    /*Make next of new node as head*/
+    new_node->next = (*head_ref);
 
-        /*3. This new node is going to be the last node, so make next of it as NULL*/
-        new_node->next = NULL;
-
-        /*4. If the Linked List is empty, then make the new node as head*/
-        if (*head_ref == NULL)
-        {
-            *head_ref = new_node;
-            return;
-        }
-
-        /*5. Else traverse till the last node*/
-        while (last->next != NULL) {
-            last = last->next;
-        }
-        /* 6. Change the next of last node*/
-        last->next = new_node;
-        
-   }
-
+    /*move the head to point to the new node*/
+    
+    (*head_ref)    = new_node;
+}
 
 
 struct Node *SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*)){
