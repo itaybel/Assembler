@@ -7,22 +7,22 @@
 
 #define MAX_LINE_LENGTH 80
 
+typedef struct Node
+{
+    void *data;
+    struct Node *next;
+} Node;
 
+Node* CreateNode();
 
-
-typedef struct Node * linklist_t;
-
-
-linklist_t CreateLinkList();
-
-void DestroyLinkList(linklist_t head);
+void DestroyLinkList(Node* head);
 
 /*Struct Node *InserNode(linklist_t head, struct Node *node_to_insert);*/
 
-void InserNode(struct Node** head_ref,int new_data);
+void InsertNode(struct Node** head_ref,void* new_data);
 
 /*struct Node *RemoveNode(linklist_t head, struct Node *node_to_remove);*/
 
-struct Node *SearchNode(linklist_t head, void *data,int(*compare_func)(void *, void *));
+struct Node *SearchNode(Node* head, void *data,int(*compare_func)(void *, void *));
 
 #endif
