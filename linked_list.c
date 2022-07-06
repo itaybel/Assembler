@@ -23,7 +23,7 @@ linklist_t CreatLinkList(){
 }
 
 
-void InserNode(struct Node** head_ref,int new_data)
+void InserNode(struct Node** head_ref, void* new_data)
     {
         struct Node* new_node =
                 (struct Node*) malloc(sizeof(struct Node));
@@ -33,12 +33,10 @@ void InserNode(struct Node** head_ref,int new_data)
         /*Put in the data*/
         new_node->data  = new_data;
 
-        /*3. This new node is going to be the*/
-        /*last node, so make next of it as NULL*/
+        /*3. This new node is going to be the last node, so make next of it as NULL*/
         new_node->next = NULL;
 
-        /*4. If the Linked List is empty, then make*/
-        /*the new node as head*/
+        /*4. If the Linked List is empty, then make the new node as head*/
         if (*head_ref == NULL)
         {
             *head_ref = new_node;
