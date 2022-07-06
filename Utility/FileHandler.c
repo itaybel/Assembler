@@ -1,4 +1,4 @@
-#include "file_handler.h"
+#include "FileHandler.h"
 
 FILE* openFile(char* file_name, char* file_extention, char* mode){
     int fileNameLength = strlen(file_name) + strlen(file_extention) + 2;

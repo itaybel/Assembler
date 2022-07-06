@@ -1,4 +1,4 @@
-#include "input_handler.h"
+#include "InputHandler.h"
 
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     int i = 0, j = 0;

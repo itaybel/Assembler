@@ -3,9 +3,9 @@
 #ifndef PREASSEMBLER_H
 #define PREASSEMBLER_H
 
-#include "../Utility/input_handler.h"
-#include "../Utility/file_handler.h"
-#include "../Utility/macro_table.h"
+#include "../Utility/InputHandler.h"
+#include "../Utility/FileHandler.h"
+#include "../Utility/MacroTable.h"
 
 /*
 This function is responsible of creating the am files after laying out the macros
