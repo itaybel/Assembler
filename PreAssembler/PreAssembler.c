@@ -1,7 +1,7 @@
-#include "preassembler.h"
+#include "PreAssembler.h"
 
 
-int createAmFile(char* file_name){
+int CreateAmFile(char* file_name){
         FILE *asmFile;
         FILE *amFile;
         Node* macroTable;
