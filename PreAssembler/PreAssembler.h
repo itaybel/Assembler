@@ -5,7 +5,8 @@
 
 #include "../Utility/InputHandler.h"
 #include "../Utility/FileHandler.h"
-#include "../Utility/MacroTable.h"
+#include "MacroTable.h"
+
 
 /*
 This function is responsible of creating the am files after laying out the macros

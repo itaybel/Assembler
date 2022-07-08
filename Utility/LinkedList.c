@@ -17,11 +17,10 @@ Node* CreateNode(){
 }
 
 
-void insertNode(struct Node** head_ref, void* new_data)
+Node* InsertNode(Node** head_ref, void* new_data)
 {
     /* Allocate node*/ 
-    struct Node* new_node =
-            (struct Node*) malloc(sizeof(struct Node));
+    Node* new_node = CreateNode();
 
     /*put in the data*/
     new_node->data  = new_data;
@@ -31,16 +30,17 @@ void insertNode(struct Node** head_ref, void* new_data)
 
     /*move the head to point to the new node*/
 
-    (*head_ref)    = new_node;
+    (*head_ref)  = new_node;
+    return new_node;
 }
 
 
 
-struct Node *SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*)){
+void *SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*)){
     while(head!= NULL)
     {
         if(cmp_func(data,head -> data) == 0)
-            return head;
+            return head->data;
 
         head = head -> next;
     }

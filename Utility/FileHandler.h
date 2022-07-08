@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
+#define MAX_FILE_NAME_LENGTH 255
 /*
 This function is responsible for opening different files with different file extenstions
 @param file_name - the name of the input file
