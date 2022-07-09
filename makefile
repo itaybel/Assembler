@@ -22,4 +22,4 @@ Assembler.o: Assembler.c Assembler.h
 	gcc -c -ansi -Wall -pedantic Assembler.c -o Assembler.o
 
 clean:
-	rm -f $(OBJS) *.am *.testam Assembler
+	rm -f $(OBJS) *.am Assembler

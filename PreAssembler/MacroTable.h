@@ -11,10 +11,11 @@
 typedef struct MacroNode
 {
     char* name;
-    char* content;
-    int contentLength;
+    int startIndex;
+    int length;
 } MacroNode;
 
 int compareMacro(void* macro, void* name);
-MacroNode* createMacroNode();
+MacroNode* createMacroNode(char* name);
+void freeNode(void* node);
 #endif

@@ -19,10 +19,10 @@ void DestroyLinkList(Node* head);
 
 /*Struct Node *InserNode(linklist_t head, struct Node *node_to_insert);*/
 
-Node* InsertNode(Node** head_ref,void* new_data);
-
+void InsertNode(Node** head_ref, void* new_data);
 /*struct Node *RemoveNode(linklist_t head, struct Node *node_to_remove);*/
 
-void *SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*));
+Node* SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*));
 
+void freeList(Node* head, void(*free_func)(void*));
 #endif
