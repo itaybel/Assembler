@@ -83,13 +83,3 @@ int getOperandNum(char *name){
     return error;
 }
 
-
-int main(){
-
-
-    printf("%s\n", getOperationName("hlt"));
-    printf("%d\n", getOperationOpcode("hlt1"));
-    printf("%d\n", getOperandNum("cmp"));
-
-    return 1;
-}
