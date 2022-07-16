@@ -2,32 +2,28 @@
 #include <string.h>
 #include "OperationTable.h"
 
-#define firstAddres 1
-#define secondAddres 2
-#define thirdAddres 4
-#define fourthAddres 8
 
 static const struct  operationConsts{
 
     const char *name;
     int opcode;
     int operandNum;
-    int soruceOperand;
-    int desttinationOperand;
-} operationTable[] = {{"mov",0,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
-                      {"cmp",1,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
-                      {"add",2,2, secondAddres | thirdAddres | fourthAddres,secondAddres | thirdAddres | fourthAddres},
-                      {"sub",3,2,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"not",4,1,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"clr",5,1, firstAddres | secondAddres,secondAddres | thirdAddres | fourthAddres},
-                      {"lea",6,2,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"inc",7,1,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"dec",8,1,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"jmp",9,1,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"bne",10,1,0, secondAddres | thirdAddres | fourthAddres},
-                      {"get",11,1,0, secondAddres | thirdAddres | fourthAddres},
-                      {"prn",12,1,0, firstAddres | secondAddres | thirdAddres | fourthAddres},
-                      {"jsr",13,1,0, secondAddres | thirdAddres | fourthAddres},
+    int sourceOperand;
+    int destinationOperand;
+} operationTable[] = {{"mov",0,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"cmp",1,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"add",2,2, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS,SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"sub",3,2,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"not",4,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"clr",5,1, FIRST_ADDRESS | SECOND_ADDRESS,SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"lea",6,2,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"inc",7,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"dec",8,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"jmp",9,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"bne",10,1,0, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"get",11,1,0, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"prn",12,1,0, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"jsr",13,1,0, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"rts",14,0,0,0},
                       {"hlt",15,0,0,0}};
 
@@ -122,7 +118,7 @@ int getDestinationOperand(char *name, int destinationOperand){
 
     while (i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0) {
-            if (bit << destinationOperand & operationTable[i].sourceOperand){
+            if (bit << destinationOperand & operationTable[i].destinationOperand){
                 printf("\ncorrect!! the number of destinationOperand for: ");
                 printf("%s ",operationTable[i].name);
                 printf("and the operand number is: \n");
