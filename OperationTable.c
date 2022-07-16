@@ -16,10 +16,10 @@ static const struct  operationConsts{
     int desttinationOperand;
 } operationTable[] = {{"mov",0,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
                       {"cmp",1,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
-                      {"add",2,2, secondAddres | thirdAddres | fourthAddres,               secondAddres | thirdAddres | fourthAddres},
+                      {"add",2,2, secondAddres | thirdAddres | fourthAddres,secondAddres | thirdAddres | fourthAddres},
                       {"sub",3,2,0,  secondAddres | thirdAddres | fourthAddres},
                       {"not",4,1,0,  secondAddres | thirdAddres | fourthAddres},
-                      {"clr",5,1, firstAddres | secondAddres,                              secondAddres | thirdAddres | fourthAddres},
+                      {"clr",5,1, firstAddres | secondAddres,secondAddres | thirdAddres | fourthAddres},
                       {"lea",6,2,0,  secondAddres | thirdAddres | fourthAddres},
                       {"inc",7,1,0,  secondAddres | thirdAddres | fourthAddres},
                       {"dec",8,1,0,  secondAddres | thirdAddres | fourthAddres},
