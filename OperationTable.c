@@ -2,6 +2,11 @@
 #include <string.h>
 #include "OperationTable.h"
 
+#define firstAddres 1
+#define secondAddres 2
+#define thirdAddres 4
+#define fourthAddres 8
+
 static const struct  operationConsts{
 
     const char *name;
@@ -9,22 +14,22 @@ static const struct  operationConsts{
     int operandNum;
     int soruceOperand;
     int desttinationOperand;
-} operationTable[] = {{"mov",0,2,1,1},
-                      {"cmp",1,2,1,1},
-                      {"add",2,2,1,1},
-                      {"sub",3,2,1,1},
-                      {"not",4,1,1,1},
-                      {"clr",5,1,1,1},
-                      {"lea",6,2,1,1},
-                      {"inc",7,1,1,1},
-                      {"dec",8,1,1,1},
-                      {"jmp",9,1,1,1},
-                      {"bne",10,1,1,1},
-                      {"get",11,1,1,1},
-                      {"prn",12,1,1,1},
-                      {"jsr",13,1,1,1},
-                      {"rts",14,0,1,1},
-                      {"hlt",15,0,1,1}};
+} operationTable[] = {{"mov",0,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
+                      {"cmp",1,2, firstAddres | secondAddres | thirdAddres | fourthAddres, secondAddres | thirdAddres | fourthAddres},
+                      {"add",2,2, secondAddres | thirdAddres | fourthAddres,               secondAddres | thirdAddres | fourthAddres},
+                      {"sub",3,2,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"not",4,1,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"clr",5,1, firstAddres | secondAddres,                              secondAddres | thirdAddres | fourthAddres},
+                      {"lea",6,2,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"inc",7,1,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"dec",8,1,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"jmp",9,1,0,  secondAddres | thirdAddres | fourthAddres},
+                      {"bne",10,1,0, secondAddres | thirdAddres | fourthAddres},
+                      {"get",11,1,0, secondAddres | thirdAddres | fourthAddres},
+                      {"prn",12,1,0, firstAddres | secondAddres | thirdAddres | fourthAddres},
+                      {"jsr",13,1,0, secondAddres | thirdAddres | fourthAddres},
+                      {"rts",14,0,0,0},
+                      {"hlt",15,0,0,0}};
 
 
 enum addressingMode{immediateAddress = 0,DirectAddress = 1,addressAccess = 2,directRegisterAddress = 3};
