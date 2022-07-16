@@ -80,11 +80,58 @@ int getOperandNum(char *name){
 
     while(i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0){
+            printf("\ncorrect! the number of operands for: ");
+            printf("%s is: \n",operationTable[i].name);
+            printf("%d",operationTable[i].operandNum);
             return operationTable[i].operandNum;
         }
         i++;
     }
     printf("Error!, this name doest not exist in the OperationTable!");
+    return error;
+}
+
+
+int getSourceOperand(char *name, int sourceOperand){
+    int i = 0;
+    int error = -1;
+    char bit = 1;
+
+
+    while (i < NUM_OF_OPERATIONS){
+        if(strcmp(name,operationTable[i].name) == 0) {
+            if (bit << sourceOperand & operationTable[i].sourceOperand){
+                printf("\ncorrect!! the number of sourceOperand for: ");
+                printf("%s ",operationTable[i].name);
+                printf("and the operand number is: \n");
+                return sourceOperand;
+            }
+        }
+        i++;
+    }
+    printf("error! invalid sourceOperand for this operation name! the error name is: ");
+    return error;
+}
+
+
+int getDestinationOperand(char *name, int destinationOperand){
+    int i = 0;
+    int error = -1;
+    char bit = 1;
+
+
+    while (i < NUM_OF_OPERATIONS){
+        if(strcmp(name,operationTable[i].name) == 0) {
+            if (bit << destinationOperand & operationTable[i].sourceOperand){
+                printf("\ncorrect!! the number of destinationOperand for: ");
+                printf("%s ",operationTable[i].name);
+                printf("and the operand number is: \n");
+                return destinationOperand;
+            }
+        }
+        i++;
+    }
+    printf("error! invalid destinationOperand for this operation name! the error name is: ");
     return error;
 }
 
