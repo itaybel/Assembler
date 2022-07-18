@@ -24,5 +24,5 @@ void InsertNode(Node** head_ref, void* new_data);
 
 Node* SearchNode(Node* head, void *data, int(*cmp_func)(void*, void*));
 
-void freeList(Node* head, void(*free_func)(void*));
+void freeList(Node* head, void(*free_func)(Node*));
 #endif

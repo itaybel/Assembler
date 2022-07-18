@@ -12,3 +12,10 @@ void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
 }
 
 
+int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
+    int i = 0;
+    for(i = 0; i < strlen(line); i++){
+        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') return 0;
+    }
+    return 1;
+}

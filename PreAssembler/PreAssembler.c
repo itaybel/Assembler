@@ -74,7 +74,7 @@ int addToMacroList(Node** head, char* line, FILE* inputFile){
                 break;
             }
         }
-        newMacroNode->length = (ftell(inputFile) - (strlen("endmacro") + 1)- newMacroNode->startIndex); /* we need to substract the length of endmacro since we don't want it to be in the output file */
+        newMacroNode->length = ((int)ftell(inputFile) - (strlen("endmacro") + 1)- newMacroNode->startIndex); /* we need to substract the length of endmacro since we don't want it to be in the output file */
         InsertNode(head, newMacroNode);
         
         return 1;
@@ -86,30 +86,31 @@ int addToMacroList(Node** head, char* line, FILE* inputFile){
 /*
 This function is opening up the macros for the assembler
 @param file_name the name of the input file
-@return 0 if it faced any errors, 1 otherwise
+@return 1 if it couldn't allocate memory, -1 if one of the files couldn't be opened, or 0 if it succeed
 */
 int preAssemble(char* file_name){
-        FILE *inputFile = NULL, *outputFile = NULL;
+        FILE *inputFile = openFile(file_name , "as", "r"), *outputFile = openFile(file_name , "am", "w");
         Node* macroTable = NULL, *foundNode = NULL;
         char line[MAX_LINE_LENGTH] = {0};
         char* command = NULL, *originaLine = NULL;
         int tempPos = 0;
 
-        if((inputFile = getInputFile(file_name)) == NULL) return 0;
-        if((outputFile = getOutputFile(file_name)) == NULL) {
+        if(inputFile == NULL) return -1;
+        if(outputFile == NULL) {
             fclose(inputFile);
-            return 0;
+            return -1;
         }
 
-        while (!feof(inputFile)) { /* iterating through each line of the input file */
-            fgets(line, MAX_LINE_LENGTH, inputFile); /* storing a copy of the line, since strtok will be changing it */
-            originaLine = (char *)malloc(strlen(line) + 1);
+        while (fgets(line, MAX_LINE_LENGTH, inputFile)) { /* iterating through each line of the input file */
+            if(containsOnlyBlanks(line)) continue;
+            originaLine = (char *)malloc(strlen(line) + 1);/* storing a copy of the line, since strtok will be changing it */
+            if(originaLine == NULL) return 1;
             strcpy(originaLine, line);
 
             if(!addToMacroList(&macroTable, line, inputFile)){ /* if we didn't add any new macros to the list */
                 command = strtok(line, " \n"); /* get the first word in the line. */
                 if((foundNode = (SearchNode(macroTable, command, compareMacro))) != NULL ){ /* if its a macro call */
-                    tempPos = ftell(inputFile);
+                    tempPos = (int)ftell(inputFile);
                     WriteMacroToOutputFile(foundNode->data, inputFile, outputFile); /* we write the macro's code instead of the macro call */
                     fseek(inputFile, tempPos, SEEK_SET);
                 }

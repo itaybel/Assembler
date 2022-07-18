@@ -38,7 +38,7 @@ This function is used to free a macro node
 @param node - the macro to be freed
 @return none
 */
-void freeNode(void* node){
+void freeNode(Node* node){
     free(((MacroNode*)node)->name);
     free(((MacroNode*)node));
 

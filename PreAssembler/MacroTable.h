@@ -17,5 +17,5 @@ typedef struct MacroNode
 
 int compareMacro(void* macro, void* name);
 MacroNode* createMacroNode(char* name);
-void freeNode(void* node);
+void freeNode(Node* node);
 #endif

@@ -34,8 +34,6 @@ void InsertNode(Node** head_ref, void* new_data)
     /* Allocate node*/ 
     Node* new_node = CreateNode();
 
-    /*put in the data*/
-    new_node->data  = malloc(sizeof(new_data));
 
     new_node->data  = new_data;
     if (!(*head_ref)) /* if the list is empty */
@@ -81,9 +79,10 @@ This function is used to free a linked list
 @param free_func - the function that frees each node invidually
 @return none
 */
-void freeList(Node* head, void(*free_func)(void*)){
+void freeList(Node* head, void(*free_func)(Node*)){
     if(head != NULL){
         freeList(head->next, free_func);
-        free_func(head);
+        free_func(head->data);
+        free(head);
     }
 }
