@@ -3,6 +3,7 @@
 #include "OperationTable.h"
 
 
+
 static const struct  operationConsts{
 
     const char *name;
@@ -28,7 +29,7 @@ static const struct  operationConsts{
                       {"hlt",15,0,0,0}};
 
 
-enum addressingMode{immediateAddress = 0,DirectAddress = 1,addressAccess = 2,directRegisterAddress = 3};
+
 
 
 char* getOperationName(char *name) {
@@ -43,10 +44,12 @@ char* getOperationName(char *name) {
 
 
         if (strcmp(name,operationTable[i].name) == 0) {
-            return  correct;
+            printf("%s",correct);
+            return  name;
         }
         i++;
     }
+    printf("%s",error);
     return  error;
 
 }
