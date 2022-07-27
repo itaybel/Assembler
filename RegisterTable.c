@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <string.h>
 #include "RegisterTable.h"
@@ -22,20 +23,16 @@ static const struct registerConsts{
 char* getRegisterName(char *name) {
 
     int i = 0;
-    char *correct;
-    char *error;
-    correct =  "The Register name is Correct!";
 
-    error = "Error!, this name doest not exist in the RegisterTable!";
     while (i < NUM_OF_REGISTERS) {
 
 
         if (strcmp(name,registerTable[i].name) == 0) {
-            return  correct;
+            return name;
         }
         i++;
     }
-    return  error;
+    return  0;
 
 }
 
@@ -43,7 +40,6 @@ char* getRegisterName(char *name) {
 int getRegisterNum(char *name){
 
     int i = 0;
-    int error = -1;
 
     while(i < NUM_OF_REGISTERS){
         if(strcmp(name, registerTable[i].name) == 0){
@@ -52,5 +48,6 @@ int getRegisterNum(char *name){
         i++;
     }
     printf("Error!, this name doest not exist in the OperationTable!");
-    return error;
+    return 0;
 }
+
