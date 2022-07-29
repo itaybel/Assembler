@@ -48,6 +48,15 @@ typedef struct symbol {
  */
 void crateTable(char *key, int symbolAddress, symbolType type);
 
+
+/**
+ * Adds symbol to head of the table.
+ * @param sym The symbol
+ * @param symbolAddress The address of the symbol
+ */
+void symbolHead(symbolTable *sym, int address);
+
+
 /**
  * Deallocates all the memory required by the table.
  * @param table The table to deallocate
