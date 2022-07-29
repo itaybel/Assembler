@@ -8,20 +8,6 @@
 
 
 
-/*typedef struct symbolNode
-{
-    char* name;
-    int address;
-    char* def;
-
-
-*//* symbol can be external,can be entry, .data, or command*//*
-} SymbolNode;*/
-
-
-static int IC,DC,L;
-
-
 int validLabelName(char *name) {
     /*Check length, first char is alpha and all the others are alphanumeric, and not assembly reserved identifier and string size is 30*/
     int i = 0;
