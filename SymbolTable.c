@@ -8,11 +8,25 @@
 
 
 
+/*typedef struct symbolNode
+{
+    char* name;
+    int address;
+    char* def;
+
+
+*//* symbol can be external,can be entry, .data, or command*//*
+} SymbolNode;*/
+
+
+static int IC,DC,L;
+
+
 int validLabelName(char *name) {
     /*Check length, first char is alpha and all the others are alphanumeric, and not assembly reserved identifier and string size is 30*/
     int i = 0;
 
-    if (name[0] && strlen(name) <= MAX_LENGTH && isalpha(name[0]) && reservedWord(name)) {
+    if (name[0] && strlen(name) <= MAX_LENGTH && isalpha(name[0]) && reservedWord(name) && name[strlen(name) -1] == ':') {
         while (name[i]) {/*use loop to check isalnum if the word is alphanumeric*/
             if (isalnum(name[i])) {
                 i++;
@@ -132,3 +146,4 @@ singleSymbol *findByTypes(symbolTable table, char *key, int symbolCount, ...) {
     free(validSymbolTypes);
     return NULL;
 }
+
