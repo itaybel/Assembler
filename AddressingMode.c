@@ -10,16 +10,17 @@
 
 
 
+
 static const struct instructionTableName{
     const char *name;
     const char *message;
 
 }instructionsTable[] = {
-        {"data",   "DATA_INSTRUCTION"},
-        {"string", "STRING_INSTRUCTION"},
-        {"struct", "STRUCT_INSTRUCTION"},
-        {"entry",  "ENTRY_INSTRUCTION"},
-        {"extern", "EXTERN_INSTRUCTION",},
+        {".data",   "DATA_INSTRUCTION"},
+        {".string", "STRING_INSTRUCTION"},
+        {".struct", "STRUCT_INSTRUCTION"},
+        {".entry",  "ENTRY_INSTRUCTION"},
+        {".extern", "EXTERN_INSTRUCTION",},
         /*{NULL,     "ERROR_INSTRUCTION"}* it will have problem when we will compare name between NULL*/
 };
 
@@ -87,11 +88,10 @@ int immediateAddressCheck(char *string){/*we can use strtol instead of this func
 
 
 
-addressingMode getAddressingMode(char *address) {
+addressingMode getAddressingMode(char *address) {/* address = "add #4, s.1"*/
 
-    char *result = NULL;
-    char *dot = (char *) '.';
-    result = strtok(address, " \t\n\v\f\r");
+    /*char *result = NULL;
+    result = strtok(NULL, " \t\n\v\f\r");*/
 
     /*if nothing, just return none */
 
@@ -119,16 +119,14 @@ addressingMode getAddressingMode(char *address) {
 
         /*if address is a valid label name & after the dot we have, it's addressAccess  = 2 */
 
-    else if (validLabelName(address)) {/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
-
-        if (strcmp(result, dot) == 0) {
-            result = strtok(address, " \t\n\v\f\r.,");
-            if (atoi(result)) {
+    else{/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
+        if(validLabelName(address)){
+            if(firstCharIsDot(address) && address[1] == '1' || address[1] == '2'){
+            /*if the label is valid, and checks if after the dot the number are 1 or 2*/
                 return addressAccess;
             }
         }
     }
     return error;
 }
-
 
