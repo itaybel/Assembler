@@ -313,4 +313,7 @@ int crateSymbolTable(char* fileName) {
 
 
     }
+    
+    fclose(inputFile);
+    return 1;
 }
