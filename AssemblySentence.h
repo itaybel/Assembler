@@ -4,12 +4,9 @@
 #define UNTITLED4_ASSEMBLYSENTENCE_H
 
 #include "SymbolTable.h"
+#include "AddressingMode.h"
 
 #define MAX_LINE_LENGTH 80
-
-
-
-
 
 
 int foundCommendSentence(char* file_name);
@@ -18,19 +15,23 @@ int foundEmptySentence(char* file_name);
 
 int firstCharIsDot(char *line);
 
-int doCommandSentence(char *line, int *IC);
-
 char* cutColonFromLabel(char *line, char *firstWord);
 
-int doData(symbolTable table,char *line, int *DC,int numberOfLine);
+int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symbol);
 
-int doString(symbolTable table,char *line, int *DC,int numberOfLine);
+int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doStruct(symbolTable table,char *line, int *DC,int numberOfLine);
+int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doEntry(symbolTable table,char *line, int *DC,int numberOfLine);
+int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doExtern(symbolTable table,char *line, int *DC,int numberOfLine);
+int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable symbol);
+
+int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol);
+
+void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
+
+void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
 int crateSymbolTable(char* fileName);
 
