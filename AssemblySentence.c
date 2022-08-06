@@ -3,6 +3,7 @@
 #include "AssemblySentence.h"
 #include "Utility/FileHandler.h"
 #include "Utility/InputHandler.h"
+#include "PreAssembler/MacroTable.h"
 #include "AddressingMode.h"
 #include "AddressingMode.c"
 #include "SymbolTable.h"
@@ -26,9 +27,9 @@ int foundCommendSentence(char* line){
     char *semicolon = NULL;
     semicolon = ";";
 
-        if(strcmp(semicolon,line) == 0){
-            return 1;
-        }
+    if(strcmp(semicolon,line) == 0){
+        return 1;
+    }
     return 0;
 }
 
@@ -70,7 +71,7 @@ int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable sy
     }
     *DC = *DC + i;
     if (symbol != NULL) {
-    setType(symbol, DATA_SYMBOL);
+        setType(symbol, DATA_SYMBOL);
     }
 
     return 0;
@@ -181,9 +182,10 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol){
 
     if(validLabelName(label)){
-        InsertSymbolNode(symbol,*DC);
+        InsertSymbolNode((char *) symbol,*DC);
         return 1;
     }
+    return 0;
 }
 
 
@@ -215,7 +217,7 @@ void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
 int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symbol) {
     int opNumber = 0;
     int i = 0;
-    char *temp = NULL;
+    /*char *temp = NULL;*/
     addressingMode prevOperand = immediateAddress;
     addressingMode curr = immediateAddress;
 
@@ -259,7 +261,7 @@ void validInstructions(symbolTable table,char *instruction,int *DC, int numberOf
             instruction = strtok(NULL," ");
             instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
         }
-        
+
     }
 }
 
@@ -302,7 +304,7 @@ int crateSymbolTable(char* fileName) {
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
             label = cutColonFromLabel(originalLine, firstWord);
-            InsertSymbolNode(label, *IC);
+            InsertSymbolNode(label, IC);
             firstWord = strtok(NULL, "");
         }
 
@@ -314,7 +316,7 @@ int crateSymbolTable(char* fileName) {
 
 
     }
-    
+
     fclose(inputFile);
     return 1;
 }
