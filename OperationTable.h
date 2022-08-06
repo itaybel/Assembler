@@ -9,9 +9,9 @@
 /*
 This function is checking if the received name of the operationTable is valid or not.
 @param name - tha name of the operationTable
-@return char name
+@return int - wether it found that operation
 */
-char* getOperationName(char *name);
+int isOperationName(char *name);
 
 
 

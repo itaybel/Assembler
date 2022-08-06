@@ -5,9 +5,9 @@
 /*
 This function is checking if the received name of the registerTable is valid or not.
 @param name - tha name of the registerTable
-@return char name - name of the registerTable
+@return int - wether it found a register with that name
 */
-char* getRegisterName(char *name);
+int isRegisterName(char *name);
 
 
 

@@ -20,7 +20,7 @@ static const struct registerConsts{
 };
 
 
-char* getRegisterName(char *name) {
+int isRegisterName(char *name) {
 
     int i = 0;
 
@@ -28,7 +28,7 @@ char* getRegisterName(char *name) {
 
 
         if (strcmp(name,registerTable[i].name) == 0) {
-            return name;
+            return 1;
         }
         i++;
     }

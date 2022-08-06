@@ -19,3 +19,15 @@ int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
     }
     return 1;
 }
+
+
+void substring(char* string, int length){
+    int i = 0;
+    int j = length;
+    for(i = 0; j <= strlen(string); i++){
+        string[i] = string[j];
+        j++;
+    }
+
+    string[j] = '\0';
+}

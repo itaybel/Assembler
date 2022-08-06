@@ -19,6 +19,11 @@ This function checks if a given string contains just blanks (spaces/tabs)
 @return wether it contains just blanks
 */
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
-
-
+/*
+This function gets a string , and a number length, and removes the first length's chars from the string
+@param string: a string to be changed
+@param length: how much chars to remove
+@return none
+*/
+void substring(char* string, int length);
 #endif 

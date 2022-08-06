@@ -32,25 +32,19 @@ static const struct  operationConsts{
 
 
 
-char* getOperationName(char *name) {
+int isOperationName(char *name) {
 
     int i = 0;
-    char *correct;
-    char *error;
-    correct =  "Correct name!";
-
-    error = "Error!, this name doest not exist in the OperationTable!";
+    
     while (i < NUM_OF_OPERATIONS) {
 
 
         if (strcmp(name,operationTable[i].name) == 0) {
-            printf("%s",correct);
-            return  name;
+            return  1;
         }
         i++;
     }
-    printf("%s",error);
-    return  error;
+    return  0;
 
 }
 
@@ -79,9 +73,6 @@ int getOperandNum(char *name){
 
     while(i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0){
-            printf("\ncorrect! the number of operands for: ");
-            printf("%s is: \n",operationTable[i].name);
-            printf("%d",operationTable[i].operandNum);
             return operationTable[i].operandNum;
         }
         i++;
@@ -100,7 +91,6 @@ int getSourceOperand(char *name, int sourceOperand){
     while (i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0) {
             if (bit << sourceOperand & operationTable[i].sourceOperand){
-                printf("\ncorrect!! the number of sourceOperand for: ");
                 printf("%s ",operationTable[i].name);
                 printf("and the operand number is: \n");
                 return sourceOperand;
@@ -122,7 +112,6 @@ int getDestinationOperand(char *name, int destinationOperand){
     while (i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0) {
             if (bit << destinationOperand & operationTable[i].destinationOperand){
-                printf("\ncorrect!! the number of destinationOperand for: ");
                 printf("%s ",operationTable[i].name);
                 printf("and the operand number is: \n");
                 return destinationOperand;

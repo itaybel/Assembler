@@ -7,7 +7,11 @@
 
 
 
-#define NUM_OF_ADDRESS_MODE 6
+#define NUM_OF_ADDRESS_MODE 5
+
+
+ /*Instruction type (.data, .entry, etc.)*/
+
 
 
 typedef enum addressingMode{
@@ -19,7 +23,7 @@ typedef enum addressingMode{
 } addressingMode;
 
 
-char* getInstructionName(char *name);
+int isInstructionName(char *name);
 
 
 int reservedWord(char *name);

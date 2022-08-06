@@ -23,17 +23,16 @@ static const struct instructionTableName{
 
 
 
-char* getInstructionName(char *name) {
+int isInstructionName(char *name) {
     int i = 0;
     while( i < NUM_OF_ADDRESS_MODE) {
         if (strcmp(name, instructionsTable[i].name) == 0) {
-            printf("%s", instructionsTable->message);
-            return name;
+            return 1;
         }
         i++;
     }
 
-    return NULL;
+    return 0;
 
 }
 
@@ -43,16 +42,8 @@ int reservedWord(char *name) {
 
  /*check if register or instructionname or lable */
 
-    if (strcmp(getRegisterName(name), name) == 0 || atoi(name) || strcmp(getInstructionName(name), name) == 0){
-        return 1;
-    }
-    else if(strcmp(getOperationName(name),name) == 0){
-        return 1;
-
-    }
-
-
-    return 0;
+    return (isRegisterName(name) || atoi(name) || isInstructionName(name) || isOperationName(name));
+        
 }
 
 
@@ -102,7 +93,7 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* address = 
 
         /*if its name of register from registerTable, its directRegisterAddress = 3 */
 
-    else if (strcmp(getRegisterName(address), address) == 0) {
+    else if (isRegisterName(address)) {
         return directRegisterAddress;
     }
 

@@ -33,6 +33,7 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol);
 
 
+int getSpacesAtBegining(char* substring);
 
 void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 

@@ -2,16 +2,19 @@
 #include "AssemblySentence.h"
 
 void throwError(char* errorMsg, int numberOfLine){
-    printf("Error occured at line %d: %s", numberOfLine, errorMsg);
+    printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
 }
 
 int foundEmptySentence(char* line){
-
+    int i = 0;
 
     if(line == NULL){
         return 1;
     }
-    return 0;
+    for(i = 0; i < strlen(line); i++){
+        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') return 0;
+    }
+    return 1;
 }
 
 
@@ -28,11 +31,10 @@ int foundCommendSentence(char* line){
 
 
 int firstCharIsDot(char *line){
-
-    if(line[0] == '.' ){
-        return 1;
-    }
-    return 0;
+    int i = 0;
+    for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
+    return (line[i] == '.');
+   
 }
 
 
@@ -184,30 +186,44 @@ int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTabl
 
 
 
+int getSpacesAtBegining(char* substring){
+    int i = 0;
 
+    for(i = 0; i < strlen(substring) && (substring[i] == ' ' || substring[i] == '\t'); i++); /* shifting the spaces */
+    return i;
+}
 
-int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symbol) {
+int doCommandSentence(char *line, int *IC,int numberOfLine,symbolTable symbol) {
     int opNumber = 0;
     int i = 0;
-    /*char *temp = NULL;*/
+    char *nextWord = NULL;
+    char* originalLine;
     addressingMode prevOperand = immediateAddress;
     addressingMode curr = immediateAddress;
 
-    if (getOperationName(subString) == NULL) {
+    originalLine = (char*)malloc(sizeof(char) * (strlen(line) + 1));
+    strcpy(originalLine, line);
+    printf("line is: %s\n", line);
+    nextWord = strtok(originalLine, " \t\n\v\f\r");/*XYZ:*/
+    printf("line is: %s\n", originalLine);
+    removeSpacesAndTabs(nextWord);
+    if (!isOperationName(nextWord)) {
         throwError("Invalid OperationName", numberOfLine);
         return 0;
-
     }
 
-    opNumber = getOperandNum(subString);
+    opNumber = getOperandNum(nextWord);
+    
+    nextWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
 
-
+    printf("opnumber: %d-next word is: %s\n", opNumber, nextWord);
     for (i = 0; i < opNumber; i++) {
-        subString = strtok(NULL, ", ");
-        curr = getAddressingMode(subString, numberOfLine);
+        
+        printf("nextWord is: -%s-\n", nextWord);
+        curr = getAddressingMode(nextWord, numberOfLine);
         iCCounter(curr, prevOperand, IC);
         prevOperand = curr;
-
+        nextWord = strtok(NULL, ",");
     }
 
     return 1;
@@ -264,7 +280,6 @@ int createSymbolTable(char* fileName) {
 
     FILE *inputFile = NULL;
     char line[MAX_LINE_LENGTH] = {0};
-    char *originalLine = NULL;
     char *firstWord = NULL;
     char *label = NULL;
     symbolTable symbol = NULL;
@@ -283,25 +298,25 @@ int createSymbolTable(char* fileName) {
         fgets(line, MAX_LINE_LENGTH, inputFile); /* XYZ: .data 7, -57, +17, 9*/
         numberOfLine++;
         /* storing a copy of the line, since strtok will be changing it */
-        strcpy(originalLine, line);
         /* subString recives the first string*/
-        firstWord = strtok(originalLine, " \t\n\v\f\r");/*XYZ:*/
+        firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
 
-
-        if (foundEmptySentence(originalLine) ||
-            foundCommendSentence(originalLine)) {/* if line is empty or commend continue to the next line*/
+        if (foundEmptySentence(line) || foundCommendSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
-            label = cutColonFromLabel(originalLine, firstWord);
+        
+            label = cutColonFromLabel(line, firstWord); 
+            printf("first word is %s-\n", firstWord);
             InsertSymbolNode(&table, label, IC);
             firstWord = strtok(NULL, "");
         }
-
+        
         if (firstCharIsDot(firstWord)) {
             validInstructions(table, firstWord, &DC, numberOfLine, symbol);
         } else {
+            printf("fw is: %s\n", firstWord);
             doCommandSentence(firstWord, &IC, numberOfLine, symbol);
         }
 
