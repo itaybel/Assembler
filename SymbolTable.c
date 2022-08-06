@@ -80,7 +80,7 @@ int compareSymbol(symbolTable symbol, char *key){
 
 
 
-void InsertSymbolNode(symbolTable head_ref, int new_data)
+void InsertSymbolNode(char *head_ref, int new_data)
 {
 
 /* Allocate node*/
@@ -156,4 +156,3 @@ void freeTable(symbolTable table) {
         free(prevSymbol);
     }
 }
-
