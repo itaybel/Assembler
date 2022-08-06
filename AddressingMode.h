@@ -4,7 +4,6 @@
 #define NUM_OF_ADDRESS_MODE 6
 
 
-
  /*Instruction type (.data, .entry, etc.)*/
 
 typedef enum instructionsName {
@@ -28,7 +27,7 @@ typedef enum instructionsName {
 
  /*.extern instruction */
 
-    EXTERN_INSTRUCTION,
+    EXTERN_INSTRUCTION
 
  /*Not found
 
@@ -54,7 +53,7 @@ int reservedWord(char *name);
 int immediateAddressCheck(char *string);
 
 
-enum addressingMode getAddressingMode(char *address);
+enum addressingMode getAddressingMode(char *address, int getAddressingMode);
 
 
 #endif

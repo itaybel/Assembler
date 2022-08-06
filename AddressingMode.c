@@ -61,15 +61,12 @@ int reservedWord(char *name) {
 
 
 
-
 int immediateAddressCheck(char *string){/*we can use strtol instead of this function*/
     int i = 0;
-    if (string[0] == '-' || string[0] == '+') {
+    if (string[0] == '-' || string[0] == '+') { /*if string starts with +/-, it's OK */
         string++;
- /*if string starts with +/-, it's OK */
-
     }
-    for(i; string[0]; i++){
+    for(i = 0; string[i] != '\0'; i++){
  /*Just make sure that everything is a digit until the end*/
 
         if(!isdigit(string[i])){
@@ -78,9 +75,6 @@ int immediateAddressCheck(char *string){/*we can use strtol instead of this func
 
         }
     }
-    if( i > 0){
-        return 1;
-    }
     return 1;
 
 }
@@ -88,7 +82,7 @@ int immediateAddressCheck(char *string){/*we can use strtol instead of this func
 
 
 
-addressingMode getAddressingMode(char *address) {/* address = "add #4, s.1"*/
+addressingMode getAddressingMode(char *address, int numberOfLine) {/* address = "add #4, s.1"*/
 
     /*char *result = NULL;
     result = strtok(NULL, " \t\n\v\f\r");*/
@@ -101,8 +95,13 @@ addressingMode getAddressingMode(char *address) {/* address = "add #4, s.1"*/
 
     /*if address starts with # and a number right after that, it's immediately addressed = 0 */
 
-    if (address[0] == '#' && immediateAddressCheck(address + 1)) {
-        return immediateAddress;
+    if (address[0] == '#') {
+        if(immediateAddressCheck(address + 1)){
+            return immediateAddress;
+        }else{
+            throwError("Invalid immediate address number!", numberOfLine);
+            return error;
+        }
     }
 
         /*if its name of register from registerTable, its directRegisterAddress = 3 */
@@ -121,12 +120,13 @@ addressingMode getAddressingMode(char *address) {/* address = "add #4, s.1"*/
 
     else{/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
         if(validLabelName(address)){
-            if(firstCharIsDot(address) && address[1] == '1' || address[1] == '2'){
+            if(firstCharIsDot(address) && (address[1] == '1' || address[1] == '2')){
             /*if the label is valid, and checks if after the dot the number are 1 or 2*/
                 return addressAccess;
             }
         }
     }
+    throwError("invalid addressing mode!", numberOfLine);
     return error;
 }
 

@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include "AssemblySentence.h"
-#include "FileHandler.h"
-#include "InputHandler.h"
+#include "Utility/FileHandler.h"
+#include "Utility/InputHandler.h"
 #include "AddressingMode.h"
 #include "AddressingMode.c"
 #include "SymbolTable.h"
 
+void throwError(char* errorMsg, int numberOfLine){
+    printf("Error occured at line %d: %s", numberOfLine, errorMsg);
+}
 
 int foundEmptySentence(char* line){
 
@@ -53,12 +56,12 @@ int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable sy
 
 
     while (curr_line[0] != '\n' && curr_line[0] != '\0') {
-        if (strcmp(curr_line, line) == 0) { // this means that it couldn't convert any number
-            printf("Couldn't parse one of the numbers!\n-%s-", curr_line);
+        if (strcmp(curr_line, line) == 0) { /*this means that it couldn't convert any number*/
+            throwError("Couldn't parse one of the numbers!\n", numberOfLine);
             return 1;
         }
         if (curr_line[0] != '\0' && curr_line[0] != ',') {
-            printf("Couldn't find an ',' after a number!");
+            throwError("Couldn't find an ',' after a number!", numberOfLine);
             return 1;
         }
         curr_line++; /*shifting the ',' at the beginning*/
@@ -82,7 +85,7 @@ int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     {
         if (line[i] != '\t' && line[i] != ' ')
         {
-            printf("Found invalid text before string");
+            throwError("Found invalid text before string", numberOfLine);
             return 1;
         }
         if (line[i] == '"')
@@ -122,22 +125,22 @@ int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
 
     /*ret = strtol(line, &curr_line, 10);*/
     if (strcmp(curr_line, line) == 0)
-    { // this means that it couldn't convert any number
-        printf("Couldn't parse the number!\n");
+    { /* this means that it couldn't convert any number */
+        throwError("Couldn't parse the number!\n", numberOfLine);
         return 1;
     }
     if (curr_line[0] != ',')
     {
-        printf("Couldn't find an ',' after a number!");
+        throwError("Couldn't find an ',' after a number!", numberOfLine);
         return 1;
     }
-    curr_line++; // shifting the , at the begining
+    curr_line++; /* shifting the , at the begining */
 
     while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
     {
         if (line[i] != '\t' && line[i] != ' ')
         {
-            printf("Found invalid text after ','");
+            throwError("Found invalid text after ','", numberOfLine);
             return 1;
         }
         if (line[i] == '"')
@@ -178,8 +181,7 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol){
 
     if(validLabelName(label)){
-        createSymbol(label,&DC);
-        InsertSymbolNode(symbol,&DC);
+        InsertSymbolNode(symbol,*DC);
         return 1;
     }
 }
@@ -218,7 +220,7 @@ int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symb
     addressingMode curr = immediateAddress;
 
     if (getOperationName(subString) == NULL) {
-        printf("Invalid OperationName");
+        throwError("Invalid OperationName", numberOfLine);
         return 0;
 
     }
@@ -228,8 +230,7 @@ int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symb
 
     for (i = 0; i < opNumber; i++) {
         subString = strtok(NULL, ", ");
-        if(subString < 2)
-        curr = getAddressingMode(subString);
+        curr = getAddressingMode(subString, numberOfLine);
         iCCounter(curr, prevOperand, IC);
         prevOperand = curr;
 
@@ -301,7 +302,7 @@ int crateSymbolTable(char* fileName) {
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
             label = cutColonFromLabel(originalLine, firstWord);
-            createSymbol(label, IC);
+            InsertSymbolNode(label, *IC);
             firstWord = strtok(NULL, "");
         }
 

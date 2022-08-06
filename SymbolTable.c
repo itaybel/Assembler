@@ -80,7 +80,7 @@ int compareSymbol(symbolTable symbol, char *key){
 
 
 
-void InsertSymbolNode(symbolTable head_ref, void* new_data)
+void InsertSymbolNode(symbolTable head_ref, int new_data)
 {
 
 /* Allocate node*/
@@ -140,6 +140,7 @@ symbolTable createSymbol(char* key,int address){
     }
     new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
     strcpy(new_node->key, key);
+    new_node -> address = address;
 
     return new_node;
 

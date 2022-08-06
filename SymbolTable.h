@@ -19,7 +19,7 @@ void *checkMalloc(int size);
 /** A symbol type */
 typedef enum symbolType {
     CODE_SYMBOL,/* opertion_names and ect*/
-    DATA_SYMBOL,/*string
+    DATA_SYMBOL,/*string */
     EXTERNAL_SYMBOL, /*when we have instruction on extern*/
     STRUCT_SYMBOL /*when we have instruction on struct*/
 } symbolType;
@@ -42,7 +42,7 @@ void addType(symbolTable symbol, symbolType type);
 
 void setAddress(symbolTable symbol, int address);
 
-void InsertSymbolNode(symbolTable head_ref, void* new_data);
+void InsertSymbolNode(symbolTable head_ref, int new_data);
 
 int getAddress(symbolTable symbol);
 
