@@ -10,38 +10,6 @@
 #define NUM_OF_ADDRESS_MODE 6
 
 
- /*Instruction type (.data, .entry, etc.)*/
-
-typedef enum instructionsName {
-
-
- /*.data instruction */
-
-    DATA_INSTRUCTION,
-
- /*.string instruction */
-
-    STRING_INSTRUCTION,
-
- /*.struct instruction */
-
-    STRUCT_INSTRUCTION,
-
- /*.entry instruction */
-
-    ENTRY_INSTRUCTION,
-
- /*.extern instruction */
-
-    EXTERN_INSTRUCTION
-
- /*Not found
-
-    ERROR_INSTRUCTION*/
-
-} instructionName;
-
-
 typedef enum addressingMode{
     immediateAddress = 0,
     directAddress = 1,
