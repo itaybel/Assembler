@@ -3,8 +3,12 @@
 #ifndef UNTITLED4_ASSEMBLYSENTENCE_H
 #define UNTITLED4_ASSEMBLYSENTENCE_H
 
+#include <stdio.h>
+#include <string.h>
 #include "SymbolTable.h"
 #include "AddressingMode.h"
+#include "Utility/FileHandler.h"
+#include "Utility/InputHandler.h"
 
 void throwError(char* errorMsg, int numberOfLine);
 
@@ -28,11 +32,12 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol);
 
-void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
+
 
 void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
-int crateSymbolTable(char* fileName);
+void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
+int createSymbolTable(char* fileName) ;
 
 
 #endif

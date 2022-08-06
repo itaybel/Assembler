@@ -42,7 +42,7 @@ void addType(symbolTable symbol, symbolType type);
 
 void setAddress(symbolTable symbol, int address);
 
-void InsertSymbolNode(char *head_ref, int new_data);
+void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
 

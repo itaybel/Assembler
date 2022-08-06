@@ -2,12 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "RegisterTable.h"
 #include "AddressingMode.h"
-#include "OperationTable.h"
 #include "AssemblySentence.h"
-#include "SymbolTable.h"
-
 
 
 

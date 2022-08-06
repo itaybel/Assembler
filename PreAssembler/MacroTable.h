@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "string.h"
 #include "../Utility/LinkedList.h"
-#define MAX_LINE_LENGTH 82
+
 
 typedef struct MacroNode
 {

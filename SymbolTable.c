@@ -80,36 +80,30 @@ int compareSymbol(symbolTable symbol, char *key){
 
 
 
-void InsertSymbolNode(char *head_ref, int new_data)
+void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
 {
 
 /* Allocate node*/
 
-    symbolTable new_node = createSymbol(head_ref,new_data);
+    symbolTable new_node = createSymbol(label,new_data);
 
-/*put in the data*/
-
-
-    new_node->address  = malloc(sizeof(new_data));
-
-    new_node->address  = new_data;
     if (!(head_ref))
 
 /* if the list is empty */
 
     {
-        head_ref = new_node;
+        *head_ref = new_node;
 
     }else{
 
 /*Make next of new node as head*/
 
-        new_node->next = (head_ref);
+        new_node->next = (*head_ref);
 
 
 /*move the head to point to the new node*/
 
-        (head_ref)  = new_node;
+        (*head_ref)  = new_node;
     }
 }
 

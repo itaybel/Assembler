@@ -1,12 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+
 #include "AssemblySentence.h"
-#include "Utility/FileHandler.h"
-#include "Utility/InputHandler.h"
-#include "PreAssembler/MacroTable.h"
-#include "AddressingMode.h"
-#include "AddressingMode.c"
-#include "SymbolTable.h"
 
 void throwError(char* errorMsg, int numberOfLine){
     printf("Error occured at line %d: %s", numberOfLine, errorMsg);
@@ -182,34 +175,13 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol){
 
     if(validLabelName(label)){
-        InsertSymbolNode((char *) symbol,*DC);
+        InsertSymbolNode(&table, (char *) symbol,*DC);
         return 1;
     }
     return 0;
 }
 
 
-void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
-
-    if (address == immediateAddress) {
-        (*IC)++;
-    }
-
-    if (address == directAddress) {/*firstWord = x: .data 23*/
-        (*IC)++;
-    }
-
-    if(address == directRegisterAddress && prevAddress != directRegisterAddress){
-        (*IC)++;
-
-    }
-
-    if (address== addressAccess) {/*firstWord = add #4, s.1,*/
-        (*IC) += 2;
-    }
-
-
-}
 
 
 
@@ -265,10 +237,30 @@ void validInstructions(symbolTable table,char *instruction,int *DC, int numberOf
     }
 }
 
+void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
+
+    if (address == immediateAddress) {
+        (*IC)++;
+    }
+
+    if (address == directAddress) {/*firstWord = x: .data 23*/
+        (*IC)++;
+    }
+
+    if(address == directRegisterAddress && prevAddress != directRegisterAddress){
+        (*IC)++;
+
+    }
+
+    if (address== addressAccess) {/*firstWord = add #4, s.1,*/
+        (*IC) += 2;
+    }
 
 
+}
 
-int crateSymbolTable(char* fileName) {
+
+int createSymbolTable(char* fileName) {
 
     FILE *inputFile = NULL;
     char line[MAX_LINE_LENGTH] = {0};
@@ -278,7 +270,6 @@ int crateSymbolTable(char* fileName) {
     symbolTable symbol = NULL;
     symbolTable table = NULL;
     int numberOfLine = 0;
-    int i = 0;
 
     int IC = 100;
     int DC = 0;
@@ -304,7 +295,7 @@ int crateSymbolTable(char* fileName) {
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
             label = cutColonFromLabel(originalLine, firstWord);
-            InsertSymbolNode(label, IC);
+            InsertSymbolNode(&table, label, IC);
             firstWord = strtok(NULL, "");
         }
 
