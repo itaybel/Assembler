@@ -6,8 +6,6 @@
 #include "SymbolTable.h"
 #include "AddressingMode.h"
 
-#define MAX_LINE_LENGTH 80
-
 void throwError(char* errorMsg, int numberOfLine);
 
 int foundCommendSentence(char* file_name);
