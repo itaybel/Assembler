@@ -1,5 +1,5 @@
-
 #ifndef UNTITLED4_ADDRESSINGMODE_H
+
 #define UNTITLED4_ADDRESSINGMODE_H
 #include "RegisterTable.h"
 #include "OperationTable.h"
@@ -31,6 +31,8 @@ int reservedWord(char *name);
 
 int immediateAddressCheck(char *string);
 
+
+int getFirstDelimIndex(char *str, char delim);
 
 enum addressingMode getAddressingMode(char *address, int getAddressingMode);
 
