@@ -1,5 +1,16 @@
-
 #include "AssemblySentence.h"
+#include <stdio.h>
+#include <string.h>
+#include "SymbolTable.h"
+#include "AddressingMode.h"
+#include "Utility/FileHandler.h"
+#include "Utility/InputHandler.h"
+#include "OperationTable.h"
+#include "AddressingMode.h"
+#include "AddressingMode.c"
+#include "PreAssembler/MacroTable.h"
+
+
 
 void throwError(char* errorMsg, int numberOfLine){
     printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
@@ -34,7 +45,7 @@ int firstCharIsDot(char *line){
     int i = 0;
     for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
     return (line[i] == '.');
-   
+
 }
 
 
@@ -193,37 +204,21 @@ int getSpacesAtBegining(char* substring){
     return i;
 }
 
-int doCommandSentence(char *line, int *IC,int numberOfLine,symbolTable symbol) {
+int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol) {
     int opNumber = 0;
     int i = 0;
     char *nextWord = NULL;
-    char* originalLine;
     addressingMode prevOperand = immediateAddress;
     addressingMode curr = immediateAddress;
 
-    originalLine = (char*)malloc(sizeof(char) * (strlen(line) + 1));
-    strcpy(originalLine, line);
-    printf("line is: %s\n", line);
-    nextWord = strtok(originalLine, " \t\n\v\f\r");/*XYZ:*/
-    printf("line is: %s\n", originalLine);
-    removeSpacesAndTabs(nextWord);
-    if (!isOperationName(nextWord)) {
-        throwError("Invalid OperationName", numberOfLine);
-        return 0;
-    }
+    opNumber = getOperandNum(command);
 
-    opNumber = getOperandNum(nextWord);
-    
-    nextWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
-
-    printf("opnumber: %d-next word is: %s\n", opNumber, nextWord);
-    for (i = 0; i < opNumber; i++) {
-        
-        printf("nextWord is: -%s-\n", nextWord);
+    for (i = 0; i < opNumber && command != NULL; i++) {
+	nextWord = strtok(NULL, " \t\n\v\f\r,");
         curr = getAddressingMode(nextWord, numberOfLine);
         iCCounter(curr, prevOperand, IC);
         prevOperand = curr;
-        nextWord = strtok(NULL, ",");
+        
     }
 
     return 1;
@@ -295,7 +290,7 @@ int createSymbolTable(char* fileName) {
     while (!feof(inputFile)) {
 
         /* iterating through each line of the input file */
-        fgets(line, MAX_LINE_LENGTH, inputFile); /* XYZ: .data 7, -57, +17, 9*/
+        fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
         numberOfLine++;
         /* storing a copy of the line, since strtok will be changing it */
         /* subString recives the first string*/
@@ -306,18 +301,24 @@ int createSymbolTable(char* fileName) {
         }
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
-        
-            label = cutColonFromLabel(line, firstWord); 
-            printf("first word is %s-\n", firstWord);
+
+            label = cutColonFromLabel(line, firstWord);
+            printf("first word is %s\n", firstWord);
             InsertSymbolNode(&table, label, IC);
-            firstWord = strtok(NULL, "");
+            firstWord = strtok(NULL, " \t\n\v\f\r,");
+            printf("second word is %s\n", firstWord);
         }
-        
+
         if (firstCharIsDot(firstWord)) {
             validInstructions(table, firstWord, &DC, numberOfLine, symbol);
         } else {
-            printf("fw is: %s\n", firstWord);
+            if(isOperationName(firstWord)){
+            printf("second word is %s\n", firstWord);
             doCommandSentence(firstWord, &IC, numberOfLine, symbol);
+        }else{
+                throwError("Invalid InstructionName", numberOfLine);
+                return 0;
+            }
         }
 
 
@@ -326,3 +327,4 @@ int createSymbolTable(char* fileName) {
     fclose(inputFile);
     return 1;
 }
+
