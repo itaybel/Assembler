@@ -13,6 +13,10 @@ void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
 }
 
 
+void throwError(char* errorMsg, int numberOfLine){
+    printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
+}
+
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
     int i = 0;
     for(i = 0; i < strlen(line); i++){
