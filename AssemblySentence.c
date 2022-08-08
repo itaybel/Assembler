@@ -52,51 +52,59 @@ char* cutColonFromLabel(char *line, char *firstWord) {
 }
 
 
-int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol) {
-    int i = 0;
-    char *curr_line = line;
-
-
-    while (curr_line[0] != '\n' && curr_line[0] != '\0') {
-        if (strcmp(curr_line, line) == 0) { /*this means that it couldn't convert any number*/
-            throwError("Couldn't parse one of the numbers!\n", numberOfLine);
-            return 1;
-        }
-        if (curr_line[0] != '\0' && curr_line[0] != ',') {
-            throwError("Couldn't find an ',' after a number!", numberOfLine);
-            return 1;
-        }
-        curr_line++; /*shifting the ',' at the beginning*/
-        line = curr_line;
-        i++;
+/*checks if the char is number for doData function*/
+int isNumber(char *number){
+    char *temp = NULL;
+    strtol(number,&temp,10);
+    if(*temp == '\0'){
+        return 1;
     }
-    *DC = *DC + i;
+    return 0;
+}
+
+
+int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
+{
+    char *token = NULL;
+    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL)
+    {
+
+     if(isNumber(token)){
+            (*DC)++;
+        }
+    }
+
     if (symbol != NULL) {
         setType(symbol, DATA_SYMBOL);
     }
 
     return 0;
 }
+
+
 int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
-    while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+    char *token = NULL;
+    token = strtok(NULL," \t\n\v\f\r,");
+    while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
     {
-        if (line[i] == '\t' && line[i] == ' ')
+        if (token[i] == '\t' && token[i] == ' ')
         {
             throwError("Found invalid text before string", numberOfLine);
             return 1;
         }
-        if (line[i] == '\"')
+        
+        if (token[i] == '\"')
         {
-            while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
             {
 
                 string_length++;
                 i++;
-                if (line[i] == '\"')
+                if (token[i] == '\"')
                 {
                     found_valid_string = 1;
                 }
@@ -237,7 +245,7 @@ void validInstructions(symbolTable table,char *instruction,int *DC, int numberOf
     for(i = 0; i < sizeof(instructionFunc)/sizeof(instructionFunc[0]); ++i)
     {
         if(strcmp(instructionFunc[i].name, instruction) == 0){
-            instruction = strtok(NULL," ");
+            /*instruction = strtok(NULL," ");*/
             instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
         }
 
