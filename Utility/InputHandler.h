@@ -12,6 +12,7 @@
 
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]);
 
+void throwError(char* errorMsg, int numberOfLine);
 
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
 
