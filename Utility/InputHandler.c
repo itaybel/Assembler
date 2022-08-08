@@ -1,5 +1,6 @@
 #include "InputHandler.h"
 
+
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     int i = 0, j = 0;
     for(i = 0;  (line[i] == ' ' || line[i] == '\t') && i < strlen(line) ; i++);

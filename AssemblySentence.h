@@ -1,5 +1,3 @@
-
-
 #ifndef UNTITLED4_ASSEMBLYSENTENCE_H
 #define UNTITLED4_ASSEMBLYSENTENCE_H
 
@@ -38,8 +36,7 @@ int getSpacesAtBegining(char* substring);
 void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
-int createSymbolTable(char* fileName) ;
-
+int createSymbolTable(char* fileName, symbolTable* table);
+int encodeAssembly(char* fileName, symbolTable head);
 
 #endif
-

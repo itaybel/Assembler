@@ -82,7 +82,6 @@ int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable sy
 
     return 0;
 }
-
 int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
 {
     int i = 0;
@@ -90,12 +89,12 @@ int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     int found_valid_string = 0;
     while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
     {
-        if (line[i] != '\t' && line[i] != ' ')
+        if (line[i] == '\t' && line[i] == ' ')
         {
             throwError("Found invalid text before string", numberOfLine);
             return 1;
         }
-        if (line[i] == '"')
+        if (line[i] == '\"')
         {
             while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
             {
@@ -120,7 +119,6 @@ int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     }
     return 1;
 }
-
 
 int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
 {
@@ -215,8 +213,11 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
 
     for (i = 0; i < opNumber && command != NULL; i++) {
 	nextWord = strtok(NULL, " \t\n\v\f\r,");
+	printf("the operand we found in the line is: %s\n", nextWord);
         curr = getAddressingMode(nextWord, numberOfLine);
         iCCounter(curr, prevOperand, IC);
+        printf("and his addressMode is: %d\n", curr);
+        printf("and after adding the value of the addressingMode to the value of IC now we have IC: %d\n", *IC);
         prevOperand = curr;
         
     }
@@ -271,20 +272,20 @@ void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
 }
 
 
-int createSymbolTable(char* fileName) {
+int createSymbolTable(char* fileName, symbolTable* table) {
 
     FILE *inputFile = NULL;
     char line[MAX_LINE_LENGTH] = {0};
     char *firstWord = NULL;
     char *label = NULL;
     symbolTable symbol = NULL;
-    symbolTable table = NULL;
     int numberOfLine = 0;
 
     int IC = 100;
     int DC = 0;
 
     inputFile = openFile(fileName, "am", "r");
+    
 
 
     while (!feof(inputFile)) {
@@ -301,19 +302,19 @@ int createSymbolTable(char* fileName) {
         }
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
+        	
 
             label = cutColonFromLabel(line, firstWord);
-            printf("first word is %s\n", firstWord);
-            InsertSymbolNode(&table, label, IC);
+            InsertSymbolNode(table, label, IC);
+            printf("the label we found and insert to the symbol label is: %s\n", label);
             firstWord = strtok(NULL, " \t\n\v\f\r,");
-            printf("second word is %s\n", firstWord);
         }
 
         if (firstCharIsDot(firstWord)) {
-            validInstructions(table, firstWord, &DC, numberOfLine, symbol);
+            validInstructions(*table, firstWord, &DC, numberOfLine, symbol);
         } else {
             if(isOperationName(firstWord)){
-            printf("second word is %s\n", firstWord);
+            printf("after cuting the symbol we found the operation: %s\n", firstWord);
             doCommandSentence(firstWord, &IC, numberOfLine, symbol);
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
@@ -328,3 +329,36 @@ int createSymbolTable(char* fileName) {
     return 1;
 }
 
+
+
+
+int encodeAssembly(char* fileName, symbolTable head){
+
+    FILE *inputFile = NULL;
+    char line[MAX_LINE_LENGTH] = {0};
+    int numberOfLine = 0;
+    char *firstWord = NULL;
+    int IC = 100;
+    int DC = 0;
+
+    inputFile = openFile(fileName, "am", "r");
+
+
+    while (!feof(inputFile)) {
+
+        /* iterating through each line of the input file */
+        fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
+        numberOfLine++;
+        if (foundEmptySentence(line) || foundCommendSentence(line)) {/* if line is empty or commend continue to the next line*/
+            continue;
+        }
+
+        firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
+        if(isLabel(firstWord)){
+            firstWord = strtok(NULL, " \t\n\v\f\r,");
+        }
+        printf("first word is: %s\n", firstWord);
+
+    }
+
+}

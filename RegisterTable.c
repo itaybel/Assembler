@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include "RegisterTable.h"
@@ -50,4 +49,3 @@ int getRegisterNum(char *name){
     printf("Error!, this name doest not exist in the OperationTable!");
     return 0;
 }
-

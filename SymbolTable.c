@@ -76,6 +76,12 @@ int compareSymbol(symbolTable symbol, char *key){
     return strcmp((symbol)->key, key);
 }
 
+int isIsSymbolTable(symbolTable symbol, char *key){
+    if(symbol != NULL){
+        return compareSymbol(symbol, key) || isIsSymbolTable(symbol->next, key);
+    }
+    return 0;
+}
 
 
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
@@ -85,7 +91,7 @@ void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
 
     symbolTable new_node = createSymbol(label,new_data);
 
-    if (!(head_ref))
+    if (!(*head_ref))
 
 /* if the list is empty */
 

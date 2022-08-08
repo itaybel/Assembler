@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_LINE_LENGTH 80
 
 typedef struct Node
 {
