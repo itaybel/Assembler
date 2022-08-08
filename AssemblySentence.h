@@ -19,6 +19,8 @@ char* cutColonFromLabel(char *line, char *firstWord);
 
 int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symbol);
 
+int isNumber(char *number);
+
 int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
 int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
