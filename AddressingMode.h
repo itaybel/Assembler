@@ -6,11 +6,10 @@
 
 
 
-
+#define MAX_LABEL_LENGTH 30
 #define NUM_OF_ADDRESS_MODE 5
 
 
- /*Instruction type (.data, .entry, etc.)*/
 
 
 
@@ -34,7 +33,7 @@ int immediateAddressCheck(char *string);
 
 int getFirstDelimIndex(char *str, char delim);
 
-enum addressingMode getAddressingMode(char *address, int getAddressingMode);
+addressingMode getAddressingMode(char *address, int numberOfLine);
 
 
 #endif
