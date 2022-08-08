@@ -1,20 +1,14 @@
-#include "AssemblySentence.h"
 #include <stdio.h>
 #include <string.h>
+#include "AssemblySentence.h"
 #include "SymbolTable.h"
 #include "AddressingMode.h"
 #include "Utility/FileHandler.h"
-#include "Utility/InputHandler.h"
 #include "OperationTable.h"
-#include "AddressingMode.h"
-#include "AddressingMode.c"
 #include "PreAssembler/MacroTable.h"
 
 
 
-void throwError(char* errorMsg, int numberOfLine){
-    printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
-}
 
 int foundEmptySentence(char* line){
     int i = 0;
@@ -27,6 +21,7 @@ int foundEmptySentence(char* line){
     }
     return 1;
 }
+
 
 
 
@@ -360,5 +355,6 @@ int encodeAssembly(char* fileName, symbolTable head){
         printf("first word is: %s\n", firstWord);
 
     }
+    return 1;
 
 }
