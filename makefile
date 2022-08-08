@@ -1,4 +1,4 @@
-OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o InputHandler.o FileHandler.o OperationTable.o RegisterTable.o AssemblySentence.o SymbolTable.o
+OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o InputHandler.o FileHandler.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o 
 
 
 Assembler: $(OBJS)
@@ -27,11 +27,15 @@ OperationTable.o: OperationTable.c OperationTable.h
 RegisterTable.o: RegisterTable.c RegisterTable.h
 	gcc -g -c -ansi -Wall -pedantic RegisterTable.c -o RegisterTable.o
 	
+AddressingMode.o: AddressingMode.c AddressingMode.h
+	gcc -g -c -ansi -Wall -pedantic AddressingMode.c -o AddressingMode.o	
+	
 AssemblySentence.o: AssemblySentence.c AssemblySentence.h
 	gcc -g -c -ansi -Wall -pedantic AssemblySentence.c -o AssemblySentence.o
 	
 SymbolTable.o: SymbolTable.c SymbolTable.h
-	gcc -g -c -ansi -Wall -pedantic SymbolTable.c -o SymbolTable.o		
+	gcc -g -c -ansi -Wall -pedantic SymbolTable.c -o SymbolTable.o
+	
 
 Assembler.o: Assembler.c Assembler.h
 	gcc -g -c -ansi -Wall -pedantic Assembler.c -o Assembler.o
