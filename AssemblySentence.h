@@ -8,7 +8,6 @@
 #include "Utility/FileHandler.h"
 #include "Utility/InputHandler.h"
 
-void throwError(char* errorMsg, int numberOfLine);
 
 int foundCommendSentence(char* file_name);
 
@@ -32,6 +31,8 @@ int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTabl
 
 
 int getSpacesAtBegining(char* substring);
+
+void throwError(char* errorMsg, int numberOfLine);
 
 void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
