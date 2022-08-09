@@ -87,7 +87,7 @@ int getFirstDelimIndex(char *str, char delim){/*S1.1 .*/
 addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    mov    S1.1 ,LENGTH"*/
 
     int labelEnd = 0;
-    char parsedLabel[MAX_LABEL_LENGTH] = {0};
+    char parsedLabel[MAX_LENGTH] = {0};
     /*result = strtok(NULL, " \t\n\v\f\r");*/
 
     /*if nothing, just return none */

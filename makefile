@@ -1,4 +1,6 @@
-OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o InputHandler.o FileHandler.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o 
+
+
+OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o InputHandler.o FileHandler.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
 
 
 Assembler: $(OBJS)
@@ -40,5 +42,9 @@ SymbolTable.o: SymbolTable.c SymbolTable.h
 Assembler.o: Assembler.c Assembler.h
 	gcc -g -c -ansi -Wall -pedantic Assembler.c -o Assembler.o
 
+SecondPass.o: SecondPass.c SecondPass.h
+	gcc -g -c -ansi -Wall -pedantic SecondPass.c -o SecondPass.o	
 clean:
-	rm -f $(OBJS) Assembler 
+	rm -f $(OBJS) Assembler 		
+
+	

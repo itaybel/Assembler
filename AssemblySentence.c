@@ -9,7 +9,6 @@
 
 
 
-
 int foundEmptySentence(char* line){
     int i = 0;
 
@@ -21,7 +20,6 @@ int foundEmptySentence(char* line){
     }
     return 1;
 }
-
 
 
 
@@ -52,59 +50,51 @@ char* cutColonFromLabel(char *line, char *firstWord) {
 }
 
 
-/*checks if the char is number for doData function*/
-int isNumber(char *number){
-    char *temp = NULL;
-    strtol(number,&temp,10);
-    if(*temp == '\0'){
-        return 1;
-    }
-    return 0;
-}
+int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol) {
+    int i = 0;
+    char *curr_line = line;
 
 
-int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
-{
-    char *token = NULL;
-    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL)
-    {
-
-     if(isNumber(token)){
-            (*DC)++;
+    while (curr_line[0] != '\n' && curr_line[0] != '\0') {
+        if (strcmp(curr_line, line) == 0) { /*this means that it couldn't convert any number*/
+            throwError("Couldn't parse one of the numbers!\n", numberOfLine);
+            return 1;
         }
+        if (curr_line[0] != '\0' && curr_line[0] != ',') {
+            throwError("Couldn't find an ',' after a number!", numberOfLine);
+            return 1;
+        }
+        curr_line++; /*shifting the ',' at the beginning*/
+        line = curr_line;
+        i++;
     }
-
+    *DC = *DC + i;
     if (symbol != NULL) {
         setType(symbol, DATA_SYMBOL);
     }
 
     return 0;
 }
-
-
 int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
-    char *token = NULL;
-    token = strtok(NULL," \t\n\v\f\r,");
-    while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
+    while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
     {
-        if (token[i] == '\t' && token[i] == ' ')
+        if (line[i] == '\t' && line[i] == ' ')
         {
             throwError("Found invalid text before string", numberOfLine);
             return 1;
         }
-        
-        if (token[i] == '\"')
+        if (line[i] == '\"')
         {
-            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
+            while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
             {
 
                 string_length++;
                 i++;
-                if (token[i] == '\"')
+                if (line[i] == '\"')
                 {
                     found_valid_string = 1;
                 }
@@ -235,7 +225,7 @@ struct inst
     int(*doInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine,symbolTable symbol);
 };
 
-void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
+int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
 {
     struct inst instructionFunc[] = {{".data", doData}, {".string", doString}, {".struct", doStruct}, {".entry",doEntry}, {".extern",doExtern}};
     int i = 0;
@@ -245,11 +235,13 @@ void validInstructions(symbolTable table,char *instruction,int *DC, int numberOf
     for(i = 0; i < sizeof(instructionFunc)/sizeof(instructionFunc[0]); ++i)
     {
         if(strcmp(instructionFunc[i].name, instruction) == 0){
-            /*instruction = strtok(NULL," ");*/
+            instruction = strtok(NULL," ");
             instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
+            return i;
         }
 
     }
+    return -1;
 }
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
@@ -283,7 +275,7 @@ int createSymbolTable(char* fileName, symbolTable* table) {
     char *label = NULL;
     symbolTable symbol = NULL;
     int numberOfLine = 0;
-
+    int instructionIndex = 0;
     int IC = 100;
     int DC = 0;
 
@@ -314,7 +306,11 @@ int createSymbolTable(char* fileName, symbolTable* table) {
         }
 
         if (firstCharIsDot(firstWord)) {
-            validInstructions(*table, firstWord, &DC, numberOfLine, symbol);
+            instructionIndex = validInstructions(*table, firstWord, &DC, numberOfLine, symbol);
+            if(instructionIndex == -1){
+                throwError("Invalid instruction!", numberOfLine);
+                continue;
+            }
         } else {
             if(isOperationName(firstWord)){
             printf("after cuting the symbol we found the operation: %s\n", firstWord);
@@ -334,35 +330,3 @@ int createSymbolTable(char* fileName, symbolTable* table) {
 
 
 
-
-int encodeAssembly(char* fileName, symbolTable head){
-
-    FILE *inputFile = NULL;
-    char line[MAX_LINE_LENGTH] = {0};
-    int numberOfLine = 0;
-    char *firstWord = NULL;
-    int IC = 100;
-    int DC = 0;
-
-    inputFile = openFile(fileName, "am", "r");
-
-
-    while (!feof(inputFile)) {
-
-        /* iterating through each line of the input file */
-        fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
-        numberOfLine++;
-        if (foundEmptySentence(line) || foundCommendSentence(line)) {/* if line is empty or commend continue to the next line*/
-            continue;
-        }
-
-        firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
-        if(isLabel(firstWord)){
-            firstWord = strtok(NULL, " \t\n\v\f\r,");
-        }
-        printf("first word is: %s\n", firstWord);
-
-    }
-    return 1;
-
-}

@@ -2,7 +2,7 @@
 #include "Assembler.h"
 #include "PreAssembler/PreAssembler.h"
 #include "AssemblySentence.h"
-
+#include "SecondPass.h"
 int main(int argc, char** argv){
 
     int i = 0;
@@ -12,7 +12,7 @@ int main(int argc, char** argv){
         return 0;
     }
     for(i = 1; i < argc; i++){
-        /*preAssemble(argv[i]);*/
+        preAssemble(argv[i]);
         createSymbolTable(argv[i], &table);
         encodeAssembly(argv[i], table);
         freeTable(table);
