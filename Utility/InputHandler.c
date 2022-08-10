@@ -36,3 +36,39 @@ void substring(char* string, int length){
 
     string[j] = '\0';
 }
+
+
+int getSpacesAtBegining(char* substring){
+    int i = 0;
+
+    for(i = 0; i < strlen(substring) && (substring[i] == ' ' || substring[i] == '\t'); i++); /* shifting the spaces */
+    return i;
+}
+
+
+
+int firstCharIsDot(char *line){
+    int i = 0;
+    for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
+    return (line[i] == '.');
+
+}
+
+
+
+char* cutColonFromLabel(char *line, char *firstWord) {
+
+    line[strlen(firstWord) - 1] = '\0';
+    return line;
+}
+
+
+/*checks if the char is number for doData function*/
+int isNumber(char *number){
+    char *temp = NULL;
+    strtol(number,&temp,10);
+    if(*temp == '\0'){
+        return 1;
+    }
+    return 0;
+}
