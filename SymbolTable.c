@@ -72,11 +72,14 @@ int compareSymbol(symbolTable symbol, char *key){
     return strcmp((symbol)->key, key);
 }
 
-int isIsSymbolTable(symbolTable symbol, char *key){
+symbolTable findInTable(symbolTable symbol, char *key){
     if(symbol != NULL){
-        return compareSymbol(symbol, key) || isIsSymbolTable(symbol->next, key);
+        if(strcmp(symbol->key, key) == 0){
+            return symbol;
+        }
+        return findInTable(symbol->next, key);
     }
-    return 0;
+    return NULL;
 }
 
 

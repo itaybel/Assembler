@@ -122,6 +122,7 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
         /*if address is a valid label name & after the dot we have, it's addressAccess  = 2 */
 
     else{/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
+    
         labelEnd = getFirstDelimIndex(address,'.');
         strncpy(parsedLabel, address, labelEnd);
         if(validLabelName(parsedLabel)){/*S1.1*/

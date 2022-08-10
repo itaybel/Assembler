@@ -57,6 +57,6 @@ symbolTable createSymbol(char* key,int address);
  */
 void freeTable(symbolTable table);
 
-int isIsSymbolTable(symbolTable symbol, char *key);
+symbolTable findInTable(symbolTable symbol, char *key);
 
 #endif

@@ -44,10 +44,11 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
             (*DC)++;
         }
     }
-
+    /*
     if (symbol != NULL) {
         symbol->type = DATA_SYMBOL;
     }
+    */
 
     return 0;
 }int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
@@ -83,9 +84,10 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
     if (found_valid_string)
     {
         *DC = *DC + string_length;
+        /*
         if (symbol != NULL) {
            symbol->type = STRUCT_SYMBOL;
-        }
+        }*/
         return 0;
     }
     throwError("Found invalid text before string", numberOfLine);
@@ -138,10 +140,12 @@ int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     if (found_valid_string)
     {
         *DC = *DC + string_length + 1;
+        /*
         if (symbol != NULL) {
             symbol->type = STRUCT_SYMBOL;
 
         }
+        */
         return 0;
     }
     return 1;
