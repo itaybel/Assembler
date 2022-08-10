@@ -3,9 +3,10 @@
 #include "AssemblySentence.h"
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "Utility/FileHandler.h"
+#include "FileHandler.h"
 #include "OperationTable.h"
-#include "PreAssembler/MacroTable.h"
+#include "MacroTable.h"
+
 
 
 
@@ -23,6 +24,7 @@ int foundEmptySentence(char* line){
 
 
 
+
 int foundCommendSentence(char* line){
     char *semicolon = NULL;
     semicolon = ";";
@@ -34,67 +36,50 @@ int foundCommendSentence(char* line){
 }
 
 
-int firstCharIsDot(char *line){
-    int i = 0;
-    for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
-    return (line[i] == '.');
-
-}
 
 
+int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable symbol)
+{
+    char *token = NULL;
+    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL)
+    {
 
-char* cutColonFromLabel(char *line, char *firstWord) {
-
-    line[strlen(firstWord) - 1] = '\0';
-    return line;
-}
-
-
-int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol) {
-    int i = 0;
-    char *curr_line = line;
-
-
-    while (curr_line[0] != '\n' && curr_line[0] != '\0') {
-        if (strcmp(curr_line, line) == 0) { /*this means that it couldn't convert any number*/
-            throwError("Couldn't parse one of the numbers!\n", numberOfLine);
-            return 1;
+        if(isNumber(token)){
+            (*DC)++;
         }
-        if (curr_line[0] != '\0' && curr_line[0] != ',') {
-            throwError("Couldn't find an ',' after a number!", numberOfLine);
-            return 1;
-        }
-        curr_line++; /*shifting the ',' at the beginning*/
-        line = curr_line;
-        i++;
     }
-    *DC = *DC + i;
+
     if (symbol != NULL) {
-        setType(symbol, DATA_SYMBOL);
+        setType(command,symbol, DATA_SYMBOL);
     }
 
     return 0;
 }
-int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
+
+
+int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
-    while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+    char *token = NULL;
+    token = strtok(NULL," \t\n\v\f\r,");
+    while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
     {
-        if (line[i] == '\t' && line[i] == ' ')
+        /*if (token[i] == '\t' && token[i] == ' ')
         {
             throwError("Found invalid text before string", numberOfLine);
             return 1;
-        }
-        if (line[i] == '\"')
+        }*/
+
+        if (token[i] == '\"')
         {
-            while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
             {
 
                 string_length++;
                 i++;
-                if (line[i] == '\"')
+                if (token[i] == '\"')
                 {
                     found_valid_string = 1;
                 }
@@ -106,23 +91,24 @@ int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     {
         *DC = *DC + string_length;
         if (symbol != NULL) {
-            setType(symbol, DATA_SYMBOL);
+            setType(command,symbol, DATA_SYMBOL);
         }
         return 0;
     }
+    throwError("Found invalid text before string", numberOfLine);
     return 1;
 }
 
-int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
+int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     /*int ret = 0;*/
     int string_length = 0;
     int found_valid_string = 0;
-    char *curr_line = line;
+    char *curr_line = command;
 
-    /*ret = strtol(line, &curr_line, 10);*/
-    if (strcmp(curr_line, line) == 0)
+    /*ret = strtol(command, &curr_line, 10);*/
+    if (strcmp(curr_line, command) == 0)
     { /* this means that it couldn't convert any number */
         throwError("Couldn't parse the number!\n", numberOfLine);
         return 1;
@@ -134,21 +120,21 @@ int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     }
     curr_line++; /* shifting the , at the begining */
 
-    while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+    while (command[i] != '\n' && command[i] != '\0' && !found_valid_string)
     {
-        if (line[i] != '\t' && line[i] != ' ')
+        if (command[i] != '\t' && command[i] != ' ')
         {
             throwError("Found invalid text after ','", numberOfLine);
             return 1;
         }
-        if (line[i] == '"')
+        if (command[i] == '"')
         {
-            while (line[i] != '\n' && line[i] != '\0' && !found_valid_string)
+            while (command[i] != '\n' && command[i] != '\0' && !found_valid_string)
             {
 
                 string_length++;
                 i++;
-                if (line[i] == '\"')
+                if (command[i] == '\"')
                 {
                     found_valid_string = 1;
                 }
@@ -160,7 +146,7 @@ int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable 
     {
         *DC = *DC + string_length + 1;
         if (symbol != NULL) {
-            setType(symbol, STRUCT_SYMBOL);
+            setType(command,symbol, STRUCT_SYMBOL);
         }
         return 0;
     }
@@ -179,21 +165,13 @@ int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable 
 int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol){
 
     if(validLabelName(label)){
-        InsertSymbolNode(&table, (char *) symbol,*DC);
+        InsertSymbolNode(&table, (char *) label,*DC,symbol);
         return 1;
     }
     return 0;
 }
 
 
-
-
-int getSpacesAtBegining(char* substring){
-    int i = 0;
-
-    for(i = 0; i < strlen(substring) && (substring[i] == ' ' || substring[i] == '\t'); i++); /* shifting the spaces */
-    return i;
-}
 
 int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol) {
     int opNumber = 0;
@@ -205,14 +183,14 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
     opNumber = getOperandNum(command);
 
     for (i = 0; i < opNumber && command != NULL; i++) {
-	nextWord = strtok(NULL, " \t\n\v\f\r,");
-	printf("the operand we found in the line is: %s\n", nextWord);
+        nextWord = strtok(NULL, " \t\n\v\f\r,");
+        printf("the operand we found in the line is: %s\n", nextWord);
         curr = getAddressingMode(nextWord, numberOfLine);
         iCCounter(curr, prevOperand, IC);
         printf("and his addressMode is: %d\n", curr);
         printf("and after adding the value of the addressingMode to the value of IC now we have IC: %d\n", *IC);
         prevOperand = curr;
-        
+
     }
 
     return 1;
@@ -225,7 +203,7 @@ struct inst
     int(*doInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine,symbolTable symbol);
 };
 
-int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
+void validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
 {
     struct inst instructionFunc[] = {{".data", doData}, {".string", doString}, {".struct", doStruct}, {".entry",doEntry}, {".extern",doExtern}};
     int i = 0;
@@ -235,13 +213,11 @@ int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfL
     for(i = 0; i < sizeof(instructionFunc)/sizeof(instructionFunc[0]); ++i)
     {
         if(strcmp(instructionFunc[i].name, instruction) == 0){
-            instruction = strtok(NULL," ");
+            /*instruction = strtok(NULL," ");*/
             instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
-            return i;
         }
 
     }
-    return -1;
 }
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
@@ -275,12 +251,12 @@ int createSymbolTable(char* fileName, symbolTable* table) {
     char *label = NULL;
     symbolTable symbol = NULL;
     int numberOfLine = 0;
-    int instructionIndex = 0;
+
     int IC = 100;
     int DC = 0;
 
     inputFile = openFile(fileName, "am", "r");
-    
+
 
 
     while (!feof(inputFile)) {
@@ -297,25 +273,23 @@ int createSymbolTable(char* fileName, symbolTable* table) {
         }
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
-        	
 
-            label = cutColonFromLabel(line, firstWord);
-            InsertSymbolNode(table, label, IC);
+
+            label = cutColonFromLabel(line, firstWord);/*MAIN:*/
+            InsertSymbolNode(table, label, IC,&symbol);
             printf("the label we found and insert to the symbol label is: %s\n", label);
+            /*symbol = getSymbol((symbolTable) label);*/
+            setType(label,symbol,CODE_SYMBOL);
             firstWord = strtok(NULL, " \t\n\v\f\r,");
         }
 
         if (firstCharIsDot(firstWord)) {
-            instructionIndex = validInstructions(*table, firstWord, &DC, numberOfLine, symbol);
-            if(instructionIndex == -1){
-                throwError("Invalid instruction!", numberOfLine);
-                continue;
-            }
+            validInstructions(*table, firstWord, &DC, numberOfLine, symbol);
         } else {
             if(isOperationName(firstWord)){
-            printf("after cuting the symbol we found the operation: %s\n", firstWord);
-            doCommandSentence(firstWord, &IC, numberOfLine, symbol);
-        }else{
+                printf("after cuting the symbol we found the operation: %s\n", firstWord);
+                doCommandSentence(firstWord, &IC, numberOfLine, symbol);
+            }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 return 0;
             }
@@ -330,3 +304,35 @@ int createSymbolTable(char* fileName, symbolTable* table) {
 
 
 
+
+int encodeAssembly(char* fileName, symbolTable head){
+
+    FILE *inputFile = NULL;
+    char line[MAX_LINE_LENGTH] = {0};
+    int numberOfLine = 0;
+    char *firstWord = NULL;
+    int IC = 100;
+    int DC = 0;
+
+    inputFile = openFile(fileName, "am", "r");
+
+
+    while (!feof(inputFile)) {
+
+        /* iterating through each line of the input file */
+        fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
+        numberOfLine++;
+        if (foundEmptySentence(line) || foundCommendSentence(line)) {/* if line is empty or commend continue to the next line*/
+            continue;
+        }
+
+        firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
+        if(isLabel(firstWord)){
+            firstWord = strtok(NULL, " \t\n\v\f\r,");
+        }
+        printf("first word is: %s\n", firstWord);
+
+    }
+    return 1;
+
+}
