@@ -1,38 +1,5 @@
 #include "PreAssembler.h"
 
-/*
-This function is used to open the input assembly file
-@param file_name - the name of the file
-@return a pointer to the opened file
-*/
-FILE* getInputFile(char* file_name){
-    FILE *asmFile = NULL;
-
-    asmFile = openFile(file_name , "as", "r");
-        
-    if(asmFile == NULL){
-        printf("Error - Couldn't open the file: %s\n", file_name);
-        return NULL;
-    }
-    return asmFile;
-}
-/*
-This function is used to open the output am file
-@param file_name - the name of the file
-@return a pointer to the opened file
-*/
-FILE* getOutputFile(char* file_name){
-    FILE *amFile = NULL;
-
-    amFile = openFile(file_name , "am", "w");
-        
-    if(amFile == NULL){
-        printf("Error - Couldn't open the file: %s\n", file_name);
-        return NULL;
-    }
-
-    return amFile;
-}
 
 /*
 This function is used to write the content of a macro to the output file

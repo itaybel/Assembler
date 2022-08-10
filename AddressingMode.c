@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "AddressingMode.h"
-#include "Utility/InputHandler.h"
+#include "Utility/GeneralFunctions.h"
 #include "AssemblySentence.h"
 
 

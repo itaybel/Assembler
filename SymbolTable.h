@@ -17,7 +17,7 @@ void *checkMalloc(int size);
 
 
 /** A symbol type */
-typedef enum symbolType {
+enum symbolType {
     CODE_SYMBOL,/* opertion_names and ect*/
     DATA_SYMBOL,/*string */
     EXTERNAL_SYMBOL, /*when we have instruction on extern*/
@@ -33,12 +33,10 @@ int isLabel(char *name);
 
 
 
-void setType(symbolTable symbol,symbolType type);
 
 
 int compareSymbol(symbolTable symbol, char *key);
 
-void addType(symbolTable symbol, symbolType type);
 
 void setAddress(symbolTable symbol, int address);
 
@@ -46,7 +44,7 @@ void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
 
-symbolType getType(symbolTable symbol);
+
 
 char *getSymbol(symbolTable symbol);
 

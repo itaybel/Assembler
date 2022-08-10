@@ -6,11 +6,10 @@
 #include <string.h>
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "Utility/FileHandler.h"
-#include "Utility/InputHandler.h"
+#include "Utility/GeneralFunctions.h"
 
 #define ENTRY_INDEX 4
-
+#define MAX_LINE_LENGTH 82
 void throwError(char* errorMsg, int numberOfLine);
 
 int foundCommendSentence(char* file_name);

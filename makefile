@@ -1,6 +1,6 @@
 
 
-OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o InputHandler.o FileHandler.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
+OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
 
 
 Assembler: $(OBJS)
@@ -15,12 +15,10 @@ MacroTable.o: PreAssembler/MacroTable.c PreAssembler/MacroTable.h
 PreAssembler.o: PreAssembler/PreAssembler.c PreAssembler/PreAssembler.h 
 	gcc -g -c -ansi -Wall -pedantic PreAssembler/PreAssembler.c -o PreAssembler.o
 	
-InputHandler.o: Utility/InputHandler.c Utility/InputHandler.h 
-	gcc -g -c -ansi -Wall -pedantic Utility/InputHandler.c -o InputHandler.o
 
-FileHandler.o: Utility/FileHandler.c Utility/FileHandler.h 
-	gcc -g -c -ansi -Wall -pedantic Utility/FileHandler.c -o FileHandler.o
-	
+GeneralFunctions.o: Utility/GeneralFunctions.c Utility/GeneralFunctions.h 
+	gcc -g -c -ansi -Wall -pedantic Utility/GeneralFunctions.c -o GeneralFunctions.o
+
 	
 OperationTable.o: OperationTable.c OperationTable.h
 	gcc -g -c -ansi -Wall -pedantic OperationTable.c -o OperationTable.o
@@ -45,6 +43,6 @@ Assembler.o: Assembler.c Assembler.h
 SecondPass.o: SecondPass.c SecondPass.h
 	gcc -g -c -ansi -Wall -pedantic SecondPass.c -o SecondPass.o	
 clean:
-	rm -f $(OBJS) Assembler 		
+	rm -f $(OBJS) *.am *.ob Assembler 		
 
 	

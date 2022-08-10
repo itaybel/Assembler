@@ -16,7 +16,7 @@ struct symbol {
     /** Key (symbol name) is a string (aka char*) */
     char *key;
     /** Symbol type */
-    symbolType type;
+    int type;
 };
 
 
@@ -59,10 +59,6 @@ void *checkMalloc(int size) {
 
 
 
-void setType(symbolTable symbol,symbolType type){
-
-    symbol->type = type;
-}
 
 
 void setAddress(symbolTable symbol, int address){
@@ -117,9 +113,6 @@ int getAddress(symbolTable symbol){
 }
 
 
-symbolType getType(symbolTable symbol){
-    return symbol->type;
-}
 
 
 char *getSymbol(symbolTable symbol){
