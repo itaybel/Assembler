@@ -148,6 +148,7 @@ void printSymbol(symbolTable table){
 
     while(table != NULL){
         printf("%s\n",table->key);
+        /*printf("%d",table->type);*/
         table = table->next;
     }
 }
