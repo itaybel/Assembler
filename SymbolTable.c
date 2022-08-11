@@ -6,7 +6,6 @@
 #include "AddressingMode.h"
 
 
-
 /** A single table symbol*/
 struct symbol {
     /** Next symbol in table */
@@ -16,7 +15,7 @@ struct symbol {
     /** Key (symbol name) is a string (aka char*) */
     char *key;
     /** Symbol type */
-    int type;
+    symbolType type;
 };
 
 
@@ -37,9 +36,9 @@ int validLabelName(char *name) {
         for (i = 0; i < strlen(name) && name[i] != ':'; i++) {/*use loop to check isalnum if the word is alphanumeric*/
             if (!isalnum(name[i])) {
                 return 0;
-            } 
+            }
         }
-        
+
         return 1;
     }
     return 0;
@@ -59,6 +58,10 @@ void *checkMalloc(int size) {
 
 
 
+void setType(symbolTable symbol,symbolType type){
+
+    symbol->type = type;
+}
 
 
 void setAddress(symbolTable symbol, int address){
@@ -72,14 +75,29 @@ int compareSymbol(symbolTable symbol, char *key){
     return strcmp((symbol)->key, key);
 }
 
-symbolTable findInTable(symbolTable symbol, char *key){
+int isIsSymbolTable(symbolTable symbol, char *key){
     if(symbol != NULL){
-        if(strcmp(symbol->key, key) == 0){
-            return symbol;
-        }
-        return findInTable(symbol->next, key);
+        return compareSymbol(symbol, key) || isIsSymbolTable(symbol->next, key);
     }
-    return NULL;
+    return 0;
+}
+
+
+
+symbolTable createSymbol(char* key,int address){
+
+    symbolTable new_node = checkMalloc(sizeof(struct symbol));
+    /*if(new_node == NULL){
+        checkMalloc()
+        printf("Error, couldn't allocate memory");
+        return  NULL;
+    }*/
+    new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
+    strcpy(new_node->key, key);
+    new_node -> address = address;
+
+    return new_node;
+
 }
 
 
@@ -116,6 +134,9 @@ int getAddress(symbolTable symbol){
 }
 
 
+symbolType getType(symbolTable symbol){
+    return symbol->type;
+}
 
 
 char *getSymbol(symbolTable symbol){
@@ -123,22 +144,25 @@ char *getSymbol(symbolTable symbol){
 }
 
 
+void printSymbol(symbolTable table){
 
-
-symbolTable createSymbol(char* key,int address){
-
-    symbolTable new_node = malloc(sizeof(struct symbol));
-    if(new_node == NULL){
-        printf("Error, couldn't allocate memory");
-        return  NULL;
+    while(table != NULL){
+        printf("%d",table->type);
+        table = table->next;
     }
-    new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
-    strcpy(new_node->key, key);
-    new_node -> address = address;
-
-    return new_node;
-
 }
+
+void updateTable(symbolTable table, int IC){
+
+    while(table != NULL) {
+        if (table->type == DATA_SYMBOL || table->type == STRUCT_SYMBOL) {
+            table->address += IC;
+        }
+    table = table->next;
+    }
+}
+
+
 
 
 void freeTable(symbolTable table) {
