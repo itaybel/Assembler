@@ -147,7 +147,7 @@ char *getSymbol(symbolTable symbol){
 void printSymbol(symbolTable table){
 
     while(table != NULL){
-        printf("%d",table->type);
+        printf("%s\n",table->key);
         table = table->next;
     }
 }
