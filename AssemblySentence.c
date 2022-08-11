@@ -295,6 +295,7 @@ symbolTable createSymbolTable(char* fileName) {
             validInstructions(table, firstWord, &DC, numberOfLine, symbol);
         } else {
             if(isOperationName(firstWord)){
+                IC++;
                 doCommandSentence(firstWord, &IC, numberOfLine, symbol);
             }else{
                 throwError("Invalid InstructionName", numberOfLine);
