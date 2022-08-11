@@ -1,5 +1,6 @@
 MAIN:    mov    S1.1 ,LENGTH
          add    r2,STR
+strct8: .struct 8, "xyz"
 LOOP:    jmp    END
 	 macro m1
         prn    #-3
@@ -9,7 +10,7 @@ LOOP:    jmp    END
          prn    #-5
          sub    r1, r4
          m1
-         dwqdqwdqwdqwd
+         
 
 macro m3
         prn    #-3

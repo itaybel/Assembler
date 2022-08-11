@@ -4,7 +4,7 @@
 #include "AssemblySentence.h"
 #include "SecondPass.h"
 int main(int argc, char** argv){
-
+      
     int i = 0;
     symbolTable table = NULL;
     if(argc < 2){
@@ -13,9 +13,10 @@ int main(int argc, char** argv){
     }
     for(i = 1; i < argc; i++){
         preAssemble(argv[i]);
-        createSymbolTable(argv[i], &table);
+        table = createSymbolTable(argv[i]);
+        if(table == NULL) continue;
         encodeAssembly(argv[i], table);
-        freeTable(table);
+        
     }
     return 0;
 }

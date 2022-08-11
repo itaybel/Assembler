@@ -4,6 +4,7 @@
 #define MAX_LENGTH 30
 
 
+
 int validLabelName(char *name);
 
 
@@ -32,14 +33,15 @@ int isLabel(char *name);
 
 
 
+
+
 void setType(symbolTable symbol,symbolType type);
 
 int compareSymbol(symbolTable symbol, char *key);
 
+
 void setAddress(symbolTable symbol, int address);
-
 symbolTable createSymbol(char* key,int address);
-
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
@@ -49,16 +51,13 @@ symbolType getType(symbolTable symbol);
 char *getSymbol(symbolTable symbol);
 
 void printSymbol(symbolTable table);
-
 void updateTable(symbolTable table, int IC);
-
-
 /**
  * Deallocates all the memory required by the table.
  * @param table The table to deallocate
  */
 void freeTable(symbolTable table);
 
-int isIsSymbolTable(symbolTable symbol, char *key);
+symbolTable findInTable(symbolTable symbol, char *key);
 
 #endif
