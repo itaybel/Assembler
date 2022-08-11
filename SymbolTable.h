@@ -4,7 +4,6 @@
 #define MAX_LENGTH 30
 
 
-
 int validLabelName(char *name);
 
 
@@ -17,7 +16,7 @@ void *checkMalloc(int size);
 
 
 /** A symbol type */
-enum symbolType {
+typedef enum symbolType {
     CODE_SYMBOL,/* opertion_names and ect*/
     DATA_SYMBOL,/*string */
     EXTERNAL_SYMBOL, /*when we have instruction on extern*/
@@ -33,22 +32,25 @@ int isLabel(char *name);
 
 
 
-
+void setType(symbolTable symbol,symbolType type);
 
 int compareSymbol(symbolTable symbol, char *key);
 
-
 void setAddress(symbolTable symbol, int address);
+
+symbolTable createSymbol(char* key,int address);
 
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
 
-
+symbolType getType(symbolTable symbol);
 
 char *getSymbol(symbolTable symbol);
 
-symbolTable createSymbol(char* key,int address);
+void printSymbol(symbolTable table);
+
+void updateTable(symbolTable table, int IC);
 
 
 /**
@@ -57,6 +59,6 @@ symbolTable createSymbol(char* key,int address);
  */
 void freeTable(symbolTable table);
 
-symbolTable findInTable(symbolTable symbol, char *key);
+int isIsSymbolTable(symbolTable symbol, char *key);
 
 #endif
