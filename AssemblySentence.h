@@ -10,7 +10,6 @@
 
 #define ENTRY_INDEX 4
 #define MAX_LINE_LENGTH 82
-void throwError(char* errorMsg, int numberOfLine);
 
 int foundCommendSentence(char* file_name);
 
