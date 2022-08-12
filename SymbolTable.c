@@ -16,7 +16,7 @@ struct symbol {
     /** Key (symbol name) is a string (aka char*) */
     char *key;
     /** Symbol type */
-    int type;
+    symbolType type;
 };
 
 
