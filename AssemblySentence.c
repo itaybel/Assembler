@@ -178,6 +178,10 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
 
     for (i = 0; i < opNumber && command != NULL; i++) {
 	    nextWord = strtok(NULL, " \t\n\v\f\r,");
+        if(nextWord == NULL){
+            throwError("Invalid amount of operands!",numberOfLine);
+            return 1;
+        }
 	    printf("the operand we found in the line is: %s\n", nextWord);
         curr = getAddressingMode(nextWord, numberOfLine);
         iCCounter(curr, prevOperand, IC);
@@ -186,9 +190,12 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
         prevOperand = curr;
         
     }
- /* todo: need to check if we dont have to many perimeters and we need to print error if we have less then we expected,
-     * todo: and we need to continue to the next line*/
-    return 1;
+    if(strtok(NULL, " \t\n\v\f\r,") != NULL){
+        throwError("Invalid amount of operands!", numberOfLine);
+        return 1;
+    }
+     /* todo: and we need to continue to the next line*/
+    return 0;
 }
 
 
@@ -256,7 +263,7 @@ symbolTable createSymbolTable(char* fileName) {
     int instructionErrorFlag = 0;
     inputFile = openFile(fileName, "am", "r");
     
-
+    printf("Started first phase on the file: %s...\n",  fileName);
 
     while (!feof(inputFile)) {
 
@@ -283,18 +290,17 @@ symbolTable createSymbolTable(char* fileName) {
         if (firstCharIsDot(firstWord)) {
             instructionErrorFlag = validInstructions(table, firstWord, &DC, numberOfLine, symbol);
             if(instructionErrorFlag){
-                printf("\ncock\n");
                 errorFlag = 1;
                 continue;
             }
         } else {
             if(isOperationName(firstWord)){
             printf("after cuting the symbol we found the operation: %s\n", firstWord);
-            doCommandSentence(firstWord, &IC, numberOfLine, symbol);
+            errorFlag |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 errorFlag = 1;
-                 printf("\ncock2 -%s-\n", firstWord);
+            
             }
         }
 

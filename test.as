@@ -1,4 +1,4 @@
-MAIN:    mov    S1.1 ,LENGTH
+MAIN:    mov    S1.1
          add    r2,STR
 strct8: .struct 8, "xyz"
 LOOP:    jmp    END

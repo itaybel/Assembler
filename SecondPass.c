@@ -41,23 +41,14 @@ void encodeData(symbolTable table, char* line , int* IC, int numberOfLine, FILE*
 void encodeString(symbolTable table, char* command , int* IC, int numberOfLine, FILE* obFile)
 {
 
-
-
-
-
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
     char *token = NULL;
     char inBase32[2] = {0};
-    token = strtok(NULL," \t\n\v\f\r,");
+    token = strtok(NULL," \t\n\v\f\r ");
     while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
     {
-        /*if (token[i] == '\t' && token[i] == ' ')
-        {
-            throwError("Found invalid text before string", numberOfLine);
-            return 1;
-        }*/
 
         if (token[i] == '\"')
         {
@@ -76,11 +67,54 @@ void encodeString(symbolTable table, char* command , int* IC, int numberOfLine, 
         }
         i++;
     }
-
-
 }
 
 
+
+void encodeStruct(symbolTable table, char* command , int* IC, int numberOfLine, FILE* obFile)
+{
+    int i = 0;
+    /*int ret = 0;*/
+    int string_length = 0;
+    int found_valid_string = 0;
+    char* token = NULL;
+    char inBase32[2] = {0};
+   
+    token = strtok(NULL," \t\n\v\f\r,");
+    
+
+    if(isNumber(token)){
+        toBase32(atoi(token), inBase32);
+        writeToFile(inBase32, obFile, *IC);
+        (*IC)++;
+    }
+    token = strtok(NULL," \t\n\v\f\r,");
+    while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
+    {
+
+        if (token[i] == '\"')
+        {
+            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
+            {
+                toBase32(token[i], inBase32);
+                *IC = *IC + 1;
+                writeToFile(inBase32, obFile, *IC);
+                string_length++;
+                i++;
+                if (token[i] == '\"')
+                {
+                    found_valid_string = 1;
+                }
+            }
+        }
+        i++;
+    }
+    if (found_valid_string)
+    {
+        *IC = *IC + string_length;
+    }
+   
+}
 
 
 
@@ -90,11 +124,11 @@ struct encodeInst
     const char *name;
     void(*encodeInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine, FILE* obFile);
 };
+
+
 void handleInstructions(symbolTable table, char *instruction, int *DC, int numberOfLine, FILE* obFile){
-    struct encodeInst instructionFunc[] = {{".data", encodeData}, {".string", encodeString}, {".struct", encodeData}, {".extern",encodeData}};
+    struct encodeInst instructionFunc[] = {{".data", encodeData}, {".string", encodeString}, {".struct", encodeStruct}};
     int i = 0;
-
-
 
     for(i = 0; i < sizeof(instructionFunc)/sizeof(instructionFunc[0]); ++i)
     {
@@ -108,86 +142,91 @@ void handleInstructions(symbolTable table, char *instruction, int *DC, int numbe
 
 int parseNoneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) {
     char inBase32[2] = {0};
+
     toBase32(getOperationOpcode(command) << 6, inBase32);
     *IC = *IC + 1;
     writeToFile(inBase32, obFile, *IC);
     return 0;
 }   
 
-
-int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) {
+int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* obFile){
     char inBase32[2] = {0};
-    int opCode = 0;
-    int ARE = 00;
-    unsigned int operandToInt = 0;
     char* end;
-    char parsedLabel[MAX_LENGTH] = {0};
-    char* operand = NULL;
-    int labelEnd = 0;
+    int operandToInt = 0;
+    operandToInt = (unsigned int)strtol(operand + 1, &end, 10); /* we need the +1 to shift the # */ 
+    if (end == operand + 1 || (*end != ' ' && *end != '\t' && *end != '\n' && *end != '\0')){
+        throwError("invalid number", numberOfLine);
+        return 1;
+    }
+    *IC = *IC + 1;
+    toBase32(operandToInt, inBase32);
+    writeToFile(inBase32, obFile, *IC);
+    return 0;
+}
+
+int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* obFile){
+    char inBase32[2] = {0};
+    int ARE = 0;
     symbolTable foundSymbol = NULL;
-    addressingMode operandMode = 0;
 
-
-    opCode = getOperationOpcode(command);
-    operand = strtok(NULL, " \t\n\v\f\r ");
-    operandMode = getAddressingMode(operand, numberOfLine);
+    printf("directAddress -%s-\n", operand);
+    foundSymbol = findInTable(table, operand);
+    if(foundSymbol == NULL){
+        throwError("Invalid label found", numberOfLine);
+        return 1;
+    }else{
+        printf("fond symbol name is: %s\n", getSymbol(foundSymbol));
+        /* parsing the extra words */
+        if(getType(foundSymbol) == EXTERNAL_SYMBOL) ARE = 1;
+        else ARE = 2;
     
+        toBase32(getAddress(foundSymbol) << 2 | ARE, inBase32);
+        writeToFile(inBase32, obFile, *IC);
+        *IC = *IC + 1;
+    }
+    return 0;
+}
 
+int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* obFile){
 
-    toBase32(opCode << 6 | operandMode << 4, inBase32);
+    char parsedLabel[MAX_LENGTH] = {0};
+    int labelEnd = 0;
+    char inBase32[2] = {0};
+    symbolTable foundSymbol = NULL;
+
+    printf("addressAccess -%s-\n", operand);
+    labelEnd = getFirstDelimIndex(operand,'.');
+    strncpy(parsedLabel, operand, labelEnd);
+    foundSymbol = findInTable(table, operand);
+    if(foundSymbol == NULL){
+        throwError("Invalid label found", numberOfLine);
+        return 1;
+    }
+    
+    toBase32(getAddress(foundSymbol) << 2 | 2, inBase32);
     writeToFile(inBase32, obFile, *IC);
     *IC = *IC + 1;
+    toBase32((operand[labelEnd+1] - '0') << 2, inBase32);
+    writeToFile(inBase32, obFile, *IC);
+    *IC = *IC + 1;
+    return 0;
+}
+
+int handleAccesses(addressingMode operandMode, symbolTable table, char* operand, int* IC, int numberOfLine, FILE* obFile){
+    char inBase32[2] = {0};
 
     switch(operandMode){
         case immediateAddress:
-            printf("immediateAddress\n");
-            operandToInt = (unsigned int)strtol(operand + 1, &end, 10); /* we need the +1 to shift the # */ 
-            if (end == operand + 1 || (*end != ' ' && *end != '\t' && *end != '\n' && *end != '\0')){
-                throwError("invalid number", numberOfLine);
-                return 1;
-            }
-            *IC = *IC + 1;
-            toBase32(operandToInt, inBase32);
-            writeToFile(inBase32, obFile, *IC);
-            
+            return handleImmediateAddress(operand, IC, numberOfLine, obFile);
             break;
         case directAddress:
-            printf("directAddress -%s-\n", operand);
-            foundSymbol = findInTable(table, operand);
-            if(foundSymbol == NULL){
-                throwError("Invalid label found", numberOfLine);
-                return 1;
-            }else{
-                printf("fond symbol name is: %s\n", getSymbol(foundSymbol));
-                /* parsing the extra words */
-                if(getType(foundSymbol) == EXTERNAL_SYMBOL) ARE = 1;
-                else ARE = 2;
-            
-                toBase32(getAddress(foundSymbol) << 2 | ARE, inBase32);
-                writeToFile(inBase32, obFile, *IC);
-                *IC = *IC + 1;
-            }
+            return handleDirectAddress(table, operand, IC, numberOfLine, obFile);
             break;
         case addressAccess:
-            printf("addressAccess -%s-\n", operand);
-            labelEnd = getFirstDelimIndex(operand,'.');
-            strncpy(parsedLabel, operand, labelEnd);
-            foundSymbol = findInTable(table, operand);
-            if(foundSymbol == NULL){
-                throwError("Invalid label found", numberOfLine);
-                return 1;
-            }
-            
-            toBase32(getAddress(foundSymbol) << 2 | 2, inBase32);
-            writeToFile(inBase32, obFile, *IC);
-            *IC = *IC + 1;
-            toBase32((operand[labelEnd+1] - '0') << 2, inBase32);
-            writeToFile(inBase32, obFile, *IC);
-            *IC = *IC + 1;
+            return handleAddressAccess(table, operand, IC, numberOfLine, obFile);
         break;
 
         case directRegisterAddress:
-        printf("directRegisterAddress\n");
             toBase32(getRegisterNum(operand) << 2, inBase32);
             writeToFile(inBase32, obFile, *IC);
             *IC = *IC + 1;
@@ -199,13 +238,62 @@ int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int number
         break;
          
     }
-    return 0;
+    return 1;
+}
+
+
+int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) {
+    char inBase32[2] = {0};
+    int opCode = 0;
+    char* operand = NULL;
+    addressingMode operandMode = 0;
+    opCode = getOperationOpcode(command);
+    operand = strtok(NULL, " \t\n\v\f\r ");
+    operandMode = getAddressingMode(operand, numberOfLine);
+   
+    toBase32(opCode << 6 | operandMode << 4, inBase32);
+
+    writeToFile(inBase32, obFile, *IC);
+    *IC = *IC + 1;
+    
+    return handleAccesses(operandMode, table,  operand, IC,  numberOfLine, obFile);
 }   
 
 
-int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile){
-    return 0;
-}
+int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) {
+    char inBase32[2] = {0};
+    int opCode = 0;
+    char* operand1 = NULL;
+    char* operand2 = NULL;
+    addressingMode operand1Mode = 0;
+    addressingMode operand2Mode = 0;
+
+    opCode = getOperationOpcode(command);
+    operand1 = strtok(NULL, " \t\n\v\f\r ");
+    operand1Mode = getAddressingMode(operand1, numberOfLine);
+
+    operand2 = strtok(NULL, " \t\n\v\f\r,");
+    operand2Mode = getAddressingMode(operand2, numberOfLine);
+
+
+    toBase32(opCode << 6 | operand1Mode << 4 | operand2Mode << 2, inBase32);
+    writeToFile(inBase32, obFile, *IC);
+    *IC = *IC + 1;
+
+    /* we handle this case seperetly */
+
+    if(operand1Mode == directRegisterAddress && operand2Mode == directRegisterAddress){
+        toBase32(getRegisterNum(operand1) << 6 | getRegisterNum(operand2) << 2, inBase32);
+        writeToFile(inBase32, obFile, *IC);
+        *IC = *IC + 1;
+        return 0;
+    }
+
+    /* if one of them has returned an error, we need to return an error, thats why we use the || operator */
+    return handleAccesses(operand1Mode, table,  operand1, IC,  numberOfLine, obFile) || handleAccesses(operand2Mode, table,  operand2, IC, numberOfLine, obFile);
+}   
+
+
 int parseCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) {
     int opNumber = 0;
     int isErr = 0;
@@ -226,26 +314,60 @@ int parseCommandSentence(symbolTable table, char *command, int *IC,int numberOfL
 
 }
 
-void terminateSecondPhase(symbolTable table, FILE* inputFile, FILE* obFile){
+void terminateSecondPhase(symbolTable table, FILE* inputFile, FILE* obFile,  FILE* entFIle,  FILE* extFile){
     freeTable(table);
     fclose(inputFile);
     fclose(obFile);
+    fclose(entFIle);
+    fclose(extFile);
 }
+
+int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile, FILE* extFile , int* isError){
+    symbolTable symbol = NULL;
+    char inBase32[2] = {0};
+    if(!strcmp(firstWord, ".entry")){
+        if((symbol = findInTable(table, firstWord)) == NULL){
+            throwError("Found an entry declaration of an undefined label", numberOfLine);
+            *isError = 1;
+        }else{
+            toBase32(getAddress(symbol) , inBase32);
+            fprintf(entFile, "%s\t%s", getSymbol(symbol),inBase32);
+        }
+        return 1;
+    }
+    if(!strcmp(firstWord, ".extern")){
+        if((symbol = findInTable(table, firstWord)) != NULL){
+            throwError("Found an extern declaration of a declared label", numberOfLine);
+            *isError = 1;
+        }else{
+            toBase32(getAddress(symbol) , inBase32);
+            fprintf(extFile, "%s\t%s", getSymbol(symbol),inBase32);
+        }
+        return 1;
+    }
+    return 0;
+}
+
 
 int encodeAssembly(char* fileName, symbolTable table){
 
     FILE *inputFile = NULL;
     FILE* obFile = NULL;
+    FILE *entFile = NULL;
+    FILE* extFile = NULL;
+    
     int isError = 0;
     char line[MAX_LINE_LENGTH] = {0};
     int numberOfLine = 0;
     char *firstWord = NULL;
     int IC = 100;
     int DC = 0;
-    int instructionIndex = 0;
+
     inputFile = openFile(fileName, "am", "r");
     obFile = openFile(fileName, "ob", "w");
-
+    entFile = openFile(fileName, "ent", "w");
+    extFile = openFile(fileName, "ent", "w");
+    printf("Started second phase on the file: %s...\n",  fileName);
     while (!feof(inputFile)) {
 
         /* iterating through each line of the input file */
@@ -259,28 +381,20 @@ int encodeAssembly(char* fileName, symbolTable table){
         if(isLabel(firstWord)){
             firstWord = strtok(NULL, " \t\n\v\f\r,");
         }
-    /*    instructionIndex = validInstructions(*head, firstWord, &DC, numberOfLine, symbol); */
         if(firstCharIsDot(firstWord)){
-            
-            if(instructionIndex == ENTRY_INDEX){
-                firstWord = strtok(NULL, " \t\n\v\f\r,");
-                if(findInTable(table, firstWord) == NULL){
-                    throwError("Found an entry declaration of an undefined label", numberOfLine);
-                    isError = 1;
-                }else{
-                    /* todo: write the label into the .ent file */
-                }
-            }else{
+            firstWord = strtok(NULL, " \t\n\v\f\r ");
+            if(!handleEntryAndExtern(firstWord, table,  numberOfLine,entFile,extFile , &isError)){ /* if its not an extern nor entry instruction */
                 handleInstructions(table, firstWord, &DC, numberOfLine, obFile);
             }
-        }else{
+        }
+        else{
              if(isOperationName(firstWord)){
                 isError = parseCommandSentence(table,  firstWord, &IC, numberOfLine, obFile);
              }
         }
         printf("first word is: %s\n", firstWord);
         if(isError){
-            terminateSecondPhase(table, inputFile, obFile);
+            terminateSecondPhase(table, inputFile, obFile, entFile ,extFile);
         }
     }
     return 0;
