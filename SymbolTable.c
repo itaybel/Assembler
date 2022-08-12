@@ -33,7 +33,7 @@ int validLabelName(char *name) {
 
     int i = 0;
 
-    if (name[0] && strlen(name) <= MAX_LENGTH && !(reservedWord(name))){
+    if (isalpha(name[0]) && strlen(name) <= MAX_LENGTH && !(reservedWord(name))){
         for (i = 0; i < strlen(name) && name[i] != ':'; i++) {/*use loop to check isalnum if the word is alphanumeric*/
             if (!isalnum(name[i])) {
                 return 0;
