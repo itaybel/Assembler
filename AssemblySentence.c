@@ -285,6 +285,7 @@ symbolTable createSymbolTable(char* fileName) {
             label = cutColonFromLabel(line, firstWord);
             InsertSymbolNode(&table, label, IC);
             symbol = table;
+	    setType(symbol,CODE_SYMBOL);
             firstWord = strtok(NULL, " \t\n\v\f\r,");
         }
 
