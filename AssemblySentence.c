@@ -64,7 +64,8 @@ int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbol
     int string_length = 0;
     int found_valid_string = 0;
     char *token = NULL;
-    token = strtok(command," \t\n\v\f\r,");
+
+    token = strtok(NULL," \t\n\v\f\r,");
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
@@ -94,6 +95,29 @@ int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbol
         return 1;
     }
     throwError("Found invalid text before string", numberOfLine);
+    return 0;
+}
+
+
+int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
+
+    char *token = command;
+
+    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL) {
+
+        if (isNumber(token)) {
+            (*DC)++;
+    }
+        if(doString(table,token,DC,numberOfLine,NULL)){
+                if (symbol != NULL) {
+                    setAddress(symbol,*DC);
+                    setType(symbol, STRUCT_SYMBOL);
+                }
+                return 1;
+            }
+
+            }
+
     return 0;
 }
 
