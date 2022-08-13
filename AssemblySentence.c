@@ -43,25 +43,28 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
         setType(symbol, DATA_SYMBOL);
     }
 
-    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL)
-    {
+    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL) {
 
-        if(isNumber(token)){
+        if (isNumber(token)) {
             (*DC)++;
-        }else{
-            throwError("Found an invalid number in .data instruction!", numberOfLine);
-            return 1;
+        } else {
+            if(strcmp(command,".struct") == 0) {
+                return 1;
+            }else
+                throwError("Found an invalid number in .data instruction!", numberOfLine);
         }
     }
-   
     return 0;
-}int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
+}
+
+   
+int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
     char *token = NULL;
-    token = strtok(NULL," \t\n\v\f\r,");
+    token = strtok(command," \t\n\v\f\r,");
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
@@ -87,62 +90,36 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
     if (found_valid_string)
     {
         *DC = *DC + string_length;
-      
-        return 0;
+
+        return 1;
     }
     throwError("Found invalid text before string", numberOfLine);
-    return 1;
+    return 0;
 }
 
-int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol)
-{
-    int i = 0;
-    /*int ret = 0;*/
-    int string_length = 0;
-    int found_valid_string = 0;
-    char* token = NULL;
 
-    if (symbol != NULL) {
-        setAddress(symbol,*DC);
-        setType(symbol, STRUCT_SYMBOL);
-    }
-    token = strtok(NULL," \t\n\v\f\r,");
-    
+int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
 
-    if(isNumber(token)){
+    char *token = command;
+
+    while((token = strtok(NULL," \t\n\v\f\r,")) != NULL) {
+
+        if (isNumber(token)) {
             (*DC)++;
-    }else{
-            throwError("Found an invalid number in .struct instruction!", numberOfLine);
-            return 1;
-    }
-     token = strtok(NULL," \t\n\v\f\r,");
-     while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
-    {
-
-        if (token[i] == '\"')
-        {
-            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
-            {
-
-                string_length++;
-                i++;
-                if (token[i] == '\"')
-                {
-                    found_valid_string = 1;
+    }else {
+            if(doString(table,token,DC,numberOfLine,NULL)){
+                if (symbol != NULL) {
+                    setAddress(symbol,*DC);
+                    setType(symbol, STRUCT_SYMBOL);
                 }
+                return 1;
+            }
+
             }
         }
-        i++;
-    }
-    if (found_valid_string)
-    {
-        *DC = *DC + string_length;
-        return 0;
-    }
-    throwError("Found invalid text before string", numberOfLine);
-    return 1;
-}
 
+    return 0;
+}
 
 int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable symbol){
     if(validLabelName(label)){
