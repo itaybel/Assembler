@@ -10,15 +10,14 @@
 
 static const struct instructionTableName{
     const char *name;
-    const char *message;
 
 }instructionsTable[] = {
-        {".data",   "DATA_INSTRUCTION"},
-        {".string", "STRING_INSTRUCTION"},
-        {".struct", "STRUCT_INSTRUCTION"},
-        {".entry",  "ENTRY_INSTRUCTION"},
-        {".extern", "EXTERN_INSTRUCTION",},
-        /*{NULL,     "ERROR_INSTRUCTION"}* it will have problem when we will compare name between NULL*/
+        {".data"},
+        {".string"},
+        {".struct"},
+        {".entry"},
+        {".extern"}
+        
 };
 
 
@@ -43,7 +42,7 @@ int reservedWord(char *name) {
 
     /*check if register or instructionname or lable */
 
-    return (isRegisterName(name) || atoi(name) || isInstructionName(name) || isOperationName(name));
+    return (isRegisterName(name) || isInstructionName(name) || isOperationName(name));
 
 }
 
