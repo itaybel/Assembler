@@ -97,6 +97,7 @@ symbolTable createSymbol(char* key,int address){
     new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
     strcpy(new_node->key, key);
     new_node -> address = address;
+    new_node -> next = NULL;
 
     return new_node;
 
