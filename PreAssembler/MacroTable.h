@@ -1,21 +1,18 @@
 #ifndef MACRO_H
 #define MACRO_H
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "string.h"
-#include "../Utility/LinkedList.h"
+typedef struct MNode* macroNode;
 
 
-typedef struct MacroNode
-{
-    char* name;
-    int startIndex;
-    int length;
-} MacroNode;
+void *checkMalloc(int size);
 
 int compareMacro(void* macro, void* name);
-MacroNode* createMacroNode(char* name);
-void freeNode(Node* node);
+
+macroNode createMacroNode(char* name);
+
+void InsertMacroNode(struct MNode** head_ref, struct MNode* new_node);
+
+macroNode SearchNode(macroNode head, char *name);
+void freeMacroList(macroNode node);
+
 #endif

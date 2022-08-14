@@ -33,7 +33,7 @@ int validLabelName(char *name) {
 
     int i = 0;
 
-    if (name[0] && strlen(name) <= MAX_LENGTH && !(reservedWord(name))){
+    if (isalpha(name[0]) && strlen(name) <= MAX_LENGTH && !(reservedWord(name))){
         for (i = 0; i < strlen(name) && name[i] != ':'; i++) {/*use loop to check isalnum if the word is alphanumeric*/
             if (!isalnum(name[i])) {
                 return 0;
@@ -46,6 +46,7 @@ int validLabelName(char *name) {
 }
 
 
+/*
 void *checkMalloc(int size) {
     void *ptr = malloc(size);
     if (ptr == NULL) {
@@ -53,7 +54,7 @@ void *checkMalloc(int size) {
         exit(1);
     }
     return ptr;
-}
+} */
 
 
 
@@ -98,7 +99,7 @@ symbolTable createSymbol(char* key,int address){
     strcpy(new_node->key, key);
     new_node -> address = address;
     new_node -> next = NULL;
-
+    new_node->type = 0;
     return new_node;
 
 }
@@ -149,7 +150,7 @@ void printSymbol(symbolTable table){
 
     while(table != NULL){
         
-        printf("%s\n",table->key);
+        printf("%s | %d\n",table->key, table->address);
         /*printf("%d",table->type);*/
         table = table->next;
     }

@@ -8,13 +8,15 @@
 int validLabelName(char *name);
 
 
+/*
 /**
  * Allocates memory in the required size. Exits the program if failed.
  * @param size The size to allocate in bytes
  * @return A generic pointer to the allocated memory if succeeded
- */
+
 void *checkMalloc(int size);
 
+ */
 
 /** A symbol type */
 typedef enum symbolType {

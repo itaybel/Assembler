@@ -7,11 +7,14 @@
 #include "string.h"
 #define MAX_FILE_NAME_LENGTH 255
 #define MAX_LINE_LENGTH 82
-#include "../PreAssembler/MacroTable.h"
+
 
 
 
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]);
+
+void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension);
+void deleteFile(char* file_name, char* file_extension);
 FILE* openFile(char* file_name, char* file_extention, char* mode);
 
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
@@ -24,4 +27,5 @@ int firstCharIsDot(char *line);
 char* cutColonFromLabel(char *line, char *firstWord);
 
 int isNumber(char *number);
+int convertToNumber(char* numberString, int* number);
 #endif

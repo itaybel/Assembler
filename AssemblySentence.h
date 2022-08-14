@@ -10,6 +10,14 @@
 
 #define ENTRY_INDEX 4
 #define MAX_LINE_LENGTH 82
+
+typedef struct flags {
+    int error;
+    int instructionError;
+    int foundExtern;
+    int foundEntry;
+} flags;
+
 void throwError(char* errorMsg, int numberOfLine);
 
 int foundCommendSentence(char* file_name);
@@ -22,21 +30,21 @@ char* cutColonFromLabel(char *line, char *firstWord);
 
 int doCommandSentence(char *subString, int *IC,int numberOfLine,symbolTable symbol);
 
-int doData(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
+int doData(symbolTable* table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doString(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
+int doString(symbolTable* table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doStruct(symbolTable table,char *line, int *DC,int numberOfLine,symbolTable symbol);
+int doStruct(symbolTable* table,char *line, int *DC,int numberOfLine,symbolTable symbol);
 
-int doEntry(symbolTable table,char *label, int *DC,int numberOfLine,symbolTable symbol);
+int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol);
 
-int doExtern(symbolTable table,char *label, int *DC,int numberOfLine, symbolTable symbol);
+int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolTable symbol);
 
 
-int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
+int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
-symbolTable createSymbolTable(char* fileName);
+symbolTable createSymbolTable(char* fileName, flags* status);
 
 
 #endif

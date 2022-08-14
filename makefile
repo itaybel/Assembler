@@ -1,13 +1,11 @@
 
 
-OBJS = Assembler.o MacroTable.o LinkedList.o PreAssembler.o GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
-
-
+#OBJS = Assembler.o MacroTable.o  PreAssembler.o GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
+OBJS = Assembler.o  GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
+ASSEMBLER_FILES = *.am *.ob *.ext *.ent *.o
 Assembler: $(OBJS)
 	gcc -g -ansi -Wall -pedantic $(OBJS) -o Assembler
 
-LinkedList.o: Utility/LinkedList.c Utility/LinkedList.h
-	gcc -g -c -ansi -Wall -pedantic Utility/LinkedList.c -o LinkedList.o
 
 MacroTable.o: PreAssembler/MacroTable.c PreAssembler/MacroTable.h
 	gcc -g -c -ansi -Wall -pedantic PreAssembler/MacroTable.c -o MacroTable.o
@@ -43,6 +41,6 @@ Assembler.o: Assembler.c Assembler.h
 SecondPass.o: SecondPass.c SecondPass.h
 	gcc -g -c -ansi -Wall -pedantic SecondPass.c -o SecondPass.o	
 clean:
-	rm -f $(OBJS) *.am *.ob Assembler 		
+	rm -f $(OBJS) $(ASSEMBLER_FILES) Assembler 		
 
 	

@@ -1,16 +1,27 @@
 #include "GeneralFunctions.h"
 
+void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension){
+    strcat(fileWithExtension, fileName);
+    fileWithExtension[strlen(fileName)] = '.';
+    strcat(fileWithExtension + (strlen(fileName)) + 1, extension);
+}
 
 FILE* openFile(char* file_name, char* file_extention, char* mode){
     char fileNameWithExtension[MAX_FILE_NAME_LENGTH] = {0};
     FILE* fileToOpen;
 
-    strcat(fileNameWithExtension, file_name);
-    fileNameWithExtension[strlen(file_name)] = '.';
-    strcat(fileNameWithExtension + (strlen(file_name)) + 1, file_extention);
+    getFileWithExtension(file_name, file_extention, fileNameWithExtension);
+    
     fileToOpen = fopen(fileNameWithExtension,mode);
     
     return fileToOpen;
+}
+
+void deleteFile(char* file_name, char* file_extension){
+    char fileNameWithExtension[MAX_FILE_NAME_LENGTH] = {0};
+
+    getFileWithExtension(file_name, file_extension, fileNameWithExtension);
+    remove(fileNameWithExtension);
 }
 
 
@@ -76,4 +87,14 @@ int isNumber(char *number){
         return 1;
     }
     return 0;
+}
+
+int convertToNumber(char* numberString, int* number){
+    char* temp = NULL;
+    if(isNumber(numberString)){
+        *number = strtol(numberString,&temp,10);
+        return 0;
+    }else{
+        return 1;
+    }
 }

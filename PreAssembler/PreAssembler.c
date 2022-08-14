@@ -8,7 +8,7 @@ This function is used to write the content of a macro to the output file
 @param outputFile the output am file to write to
 @return none
 */
-void WriteMacroToOutputFile(MacroNode* macro, FILE* inputFile, FILE* outputFile){
+void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile){
     int i = 0;
 
     fseek(inputFile, macro->startIndex, SEEK_SET);
@@ -23,26 +23,25 @@ This function is used to look for new macros defintions and add them to the macr
 @param inputFile the input assembly file
 @return 1 if a new macro was added, 0 otherwise
 */
-int addToMacroList(Node** head, char* line, FILE* inputFile){
+int addToMacroList(macroNode* head, char* line, FILE* inputFile){
     char* command;
-    MacroNode* newMacroNode =  NULL;
-    removeSpacesAndTabs(line);
+    macroNode newMacroNode =  NULL;
 
     command = strtok(line, " "); /* get the first word in the line. */
 
     if(command != NULL && strcmp(command, "macro") == 0){ /* if the line starts with "macro" , which means a new macro declartion is made*/
-        command = strtok(NULL, "\n"); /* extracting the next field seprated with space, which will be the name of the macro */
+        command = strtok(NULL, "\n"); /* extracting the next field , which will be the name of the macro */
         newMacroNode = createMacroNode(command);
         newMacroNode->startIndex = ftell(inputFile);
         while(!feof(inputFile)){
             fgets(line, MAX_LINE_LENGTH, inputFile);
-            removeSpacesAndTabs(line);
-            if(strcmp(line, "endmacro\n") == 0) {
+            command = strtok(line, " \t\n\v\f\r");
+            if(strcmp(command, "endmacro") == 0) {
                 break;
             }
         }
         newMacroNode->length = ((int)ftell(inputFile) - (strlen("endmacro") + 1)- newMacroNode->startIndex); /* we need to substract the length of endmacro since we don't want it to be in the output file */
-        InsertNode(head, newMacroNode);
+        InsertMacroNode(head, newMacroNode);
         
         return 1;
     }
@@ -57,7 +56,7 @@ This function is opening up the macros for the assembler
 */
 int preAssemble(char* file_name){
         FILE *inputFile = openFile(file_name , "as", "r"), *outputFile = openFile(file_name , "am", "w");
-        Node* macroTable = NULL, *foundNode = NULL;
+        macroNode macroTable = NULL, foundNode = NULL;
         char line[MAX_LINE_LENGTH] = {0};
         char* command = NULL, *originaLine = NULL;
         int tempPos = 0;
@@ -76,9 +75,9 @@ int preAssemble(char* file_name){
 
             if(!addToMacroList(&macroTable, line, inputFile)){ /* if we didn't add any new macros to the list */
                 command = strtok(line, " \n"); /* get the first word in the line. */
-                if((foundNode = (SearchNode(macroTable, command, compareMacro))) != NULL ){ /* if its a macro call */
+                if((foundNode = (SearchNode(macroTable, command))) != NULL ){ /* if its a macro call */
                     tempPos = (int)ftell(inputFile);
-                    WriteMacroToOutputFile(foundNode->data, inputFile, outputFile); /* we write the macro's code instead of the macro call */
+                    WriteMacroToOutputFile(foundNode, inputFile, outputFile); /* we write the macro's code instead of the macro call */
                     fseek(inputFile, tempPos, SEEK_SET);
                 }
                 else{
@@ -91,6 +90,6 @@ int preAssemble(char* file_name){
         
         fclose(inputFile);
         fclose(outputFile);
-        freeList(macroTable, freeNode);
+        freeMacroList(macroTable);
         return 1;
 }

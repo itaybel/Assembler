@@ -2,13 +2,13 @@
 #ifndef PREASSEMBLER_H
 #define PREASSEMBLER_H
 #include "../Utility/GeneralFunctions.h"
-#include "MacroTable.h"
+#include "MacroTable.c"
 #include <stdio.h>
 #include <stdlib.h>
 
-void WriteMacroToOutputFile(MacroNode* macro, FILE* inputFile, FILE* outputFile);
+void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile);
 
-int addToMacroList(Node** head, char* line, FILE* inputFile);
+int addToMacroList(macroNode* head, char* line, FILE* inputFile);
 /*
 This function is responsible of creating the am files after laying out the macros
 @param file_name - the name of the assembly input file

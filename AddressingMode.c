@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "AddressingMode.h"
@@ -9,14 +10,15 @@
 
 static const struct instructionTableName{
     const char *name;
+    const char *message;
 
 }instructionsTable[] = {
-        {".data"},
-        {".string"},
-        {".struct"},
-        {".entry"},
-        {".extern"}
-        
+        {".data",   "DATA_INSTRUCTION"},
+        {".string", "STRING_INSTRUCTION"},
+        {".struct", "STRUCT_INSTRUCTION"},
+        {".entry",  "ENTRY_INSTRUCTION"},
+        {".extern", "EXTERN_INSTRUCTION",},
+        /*{NULL,     "ERROR_INSTRUCTION"}* it will have problem when we will compare name between NULL*/
 };
 
 
@@ -41,7 +43,7 @@ int reservedWord(char *name) {
 
     /*check if register or instructionname or lable */
 
-    return (isRegisterName(name) || isInstructionName(name) || isOperationName(name));
+    return (isRegisterName(name)  || isInstructionName(name) || isOperationName(name));
 
 }
 
@@ -83,6 +85,7 @@ int getFirstDelimIndex(char *str, char delim){/*S1.1 .*/
 
 
 addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    mov    S1.1 ,LENGTH"*/
+
 
     int labelEnd = 0;
     char parsedLabel[MAX_LENGTH] = {0};
@@ -133,6 +136,7 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
             }*/
         }
     }
+    printf("-%s-", address);
     throwError("invalid addressing mode!", numberOfLine);
     return error;
 }
