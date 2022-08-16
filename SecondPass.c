@@ -1,28 +1,35 @@
+#include "AssemblySentence.h"
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include "Utility/GeneralFunctions.h"
 #include "SecondPass.h"
-#include "AssemblySentence.h"
-#include "OperationTable.h"
-#include "RegisterTable.h"
-#include "SymbolTable.h"
+
+
+
+
 
 void writeToFile(char* content, FILE* file, int IC){
     char base32Address[2] = {0};
     toBase32(IC, base32Address);
+   
     fprintf(file, "%.2s\t%.2s\n", base32Address, content);
     
 }
 
 void toBase32(unsigned int num, char* base)
 {
-   
+    
+    
     const char base32chars[] = "!@#$%^&*<>abcdefghijklmnopqrstuv";
+    unsigned int leftGroup = 0;
+    unsigned int rightGroup = 0;
     num &= ((1 << 10) - 1); /* appling bit masking , so that num / 32 will not be bigger than 32 */
 
-    base[0] = base32chars[num / 32];
-    base[1] = base32chars[num % 32];
+    leftGroup = num >> 5;
+    rightGroup = ((num << 5) & ((1 << 10) - 1)) >> 5; /* moving the 10 bits 5 places to the left, then reseting the left 5 bits, and moving the other 5 to the right back*/
+    base[0] = base32chars[leftGroup];
+    base[1] = base32chars[rightGroup];
+
+       
 
 }
 
@@ -34,12 +41,15 @@ void encodeData(symbolTable table, char* line , int* IC, int numberOfLine, FILE*
 
     while((nextNumber = strtok(NULL," \t\n\v\f\r,")) != NULL) {
 
- 
+        *IC = *IC + 1;
+        printf("next is: -%s-\n", nextNumber);
         convertToNumber(nextNumber, &number);
         toBase32(number, inBase32);
         writeToFile(inBase32, outFile, *IC);
-        *IC = *IC + 1;
+        printf("wrote number: %d|%d\n", number, *IC);
+        
     }
+    printf("\nfinish\n");
 
 
 
@@ -59,15 +69,21 @@ void encodeString(symbolTable table, char* command , int* IC, int numberOfLine, 
 
         if (token[i] == '\"')
         {
+            i++;
             while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
             {
                 toBase32(token[i], inBase32);
                 *IC = *IC + 1;
+                printf("char is: %c|%d\n", token[i], *IC);
                 writeToFile(inBase32, outFile, *IC);
                 string_length++;
                 i++;
                 if (token[i] == '\"')
                 {
+                    
+                    *IC = *IC + 1;
+                    writeToFile("!!", outFile, *IC); /* "!!" represents NULL escape character */
+                    printf("char is: 0|%d\n", *IC);
                     found_valid_string = 1;
                 }
             }
@@ -82,8 +98,7 @@ void encodeStruct(symbolTable table, char* command , int* IC, int numberOfLine, 
 {
     int i = 0;
     /*int ret = 0;*/
-    int string_length = 0;
-    int found_valid_string = 0;
+    int number = 0;
     char* token = NULL;
     char inBase32[2] = {0};
    
@@ -91,35 +106,20 @@ void encodeStruct(symbolTable table, char* command , int* IC, int numberOfLine, 
     
 
     if(isNumber(token)){
-        toBase32(atoi(token), inBase32);
-        writeToFile(inBase32, outFile, *IC);
-        (*IC)++;
-    }
-    token = strtok(NULL," \t\n\v\f\r,");
-    while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
-    {
 
-        if (token[i] == '\"')
-        {
-            while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
-            {
-                toBase32(token[i], inBase32);
-                *IC = *IC + 1;
-                writeToFile(inBase32, outFile, *IC);
-                string_length++;
-                i++;
-                if (token[i] == '\"')
-                {
-                    found_valid_string = 1;
-                }
-            }
-        }
-        i++;
+
+        *IC = *IC + 1;
+        printf("next is: -%s-\n", token);
+        convertToNumber(token, &number);
+        toBase32(number, inBase32);
+        writeToFile(inBase32, outFile, *IC);
+        printf("wrote number: %d|%d\n", number, *IC);
+
+      
+        
     }
-    if (found_valid_string)
-    {
-        *IC = *IC + string_length;
-    }
+    
+    encodeString(table, token, IC, numberOfLine, outFile);
    
 }
 
@@ -129,18 +129,18 @@ void encodeStruct(symbolTable table, char* command , int* IC, int numberOfLine, 
 struct encodeInst
 {
     const char *name;
-    void(*encodeInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine, FILE* outFile);
+    void(*encodeInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *IC, int numberOfLine, FILE* outFile);
 };
 
 
-void handleInstructions(symbolTable table, char *instruction, int *DC, int numberOfLine, FILE* outFile){
+void handleInstructions(symbolTable table, char *instruction, int *IC, int numberOfLine, FILE* outFile){
     struct encodeInst instructionFunc[] = {{".data", encodeData}, {".string", encodeString}, {".struct", encodeStruct}};
     int i = 0;
 
     for(i = 0; i < sizeof(instructionFunc)/sizeof(instructionFunc[0]); ++i)
     {
         if(strcmp(instructionFunc[i].name, instruction) == 0){
-            instructionFunc[i].encodeInstructions(table, instruction, DC, numberOfLine, outFile);
+            instructionFunc[i].encodeInstructions(table, instruction, IC, numberOfLine, outFile);
         }
 
     }
@@ -148,10 +148,11 @@ void handleInstructions(symbolTable table, char *instruction, int *DC, int numbe
 
 int parseNoneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile) {
     char inBase32[2] = {0};
-
-    toBase32(getOperationOpcode(command) << 6, inBase32);
     *IC = *IC + 1;
+    toBase32(getOperationOpcode(command) << 6, inBase32);
     writeToFile(inBase32, outFile, *IC);
+   
+   
     return 0;
 }   
 
@@ -165,12 +166,17 @@ int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFi
         return 1;
     }
     *IC = *IC + 1;
+    printf("got number: %d\n", operandToInt);
     toBase32(operandToInt, inBase32);
+    unsigned int a = operandToInt;
+    a &= ((1 << 10) - 1); /* appling bit masking , so that num / 32 will not be bigger than 32 */
+    printf("%d-%u\n", a, a);
     writeToFile(inBase32, outFile, *IC);
+        
     return 0;
 }
 
-int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile){
+int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
     char inBase32[2] = {0};
     int ARE = 0;
     symbolTable foundSymbol = NULL;
@@ -181,14 +187,21 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
         throwError("Invalid label found", numberOfLine);
         return 1;
     }else{
-      
+        *IC = *IC + 1;
         /* parsing the extra words */
-        if(getType(foundSymbol) == EXTERNAL_SYMBOL) ARE = 1;
-        else ARE = 2;
-    
+        if(getType(foundSymbol) == EXTERNAL_SYMBOL){
+            ARE = 1;
+            toBase32(*IC, inBase32);
+            fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
+        }
+        else {
+            ARE = 2;
+        }
+        
         toBase32(getAddress(foundSymbol) << 2 | ARE, inBase32);
         writeToFile(inBase32, outFile, *IC);
-        *IC = *IC + 1;
+              
+        
     }
     return 0;
 }
@@ -209,19 +222,21 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
         throwError("Invalid label found", numberOfLine);
         return 1;
     }
-  
+    
+    *IC = *IC + 1;
     toBase32(getAddress(foundSymbol) << 2 | 2, inBase32);
    
     writeToFile(inBase32, outFile, *IC);
+                   
     *IC = *IC + 1;
    
     toBase32((operand[labelEnd+1] - '0') << 2, inBase32);
     writeToFile(inBase32, outFile, *IC);
-    *IC = *IC + 1;
+               
     return 0;
 }
 
-int handleAccesses(addressingMode operandMode, symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile){
+int handleAccesses(addressingMode operandMode, symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
     char inBase32[2] = {0};
 
     switch(operandMode){
@@ -229,16 +244,20 @@ int handleAccesses(addressingMode operandMode, symbolTable table, char* operand,
             return handleImmediateAddress(operand, IC, numberOfLine, outFile);
             break;
         case directAddress:
-            return handleDirectAddress(table, operand, IC, numberOfLine, outFile);
+            return handleDirectAddress(table, operand, IC, numberOfLine, outFile, extFile);
             break;
         case addressAccess:
             return handleAddressAccess(table, operand, IC, numberOfLine, outFile);
         break;
 
         case directRegisterAddress:
-            toBase32(getRegisterNum(operand) << 2, inBase32);
-            writeToFile(inBase32, outFile, *IC);
+
             *IC = *IC + 1;
+            printf("found register: %s-%d\n", operand, getRegisterNum(operand) << 2);
+            toBase32(getRegisterNum(operand) << 6, inBase32);
+            writeToFile(inBase32, outFile, *IC);
+                               
+            
             return 0;
         break;
 
@@ -252,7 +271,7 @@ int handleAccesses(addressingMode operandMode, symbolTable table, char* operand,
 }
 
 
-int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile) {
+int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile) {
     char inBase32[2] = {0};
     int opCode = 0;
     char* operand = NULL;
@@ -260,17 +279,20 @@ int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int number
     opCode = getOperationOpcode(command);
     operand = strtok(NULL, " \t\n\v\f\r ");
     operandMode = getAddressingMode(operand, numberOfLine);
-   
-    toBase32(opCode << 6 | operandMode << 4, inBase32);
+    
+    *IC = *IC + 1;
+
+    toBase32(opCode << 6 | operandMode << 2, inBase32);
 
     writeToFile(inBase32, outFile, *IC);
-    *IC = *IC + 1;
     
-    return handleAccesses(operandMode, table,  operand, IC,  numberOfLine, outFile);
+    
+    
+    return handleAccesses(operandMode, table,  operand, IC,  numberOfLine, outFile, extFile);
 }   
 
 
-int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile) {
+int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile) {
     char inBase32[2] = {0};
     int opCode = 0;
     char* operand1 = NULL;
@@ -288,26 +310,30 @@ int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int number
    
     operand2Mode = getAddressingMode(operand2, numberOfLine);
    
-
+    *IC = *IC + 1;
     toBase32(opCode << 6 | operand1Mode << 4 | operand2Mode << 2, inBase32);
     writeToFile(inBase32, outFile, *IC);
-    *IC = *IC + 1;
+
+         
+    
 
     /* we handle this case seperetly */
 
     if(operand1Mode == directRegisterAddress && operand2Mode == directRegisterAddress){
+        *IC = *IC + 1;
         toBase32(getRegisterNum(operand1) << 6 | getRegisterNum(operand2) << 2, inBase32);
         writeToFile(inBase32, outFile, *IC);
-        *IC = *IC + 1;
+        
+        
         return 0;
     }
 
     /* if one of them has returned an error, we need to return an error, thats why we use the || operator */
-    return handleAccesses(operand1Mode, table,  operand1, IC,  numberOfLine, outFile) || handleAccesses(operand2Mode, table,  operand2, IC, numberOfLine, outFile);
+    return handleAccesses(operand1Mode, table,  operand1, IC,  numberOfLine, outFile, extFile) || handleAccesses(operand2Mode, table,  operand2, IC, numberOfLine, outFile, extFile);
 }   
 
 
-int parseCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile) {
+int parseCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile) {
     int opNumber = 0;
     int isErr = 0;
     opNumber = getOperandNum(command);
@@ -315,9 +341,9 @@ int parseCommandSentence(symbolTable table, char *command, int *IC,int numberOfL
         isErr = parseNoneOperandsCommand(table, command, IC, numberOfLine, outFile);
     }
     else if(opNumber == 1){
-        isErr = parseOneOperandsCommand(table, command, IC, numberOfLine, outFile);
+        isErr = parseOneOperandsCommand(table, command, IC, numberOfLine, outFile, extFile);
     }else if(opNumber == 2){
-        isErr = parseTwoOperandsCommand(table, command, IC, numberOfLine, outFile);
+        isErr = parseTwoOperandsCommand(table, command, IC, numberOfLine, outFile, extFile);
     }else{
         throwError("Error parsing the command!", numberOfLine);
         isErr = 1;
@@ -337,7 +363,7 @@ void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FI
     deleteFile(fileName, "data");
 }
 
-int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile, FILE* extFile , flags* status){
+int handleEntry(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile , flags* status){
     symbolTable symbol = NULL;
     char* token = NULL;
     char inBase32[2] = {0};
@@ -353,18 +379,7 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
         }
         return 1;
     }
-    if(!strcmp(firstWord, ".extern")){
-       
-        token = strtok(NULL, " \t\n\v\f\r ");
-        if((symbol = findInTable(table, token)) == NULL){
-            throwError("Couldn't find extern symbol in symbol table!", numberOfLine);
-            status->error = 1;
-        }else{
-            toBase32(getAddress(symbol) , inBase32);
-            fprintf(extFile, "%s\t%.2s\n", getSymbol(symbol),inBase32);
-        }
-        return 1;
-    }
+    
     return 0;
 }
 
@@ -403,6 +418,7 @@ void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile
     }
     toBase32(status->finalIC , ICBase32);
     toBase32(status->finalDC , DCBase32);
+    printf("Final IC: %d\nFinal DC: %d\n", status->finalIC, status->finalDC);
     fprintf(*cmdFile, "%.2s\t%.2s\n\n", ICBase32, DCBase32);
 }
 
@@ -413,7 +429,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
     char line[MAX_LINE_LENGTH] = {0};
     int numberOfLine = 0;
     char *firstWord = NULL;
-    int IC = 100;
+    int IC = 99;
     int DC = 0;
 
     openFiles(fileName, &inputFile, &cmdFile, &dataFile, &entFile, &extFile, status);
@@ -437,13 +453,13 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         }
         if(firstCharIsDot(firstWord)){
             
-            if(!handleEntryAndExtern(firstWord, table,  numberOfLine,entFile,extFile , status)){ /* if its not an extern nor entry instruction */
-                handleInstructions(table, firstWord, &DC, numberOfLine, dataFile);
+            if(!handleEntry(firstWord, table,  numberOfLine,entFile , status)){ /* if its not an extern nor entry instruction */
+                handleInstructions(table, firstWord, &IC, numberOfLine, dataFile);
             }
         }
         else{
              if(isOperationName(firstWord)){
-                status->error = parseCommandSentence(table,  firstWord, &IC, numberOfLine, cmdFile);
+                status->error = parseCommandSentence(table,  firstWord, &IC, numberOfLine, cmdFile, extFile);
              }
         }
         
@@ -454,7 +470,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         }
         memset(line, 0, MAX_LINE_LENGTH);
     }
-    
+    printf("Second pass has been finished successfully.\n");
     handleFinalOutputFiles(fileName, cmdFile, dataFile, status);
     terminateSecondPhase(fileName, table, inputFile, entFile  ,extFile);
     return 0;

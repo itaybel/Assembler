@@ -31,7 +31,7 @@ void substring(char* string, int length);
 
 int firstCharIsDot(char *line);
 
-char* cutColonFromLabel(char *line, char *firstWord);
+char* cutColonFromLabel(char* line, char *firstWord);
 
 int isNumber(char *number);
 

@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "Utility/GeneralFunctions.h"
 
 
 
@@ -17,7 +16,7 @@ struct symbol {
     /** Key (symbol name) is a string (aka char*) */
     char *key;
     /** Symbol type */
-    symbolType type;
+    int type;
 };
 
 
@@ -38,13 +37,24 @@ int validLabelName(char *name) {
         for (i = 0; i < strlen(name) && name[i] != ':'; i++) {/*use loop to check isalnum if the word is alphanumeric*/
             if (!isalnum(name[i])) {
                 return 0;
-            }
+            } 
         }
-
+        
         return 1;
     }
     return 0;
 }
+
+
+/*
+void *checkMalloc(int size) {
+    void *ptr = malloc(size);
+    if (ptr == NULL) {
+        printf("Error: Fatal: Memory allocation failed.");
+        exit(1);
+    }
+    return ptr;
+} */
 
 
 
@@ -53,6 +63,8 @@ void setType(symbolTable symbol,symbolType type){
 
     symbol->type = type;
 }
+
+
 
 
 void setAddress(symbolTable symbol, int address){
@@ -76,28 +88,27 @@ symbolTable findInTable(symbolTable symbol, char *key){
     return NULL;
 }
 
-
-
 symbolTable createSymbol(char* key,int address){
 
-    symbolTable new_node = checkMalloc(sizeof(struct symbol));
-
+    symbolTable new_node = malloc(sizeof(struct symbol));
+    /*if(new_node == NULL){
+        printf("Error, couldn't allocate memory");
+        return  NULL;
+    }*/
     new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
     strcpy(new_node->key, key);
     new_node -> address = address;
     new_node -> next = NULL;
-    new_node ->type = 0;
-
+    new_node->type = 0;
     return new_node;
 
 }
 
-
-void shiftHead(symbolTable head){
-    symbolTable temp = head;
-    head = (head)->next;
-    freeNode(temp);
-}
+void shiftHead(symbolTable* head){
+    symbolTable temp = *head;
+    *head = (*head)->next;
+    freeNode(temp); 
+} 
 
 
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
@@ -132,7 +143,6 @@ int getAddress(symbolTable symbol){
     return symbol->address;
 }
 
-
 symbolType getType(symbolTable symbol){
     return symbol->type;
 }
@@ -142,16 +152,16 @@ char *getSymbol(symbolTable symbol){
     return symbol->key;
 }
 
-
 void printSymbol(symbolTable table){
 
     while(table != NULL){
-        printf("%s symbol name: ",table->key);
-/*        printf(" %d\n and the symbol type: ",table->type);*/
-        printf(" %d\n and the symbol address: ",table->address);
+        
+        printf("%s | %d\n",table->key, table->address);
+        /*printf("%d",table->type);*/
         table = table->next;
     }
 }
+
 
 void updateTable(symbolTable table, int IC){
 
@@ -169,13 +179,11 @@ void freeNode(symbolTable node){
     free(node);
 }
 
-
 void freeTable(symbolTable table) {
     symbolTable prevSymbol, currSymbol = table;
     while (currSymbol != NULL) {
         prevSymbol = currSymbol;
         currSymbol = currSymbol->next;
-        free(prevSymbol->key);
-        free(prevSymbol);
+        freeNode(prevSymbol);
     }
 }

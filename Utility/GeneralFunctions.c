@@ -75,6 +75,7 @@ void substring(char* string, int length){
 int firstCharIsDot(char *line){
 
     int i = 0;
+    if(line == NULL) return 0;
     for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
     return (strlen(line) == 0 || line[i] == '.');
 

@@ -4,7 +4,7 @@
 #include "AssemblySentence.h"
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "Utility/GeneralFunctions.h"
+
 #include "OperationTable.h"
 
 
@@ -28,10 +28,10 @@ int foundCommentSentence(char* line){
 }
 
 
-int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable symbol)
+int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol)
 {
     char *token = NULL;
-
+    int foundNumbers = 0;
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
@@ -39,7 +39,8 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
 
     while ((token = strtok(NULL, " \t\n\v\f\r,")) != NULL)
     {
-
+        printf("token is: %s\n", token);
+        foundNumbers = 1;
         if (isNumber(token))
         {
             (*DC)++;
@@ -47,13 +48,16 @@ int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable
         else
         {
             throwError("Found an invalid number in .data instruction!", numberOfLine);
-            return 1;
+            return 0;
         }
     }
-    return 0;
+    if(!foundNumbers){
+        throwError("found a .data instruction without any numbers", numberOfLine);
+    }
+    return foundNumbers;
 }
 
-int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
+int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
@@ -63,7 +67,7 @@ int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbol
     token = strtok(NULL," \t\n\v\f\r");
     if(token == NULL){
         throwError("Invalid definition of a string!", numberOfLine);
-        return 1;
+        return 0;
     }
     if (symbol != NULL) {
         setAddress(symbol,*DC);
@@ -91,18 +95,19 @@ int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbol
     {
         token = strtok(NULL, ""); /* getting the remining string */
         *DC = *DC + string_length;
+        printf("updated dc because of string length: %d\n", string_length);
 
         if(!containsOnlyBlanks(token)){
             throwError("Found invalid text after string", numberOfLine);
-            return 1;
+            return 0;
         }
-        return 0;
+        return 1;
         
     }
-    throwError("Found invalid text before string", numberOfLine);
-    return 1;
+    throwError("Found invalid string", numberOfLine);
+    return 0;
 }
-int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
+int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
 
     char *token = command;
      if (symbol != NULL) {
@@ -118,38 +123,37 @@ int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbol
             (*DC)++;
         }else{
             throwError("Invalid number specified in .struct", numberOfLine);
-            return 1;
+            return 0;
         }
 
         return doString(table,token,DC,numberOfLine,NULL); /* returning wether its valid */
 
     }else{
         throwError(".struct got invalid amount of operands!", numberOfLine);
-        return 1;
+        return 0;
     }
 
-    return 0;
 }
 
 
-int doEntry(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable symbol){
+int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol){
     char* label;
     label = strtok(NULL, " \t\n\v\f\r");
     if (label == NULL)
     {
         throwError("Found .entry without specifing a label", numberOfLine);
-        return 1;
+        return 0;
     }
 
     if(validLabelName(label)){
-        return 0;
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 
 
-int doExtern(symbolTable table,char *command, int *DC,int numberOfLine, symbolTable symbol){
+int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolTable symbol){
 
     char *label;
     char *token;
@@ -160,23 +164,24 @@ int doExtern(symbolTable table,char *command, int *DC,int numberOfLine, symbolTa
     label = strtok(NULL, " \t\n\v\f\r");
     if (validLabelName(label))
     {
-        InsertSymbolNode(&table, label, *DC);
-        setType(table, EXTERNAL_SYMBOL);
+        printf("Inserting : %s-%d", label, *DC);
+        InsertSymbolNode(table, label, *DC);
+        setType(*table, EXTERNAL_SYMBOL);
         /*  *DC = *DC + 1; */
     }
     else
     {
         throwError("Found invalid Label in Extern instruction!", numberOfLine);
-        return 1;
+        return 0;
     }
 
     token = strtok(NULL, " \t\n\v\f\r,");
     if (token != NULL)
     {
         throwError("Found invalid Label after the first label in Extern instruction!", numberOfLine);
-        return 1;
+        return 0;
     }
-    return 0;
+    return 1;
 }
 
 int checkValidOperand(char* operand, int numberOfLine){
@@ -259,7 +264,7 @@ int handleCommandSentence(int operandNum , int* IC, int numberOfLine, char* firs
          if(curr == error || prevOperand == error){
             return 1;
         } 
-        iCCounter(prevOperand, 0, IC);
+        iCCounter(curr, 0, IC);
         iCCounter(curr, prevOperand, IC);
     }
     return 0;
@@ -284,10 +289,10 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
 struct inst
 {
     const char *name;
-    int(*doInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine,symbolTable symbol);
+    int(*doInstructions)(/*SymbolTable *, char */symbolTable* table,char *line, int *DC, int numberOfLine,symbolTable symbol);
 };
 
-int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
+int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
 {
     struct inst instructionFunc[] = {{".data", doData}, {".string", doString}, {".struct", doStruct}, {".entry",doEntry}, {".extern",doExtern}};
     int i = 0;
@@ -304,7 +309,7 @@ int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfL
 
     }
     throwError("Invalid instruction found", numberOfLine);
-    return 1;
+    return 0;
 }
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
@@ -358,7 +363,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
-        printf("line : -%s-", line);
+        
        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
@@ -377,27 +382,36 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             InsertSymbolNode(&table, label, IC);
             symbol = table;
             firstWord = strtok(NULL, " \t\n\v\f\r");
+            if(firstWord == NULL){
+                throwError("Found an empty label declaration", numberOfLine);
+                status->error = 1;
+                continue;
+            }
         }
 
         if (firstCharIsDot(firstWord)) {
             if(strcmp(firstWord, ".entry") == 0) {
                 status ->foundEntry = 1;
             }
-            status ->foundEntry |= strcmp(firstWord, ".entry") == 0;
-            status ->foundExtern |= strcmp(firstWord, ".extern") == 0;
-            status ->instructionError = validInstructions(table, firstWord, &DC, numberOfLine, symbol);
-            if(status ->instructionError){
-                status ->error = 1;
+            if(strcmp(firstWord, ".entry") == 0) status->foundEntry = 1;
+            if(strcmp(firstWord, ".extern") == 0) status->foundExtern = 1;
+            if(!validInstructions(&table, firstWord, &DC, numberOfLine, symbol)){
+                status->error = 1;
                 continue;
             }
+          
         } else {
             if(isOperationName(firstWord)){
-            IC++;
-            status ->error  |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
+            
+                IC++;
+                /* if it occured an error */
+                if(doCommandSentence(firstWord, &IC, numberOfLine, symbol)){
+                    status ->error = 1;
+                }
+               
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 status ->error = 1;
-            
             }
         }
         symbol = NULL;
