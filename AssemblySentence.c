@@ -258,7 +258,7 @@ int handleCommandSentence(int operandNum , int* IC, int numberOfLine, char* firs
          if(curr == error || prevOperand == error){
             return 1;
         } 
-        iCCounter(curr, 0, IC);
+        iCCounter(prevOperand, 0, IC);
         iCCounter(curr, prevOperand, IC);
     }
     return 0;
@@ -391,7 +391,9 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             }
         } else {
             if(isOperationName(firstWord)){
-            status ->error  |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
+		    
+		   IC++;
+            	   status ->error  |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 status ->error = 1;
