@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
-
+#include "../Utility/GeneralFunctions.h"
 
 struct MNode{
     char* name;
@@ -11,15 +11,6 @@ struct MNode{
     struct MNode* next;
 };
 
-
-void *checkMalloc(int size) {
-    void *ptr = malloc(size);
-    if (ptr == NULL) {
-        printf("Error: Fatal: Memory allocation failed.");
-        exit(1);
-    }
-    return ptr;
-}
 
 /*
 This function is used to compare macros with a specified name
