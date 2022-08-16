@@ -8,15 +8,6 @@
 int validLabelName(char *name);
 
 
-/*
-/**
- * Allocates memory in the required size. Exits the program if failed.
- * @param size The size to allocate in bytes
- * @return A generic pointer to the allocated memory if succeeded
-
-void *checkMalloc(int size);
-
- */
 
 /** A symbol type */
 typedef enum symbolType {
@@ -35,15 +26,14 @@ int isLabel(char *name);
 
 
 
-
-
 void setType(symbolTable symbol,symbolType type);
 
 int compareSymbol(symbolTable symbol, char *key);
-void freeNode(symbolTable node);
 
 void setAddress(symbolTable symbol, int address);
+
 symbolTable createSymbol(char* key,int address);
+
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
@@ -53,13 +43,20 @@ symbolType getType(symbolTable symbol);
 char *getSymbol(symbolTable symbol);
 
 void printSymbol(symbolTable table);
+
 void updateTable(symbolTable table, int IC);
+
+
 /**
  * Deallocates all the memory required by the table.
  * @param table The table to deallocate
  */
 void freeTable(symbolTable table);
-void shiftHead(symbolTable* head);
+
+void shiftHead(symbolTable head);
+
+void freeNode(symbolTable node);
+
 symbolTable findInTable(symbolTable symbol, char *key);
 
 #endif
