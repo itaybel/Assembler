@@ -104,6 +104,12 @@ symbolTable createSymbol(char* key,int address){
 
 }
 
+void shiftHead(symbolTable* head){
+    symbolTable temp = *head;
+    *head = (*head)->next;
+    freeNode(temp); 
+} 
+
 
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
 {
@@ -168,13 +174,16 @@ void updateTable(symbolTable table, int IC){
 }
 
 
+void freeNode(symbolTable node){
+    free(node->key);
+    free(node);
+}
 
 void freeTable(symbolTable table) {
     symbolTable prevSymbol, currSymbol = table;
     while (currSymbol != NULL) {
         prevSymbol = currSymbol;
         currSymbol = currSymbol->next;
-        free(prevSymbol->key);
-        free(prevSymbol);
+        freeNode(prevSymbol);
     }
 }

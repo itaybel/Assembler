@@ -27,13 +27,18 @@ void deleteFile(char* file_name, char* file_extension){
 
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     int i = 0, j = 0;
-    for(i = 0;  (line[i] == ' ' || line[i] == '\t') && i < strlen(line) ; i++);
+    for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--); /* removing all the spaces from the right */
+        
+    line[i + 1] = '\0';
+    for(i = 0;  (line[i] == ' ' || line[i] == '\t'|| line[i] == EOF || line[i] == '\n') && i < strlen(line) ; i++);
     j = i;
     for(i = 0; j <= strlen(line); i++){ /* shifting all the chars to the left */
         line[i] = line[j];
         j++;
     }
+    
     line[j] = '\0';
+   
 }
 
 
@@ -42,6 +47,7 @@ void throwError(char* errorMsg, int numberOfLine){
 }
 
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
+    if(line == NULL) return 1;
     int i = 0;
     for(i = 0; i < strlen(line); i++){
         if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') return 0;
@@ -64,9 +70,10 @@ void substring(char* string, int length){
 
 
 int firstCharIsDot(char *line){
+
     int i = 0;
     for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
-    return (line[i] == '.');
+    return (strlen(line) == 0 || line[i] == '.');
 
 }
 

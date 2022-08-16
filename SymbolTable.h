@@ -40,7 +40,7 @@ int isLabel(char *name);
 void setType(symbolTable symbol,symbolType type);
 
 int compareSymbol(symbolTable symbol, char *key);
-
+void freeNode(symbolTable node);
 
 void setAddress(symbolTable symbol, int address);
 symbolTable createSymbol(char* key,int address);
@@ -59,7 +59,7 @@ void updateTable(symbolTable table, int IC);
  * @param table The table to deallocate
  */
 void freeTable(symbolTable table);
-
+void shiftHead(symbolTable* head);
 symbolTable findInTable(symbolTable symbol, char *key);
 
 #endif

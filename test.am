@@ -1,12 +1,12 @@
 ; file ps.as 
 .entry LOOP 
 .entry LENGTH 
-.extern L3 
+P: .extern L3 
 .extern W 
-MAIN: mov S1.1, W 
- add r2,STR 
+MAIN: mov S1.1, #1
+ jmp     r2    
 LOOP: jmp W 
- prn #-5 
+ prn #-5
  sub r1, r4 
  inc K 
  

@@ -25,11 +25,11 @@ void encodeData(symbolTable table, char* line , int* IC, int numberOfLine, FILE*
     char* nextNumber = NULL;
     char inBase32[2] = {0};
     int number = 0;
-    printf("got line: %s\ndc: %d\nnumber of line: %d\n", line, *IC, numberOfLine);
+
 
     while((nextNumber = strtok(NULL," \t\n\v\f\r,")) != NULL) {
 
-        printf("%s,\n", nextNumber);
+ 
         convertToNumber(nextNumber, &number);
         toBase32(number, inBase32);
         writeToFile(inBase32, outFile, *IC);
@@ -170,13 +170,13 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
     int ARE = 0;
     symbolTable foundSymbol = NULL;
 
-    printf("directAddress -%s-\n", operand);
+   
     foundSymbol = findInTable(table, operand);
     if(foundSymbol == NULL){
         throwError("Invalid label found", numberOfLine);
         return 1;
     }else{
-        printf("fond symbol name is: %s\n", getSymbol(foundSymbol));
+      
         /* parsing the extra words */
         if(getType(foundSymbol) == EXTERNAL_SYMBOL) ARE = 1;
         else ARE = 2;
@@ -195,21 +195,21 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
     char inBase32[2] = {0};
     symbolTable foundSymbol = NULL;
 
-    printf("addressAccess -%s-\n", operand);
+   
     labelEnd = getFirstDelimIndex(operand,'.');
     strncpy(parsedLabel, operand, labelEnd);
-    printf("parned is: %s\n",parsedLabel);
+    
     foundSymbol = findInTable(table, parsedLabel);
     if(foundSymbol == NULL){
         throwError("Invalid label found", numberOfLine);
         return 1;
     }
-    printf("\n\n\n%s-%d\n\n\n", inBase32, getAddress(foundSymbol) << 2 | 2);
+  
     toBase32(getAddress(foundSymbol) << 2 | 2, inBase32);
-    printf("\n\n\n%s-%d\n\n\n", inBase32, getAddress(foundSymbol) << 2 | 2);
+   
     writeToFile(inBase32, outFile, *IC);
     *IC = *IC + 1;
-    printf("num is -%c-\n", (operand[labelEnd+1]));
+   
     toBase32((operand[labelEnd+1] - '0') << 2, inBase32);
     writeToFile(inBase32, outFile, *IC);
     *IC = *IC + 1;
@@ -275,14 +275,14 @@ int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int number
 
     opCode = getOperationOpcode(command);
     operand1 = strtok(NULL, " \t\n\v\f\r,");
-    printf("operand 1 is -%s-\n", operand1);
+  
     operand1Mode = getAddressingMode(operand1, numberOfLine);
-    printf("operand 1 addreessing -%d-\n", operand1Mode);
+   
     
     operand2 = strtok(NULL, " \t\n\v\f\r,");
-    printf("operand 2 is -%s-\n", operand2);
+   
     operand2Mode = getAddressingMode(operand2, numberOfLine);
-    printf("operand 2 addreessing -%d-\n", operand2Mode);
+   
 
     toBase32(opCode << 6 | operand1Mode << 4 | operand2Mode << 2, inBase32);
     writeToFile(inBase32, outFile, *IC);
@@ -337,7 +337,7 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
     char* token = NULL;
     char inBase32[2] = {0};
     if(!strcmp(firstWord, ".entry")){
-        printf("stop here %d\n\n", status->foundEntry);
+       
         token = strtok(NULL, " \t\n\v\f\r ");
         if((symbol = findInTable(table, token)) == NULL){
             throwError("Found an entry declaration of an undefined label", numberOfLine);
@@ -349,7 +349,7 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
         return 1;
     }
     if(!strcmp(firstWord, ".extern")){
-        printf("stop here\n\n");
+       
         token = strtok(NULL, " \t\n\v\f\r ");
         if((symbol = findInTable(table, token)) == NULL){
             throwError("Couldn't find extern symbol in symbol table!", numberOfLine);
@@ -366,12 +366,12 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
 void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flags* status){
     char c;
     FILE* obFile = openFile(fileName, "ob" , "w");
-    printf("p-%d", fgetc(cmdFile));
+   
     fseek(cmdFile, 0, SEEK_SET);
      fseek(dataFile, 0, SEEK_SET);
     /* Copy contents of the command instructions to the ob file */
     while ((c = fgetc(cmdFile)) != EOF){
-        printf("%c", c);
+      
         fputc(c, obFile);
     }
 
@@ -384,6 +384,8 @@ void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flag
 }
 
 void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile, FILE** entFile, FILE** extFile, flags* status){
+    char ICBase32[2];
+    char DCBase32[2];
     *inputFile = openFile(fileName, "am", "r");
     *cmdFile = openFile(fileName, "cmd", "w+");
     *dataFile = openFile(fileName, "data", "w+");
@@ -394,6 +396,9 @@ void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile
     if(status->foundExtern){
         *extFile = openFile(fileName, "ext", "w");
     }
+    toBase32(status->finalIC , ICBase32);
+    toBase32(status->finalDC , DCBase32);
+    fprintf(*cmdFile, "%.2s\t%.2s\n\n", ICBase32, DCBase32);
 }
 
 int encodeAssembly(char* fileName, symbolTable table, flags* status){
@@ -409,12 +414,14 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
     openFiles(fileName, &inputFile, &cmdFile, &dataFile, &entFile, &extFile, status);
     
     printf("Started second phase on the file: %s...\n",  fileName);
+    
     while (!feof(inputFile)) {
 
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
+        line[strcspn(line, "\n")] = 0;
         numberOfLine++;
-        if (foundEmptySentence(line) || foundCommendSentence(line)) {/* if line is empty or commend continue to the next line*/
+        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
 

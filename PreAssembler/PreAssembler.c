@@ -35,6 +35,7 @@ int addToMacroList(macroNode* head, char* line, FILE* inputFile){
         newMacroNode->startIndex = ftell(inputFile);
         while(!feof(inputFile)){
             fgets(line, MAX_LINE_LENGTH, inputFile);
+            line[strcspn(line, "\n")] = 0;
             command = strtok(line, " \t\n\v\f\r");
             if(strcmp(command, "endmacro") == 0) {
                 break;

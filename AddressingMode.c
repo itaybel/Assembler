@@ -127,7 +127,7 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
         labelEnd = getFirstDelimIndex(address,'.');
         strncpy(parsedLabel, address, labelEnd);
         if(validLabelName(parsedLabel)){/*S1.1*/
-            if((address[labelEnd+1] == '1' || address[labelEnd + 1] == '2') && strlen(address) == labelEnd+2){
+            if((address[labelEnd+1] == '1' || address[labelEnd + 1] == '2') && containsOnlyBlanks(address + (labelEnd+2))){
                 return addressAccess;
             }
             /*if(firstCharIsDot(address) && (address[1] == '1' || address[1] == '2')){
@@ -136,7 +136,7 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
             }*/
         }
     }
-    printf("-%s-", address);
+
     throwError("invalid addressing mode!", numberOfLine);
     return error;
 }
