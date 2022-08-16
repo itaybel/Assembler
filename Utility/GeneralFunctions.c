@@ -47,8 +47,11 @@ void throwError(char* errorMsg, int numberOfLine){
 }
 
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
-    if(line == NULL) return 1;
+
     int i = 0;
+    if(line == NULL){ 
+    	return 1;
+    }
     for(i = 0; i < strlen(line); i++){
         if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') return 0;
     }
@@ -104,4 +107,14 @@ int convertToNumber(char* numberString, int* number){
     }else{
         return 1;
     }
+}
+
+
+void *checkMalloc(int size) {
+    void *ptr = malloc(size);
+    if (ptr == NULL) {
+        printf("Error: Fatal: Memory allocation failed.");
+        exit(1);
+    }
+    return ptr;
 }
