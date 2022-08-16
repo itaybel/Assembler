@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "AssemblySentence.h"
 #include "SymbolTable.h"
 #include "AddressingMode.h"
@@ -27,7 +28,7 @@ int foundCommentSentence(char* line){
 }
 
 
-int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol)
+int doData(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable symbol)
 {
     char *token = NULL;
 
@@ -52,7 +53,7 @@ int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTabl
     return 0;
 }
 
-int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
+int doString(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
@@ -101,7 +102,7 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     throwError("Found invalid text before string", numberOfLine);
     return 1;
 }
-int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
+int doStruct(symbolTable table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
 
     char *token = command;
      if (symbol != NULL) {
@@ -131,7 +132,7 @@ int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
 }
 
 
-int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol){
+int doEntry(symbolTable table,char *command, int *DC,int numberOfLine,symbolTable symbol){
     char* label;
     label = strtok(NULL, " \t\n\v\f\r");
     if (label == NULL)
@@ -148,7 +149,7 @@ int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTab
 
 
 
-int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolTable symbol){
+int doExtern(symbolTable table,char *command, int *DC,int numberOfLine, symbolTable symbol){
 
     char *label;
     char *token;
@@ -159,8 +160,8 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
     label = strtok(NULL, " \t\n\v\f\r");
     if (validLabelName(label))
     {
-        InsertSymbolNode(table, label, *DC);
-        setType(*table, EXTERNAL_SYMBOL);
+        InsertSymbolNode(&table, label, *DC);
+        setType(table, EXTERNAL_SYMBOL);
         /*  *DC = *DC + 1; */
     }
     else
@@ -283,10 +284,10 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
 struct inst
 {
     const char *name;
-    int(*doInstructions)(/*SymbolTable *, char */symbolTable* table,char *line, int *DC, int numberOfLine,symbolTable symbol);
+    int(*doInstructions)(/*SymbolTable *, char */symbolTable table,char *line, int *DC, int numberOfLine,symbolTable symbol);
 };
 
-int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
+int validInstructions(symbolTable table,char *instruction,int *DC, int numberOfLine,symbolTable symbol)
 {
     struct inst instructionFunc[] = {{".data", doData}, {".string", doString}, {".struct", doStruct}, {".entry",doEntry}, {".extern",doExtern}};
     int i = 0;
@@ -384,16 +385,15 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             }
             status ->foundEntry |= strcmp(firstWord, ".entry") == 0;
             status ->foundExtern |= strcmp(firstWord, ".extern") == 0;
-            status ->instructionError = validInstructions(&table, firstWord, &DC, numberOfLine, symbol);
+            status ->instructionError = validInstructions(table, firstWord, &DC, numberOfLine, symbol);
             if(status ->instructionError){
                 status ->error = 1;
                 continue;
             }
         } else {
             if(isOperationName(firstWord)){
-		    
-		   IC++;
-            	   status ->error  |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
+            IC++;
+            status ->error  |= doCommandSentence(firstWord, &IC, numberOfLine, symbol); /* if it returned 1 (error), than errorFlag will be changed */
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 status ->error = 1;
