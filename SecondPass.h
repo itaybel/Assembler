@@ -2,7 +2,9 @@
 #define SECONDPASSH
 #define MAX_LINE_LENGTH 82
 
+#include "SymbolTable.h"
 #include "AssemblySentence.h"
+#include "AddressingMode.h"
 
 void toBase32(unsigned int num, char *base);
 int encodeAssembly(char* fileName, symbolTable table, flags* status);
@@ -33,4 +35,3 @@ void terminateSecondPhase(char* fileName, symbolTable table, FILE* inputFile,  F
 void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flags* status);
 
 #endif
-
