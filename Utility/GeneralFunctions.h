@@ -14,8 +14,15 @@
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]);
 
 void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension);
+
 void deleteFile(char* file_name, char* file_extension);
+
+
 FILE* openFile(char* file_name, char* file_extention, char* mode);
+
+
+void throwError(char* errorMsg, int numberOfLine);
+
 
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
 
@@ -27,5 +34,10 @@ int firstCharIsDot(char *line);
 char* cutColonFromLabel(char *line, char *firstWord);
 
 int isNumber(char *number);
+
 int convertToNumber(char* numberString, int* number);
+
+void *checkMalloc(int size);
+
+
 #endif
