@@ -1,7 +1,12 @@
-#include "AssemblySentence.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include "Utility/GeneralFunctions.h"
 #include "SecondPass.h"
+#include "AssemblySentence.h"
+#include "OperationTable.h"
+#include "RegisterTable.h"
+#include "SymbolTable.h"
 
 void writeToFile(char* content, FILE* file, int IC){
     char base32Address[2] = {0};
