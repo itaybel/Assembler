@@ -4,8 +4,6 @@
 typedef struct MNode* macroNode;
 
 
-void *checkMalloc(int size);
-
 int compareMacro(void* macro, void* name);
 
 macroNode createMacroNode(char* name);
