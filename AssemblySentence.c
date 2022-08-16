@@ -357,16 +357,17 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
-       
+        printf("line : -%s-", line);
+       if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
+            continue;
+        }
 
         numberOfLine++;
         /* storing a copy of the line, since strtok will be changing it */
         /* subString recives the first string*/
         firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
 
-        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
-            continue;
-        }
+        
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
         	
@@ -398,6 +399,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             }
         }
         symbol = NULL;
+        memset(line, 0, MAX_LINE_LENGTH);
     }
     printf("\n\nerror flag is: %d\n", status ->error );
     

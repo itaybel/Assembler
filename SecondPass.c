@@ -420,6 +420,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
         line[strcspn(line, "\n")] = 0;
+        
         numberOfLine++;
         if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
@@ -446,6 +447,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
             return 1;
 
         }
+        memset(line, 0, MAX_LINE_LENGTH);
     }
     
     handleFinalOutputFiles(fileName, cmdFile, dataFile, status);
