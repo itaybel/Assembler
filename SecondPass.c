@@ -23,9 +23,12 @@ void toBase32(int num, char* base)
     unsigned int leftGroup = 0;
     unsigned int rightGroup = 0;
 
-    leftGroup =  (num & (((1 << 5) - 1) << 5)); /* we will bitwise and the number and the mask: 1111100000 */
-    leftGroup >>= 5; /* shifting it back to be in the first 5 bits */
-    rightGroup = (num & ((1 << 5) - 1)); /* applying a mask to the five right bits, and bitwise and with the number to get its 5 right bits*/
+
+   /* num &= ((1 << 10) - 1);  appling bit masking , so that num / 32 will not be bigger than 32 */
+
+     leftGroup =  (num & (((1 << 5) - 1) << 5)); /* we will bitwise and the number and the mask: 1111100000 */
+     leftGroup >>= 5; /* shifting it back to be in the first 5 bits */
+     rightGroup = (num & ((1 << 5) - 1)); /* reseting any bits except the 5 at the right, and then m*/
 
     base[0] = base32chars[leftGroup];
     base[1] = base32chars[rightGroup];
@@ -40,7 +43,7 @@ void encodeData(symbolTable table, char* line , int* IC, int numberOfLine, FILE*
     int number = 0;
 
 
-     while((nextNumber = strtok(NULL," \t\n\v\f\r,")) != NULL) {
+    while((nextNumber = strtok(NULL," \t\n\v\f\r,")) != NULL) {
 
         *IC = *IC + 1;
         printf("next is: -%s-\n", nextNumber);
@@ -62,11 +65,9 @@ void encodeString(symbolTable table, char* command , int* IC, int numberOfLine, 
     int i = 0;
     int string_length = 0;
     int found_valid_string = 0;
+    char *token = NULL;
     char inBase32[2] = {0};
-    char* token = NULL;
-    
-    token = strtok(NULL, "");
-    removeSpacesAndTabs(token);
+    token = strtok(NULL," \t\n\v\f\r ");
     while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
     {
 
@@ -171,7 +172,7 @@ int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFi
     *IC = *IC + 1;
 
 
-    toBase32(operandToInt, inBase32);
+    toBase32(operandToInt << 2, inBase32);
 
     writeToFile(inBase32, outFile, *IC);
         
@@ -368,7 +369,7 @@ void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FI
     deleteFile(fileName, "data");
 }
 
-int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile , flags* status){
+int handleEntry(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile , flags* status){
     symbolTable symbol = NULL;
     char* token = NULL;
     char inBase32[2] = {0};
@@ -381,16 +382,6 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
         }else{
             toBase32(getAddress(symbol) , inBase32);
             fprintf(entFile, "%s\t%.2s\n", getSymbol(symbol),inBase32);
-        }
-        return 1;
-    }
-
-    if(!strcmp(firstWord, ".extern")){
-        token = strtok(NULL, " \t\n\v\f\r ");
-        
-        if((symbol = findInTable(table, token)) != NULL && getType(symbol) != EXTERNAL_SYMBOL){
-            throwError("Found an extern declaration of a declared label", numberOfLine);
-            status->error = 1;
         }
         return 1;
     }
@@ -446,6 +437,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
     int numberOfLine = 0;
     char *firstWord = NULL;
     int IC = 99;
+    int DC = 0;
 
     openFiles(fileName, &inputFile, &cmdFile, &dataFile, &entFile, &extFile, status);
     
@@ -468,7 +460,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         }
         if(firstCharIsDot(firstWord)){
             
-            if(!handleEntryAndExtern(firstWord, table,  numberOfLine,entFile , status)){ /* if its not an extern nor entry instruction */
+            if(!handleEntry(firstWord, table,  numberOfLine,entFile , status)){ /* if its not an extern nor entry instruction */
                 handleInstructions(table, firstWord, &IC, numberOfLine, dataFile);
             }
         }

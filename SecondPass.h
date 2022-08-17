@@ -12,7 +12,7 @@ void writeToFile(char* content, FILE* file, int IC);
 void encodeData(symbolTable table, char* line , int* IC, int numberOfLine, FILE* obFile);
 void encodeString(symbolTable table, char* command , int* IC, int numberOfLine, FILE* obFile);
 void encodeStruct(symbolTable table, char* command , int* IC, int numberOfLine, FILE* obFile);
-int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile , flags* flags);
+int handleEntry(char* firstWord, symbolTable table, int numberOfLine, FILE* entFile , flags* flags);
 
 /* parsing commands by number of operands */
 int parseNoneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile) ;

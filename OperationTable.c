@@ -85,7 +85,6 @@ int getOperandNum(char *name){
 int getSourceOperand(char *name){
     int i = 0;
     int error = -1;
-    char bit = 1;
 
 
     while (i < NUM_OF_OPERATIONS){
@@ -102,7 +101,6 @@ int getSourceOperand(char *name){
 int getDestinationOperand(char *name){
     int i = 0;
     int error = -1;
-    char bit = 1;
 
 
     while (i < NUM_OF_OPERATIONS){

@@ -1,1 +1,2 @@
-.struct 5, "hello"           
+ hellooo: hlt
+.extern hello2

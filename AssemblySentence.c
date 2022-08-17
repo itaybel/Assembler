@@ -28,62 +28,30 @@ int foundCommentSentence(char* line){
 }
 
 
-void addSpacesAfterCommas(char* line, char parsedLine[MAX_LINE_LENGTH*2]){
-    int i = 0;
-    int j = 0;
-    for (i = 0; i < strlen(line); i++)
-    {
-        parsedLine[j] = line[i];
-        if (line[i] == ',')
-        {
-
-            parsedLine[j + 1] = ' ';
-            j++;
-        }
-
-        j++;
-    }
-}
-
 int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol)
 {
-    char *restOfLine = NULL;
+    char *token = NULL;
     int foundNumbers = 0;
-    char parsedLine[MAX_LINE_LENGTH*2] = {0};
-    char* nextNumber = NULL;
-
-    
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
     }
-    restOfLine = strtok(NULL, "");
 
-    addSpacesAfterCommas(restOfLine, parsedLine);
-    printf("parsed is: %s\n", parsedLine);
-    nextNumber = strtok(parsedLine, ",");
-    while (nextNumber != NULL)
+    while ((token = strtok(NULL, " \t\n\v\f\r,")) != NULL)
     {
-        printf("t is: %s\n", nextNumber);
+       
         foundNumbers = 1;
-        if (isNumber(nextNumber))
+        if (isNumber(token))
         {
             (*DC)++;
-        }
-        else if (containsOnlyBlanks(nextNumber))
-        {
-            throwError("Multiple consecutive commas", numberOfLine);
-            return 0;
         }
         else
         {
             throwError("Found an invalid number in .data instruction!", numberOfLine);
             return 0;
         }
-        nextNumber = strtok(NULL, "");
-        printf("t2 is: %s\n", nextNumber);
     }
-     if(!foundNumbers){
+    if(!foundNumbers){
         throwError("found a .data instruction without any numbers", numberOfLine);
     }
     return foundNumbers;
@@ -412,10 +380,8 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
     while (!feof(inputFile)) {
 
         /* iterating through each line of the input file */
-        /* MAIN:    mov    S1.1 ,LENGTH*/
-        
+        fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
         numberOfLine++;
-        if(fgets(line, MAX_LINE_LENGTH, inputFile) == 0) continue;
        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
@@ -442,7 +408,9 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
         }
 
         if (firstCharIsDot(firstWord)) {
-          
+            if(strcmp(firstWord, ".entry") == 0) {
+                status ->foundEntry = 1;
+            }
             if(strcmp(firstWord, ".entry") == 0) status->foundEntry = 1;
             if(strcmp(firstWord, ".extern") == 0) status->foundExtern = 1;
             if(!validInstructions(&table, firstWord, &DC, numberOfLine, symbol)){
