@@ -17,7 +17,10 @@ int main(int argc, char** argv){
         status = (flags*)calloc(1, sizeof(flags));
         /* preAssemble(argv[i]); */
         table = createSymbolTable(argv[i], status);
-        if(status->error) continue;
+        if(status->error){
+            free(status);
+            continue;
+        }
         encodeAssembly(argv[i], table, status);
         free(status);
     }

@@ -65,7 +65,10 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     char* restOfLine = NULL;
     
     restOfLine = strtok(NULL, "");
-    printf("token is: %s\n", restOfLine);
+    if(restOfLine == NULL || strlen(restOfLine) == 0){
+        throwError("Missing string", numberOfLine);
+        return 0;
+    }
     removeSpacesAndTabs(restOfLine);
     if (symbol != NULL) {
         setAddress(symbol,*DC);
@@ -165,6 +168,11 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
         shiftHead(table);
     }
     label = strtok(NULL, " \t\n\v\f\r");
+    if(label == NULL){
+        throwError("Found an extern instruction without any label!", numberOfLine);
+        return 0;
+    }
+
     if (validLabelName(label))
     {
         
@@ -282,7 +290,7 @@ int UpdateICforCommandSentence(char* command, int operandNum , int* IC, int numb
             return 1;
         }
         iCCounter(curr, prevOperand, IC);
-        printf("after second operand IC: %d\n\n\n", *IC);
+    
     }
     return 0;
 }
@@ -379,6 +387,8 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
     while (!feof(inputFile)) {
 
+        symbol = NULL;
+        memset(line, 0, MAX_LINE_LENGTH);
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
         numberOfLine++;
@@ -395,13 +405,19 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
         	
+            if(validLabelName(firstWord)){
 
-            label = cutColonFromLabel(line, firstWord);
-            InsertSymbolNode(&table, label, IC);
-            symbol = table;
-            firstWord = strtok(NULL, " \t\n\v\f\r");
-            if(firstWord == NULL){
-                throwError("Found an empty label declaration", numberOfLine);
+                label = cutColonFromLabel(line, firstWord);
+                InsertSymbolNode(&table, label, IC);
+                symbol = table;
+                firstWord = strtok(NULL, " \t\n\v\f\r");
+                if(firstWord == NULL){
+                    throwError("Found an empty label declaration", numberOfLine);
+                    status->error = 1;
+                    continue;
+                }
+            }else{
+                throwError("Invalid label name", numberOfLine);
                 status->error = 1;
                 continue;
             }
@@ -426,15 +442,13 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
                 if(doCommandSentence(firstWord, &IC, numberOfLine, symbol)){
                     status ->error = 1;
                 }
-                printf("after command -%s- IC is: %d\n", firstWord, IC);
                
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
                 status ->error = 1;
             }
         }
-        symbol = NULL;
-        memset(line, 0, MAX_LINE_LENGTH);
+        
     }
     printf("\n\nerror flag is: %d\n", status ->error );
     
@@ -445,7 +459,6 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
     fclose(inputFile);
     if(status ->error ){
         freeTable(table);
-        free(status);
         return NULL;
     }
     return table;

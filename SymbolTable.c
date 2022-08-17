@@ -21,7 +21,7 @@ struct symbol {
 
 
 int isLabel(char *name){
-    if(validLabelName(name) && name[strlen(name) -1] == ':'){
+    if(name[strlen(name) -1] == ':'){
         return 1;
     }
     return 0;

@@ -50,7 +50,6 @@ int reservedWord(char *name) {
 
 
 int immediateAddressCheck(char *string){/*we can use strtol instead of this function*/
-    int i = 0;
     if (string[0] == '-' || string[0] == '+') { /*if string starts with +/-, it's OK */
         string++;
     }
