@@ -24,6 +24,7 @@ int foundEmptySentence(char* file_name);
 
 int foundCommentSentence(char* file_name);
 
+void addSpacesAfterCommas(char* line, char parsedLine[MAX_LINE_LENGTH*2]);
 
 int firstCharIsDot(char *line);
 

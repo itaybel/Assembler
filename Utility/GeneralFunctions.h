@@ -47,6 +47,12 @@ This function deletes the spaces at the beginning and at the end of a given stri
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]);
 
 /*
+This function checks if a given string contains a blank (space/tab)
+@param string - the string to search in
+@return wether it contains blanks
+*/
+int containsBlank(char* string);
+/*
 This function throws an error and prints it on the screen
 @param errorMsg - the error message to be printed
 @param numberOfLine - the number of line the error was occurred at
@@ -61,13 +67,17 @@ This function checks if a line contains only blanks (spaces/tabs)
 */
 int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
 
-
 /*
 This function checks if the first character in a line is a dot
 @param line - the line to check
 @return wether it found a dot at the beginning of the string
 */
 int firstCharIsDot(char *line);
+
+
+void substring(char* string, int length);
+int consestiveCommasFound(char* input);
+int areCommasValid(char* input, int isFirst ,int numberOfLine);
 
 /*
 This function cuts the part of the string that ends with a colon
