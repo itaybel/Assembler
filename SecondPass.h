@@ -18,7 +18,7 @@ This function is used to convert a given number to base32
 @param base  a pointer to the string to write the base32 into
 */
 void toBase32(int num, char *base);
-int encodeAssembly(char* fileName, symbolTable table, flags* status);
+
 
 
 /* parsing instructions */
@@ -110,17 +110,108 @@ This function is used to encode a two operands command
 int encodeTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile);
 
 /* handling access methods */
-int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* obFile);
-int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* obFile, FILE* extFile);
-int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* obFile);
-int handleAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile);
 
+
+/*
+This function is used to encode an operand with a immediate address
+@param operand the operand to encode
+@param IC a pointer to the IC
+@param numberOfLine the current number of line proccesed in the input file
+@param outFile the .cmd file that we right our commands into
+*/
+int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFile);
+
+
+/*
+This function is used to encode an operand with a direct address
+@param table the symbol list
+@param operand the operand to encode
+@param IC a pointer to the IC
+@param numberOfLine the current number of line proccesed in the input file
+@param outFile the .cmd file that we right our commands into
+@param extFile the .ext file that we right our externals into
+*/
+int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile);
+
+/*
+This function is used to encode an operand with a address address
+@param table the symbol list
+@param operand the operand to encode
+@param IC a pointer to the IC
+@param numberOfLine the current number of line proccesed in the input file
+@param outFile the .cmd file that we right our commands into
+*/
+int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile);
+
+/*
+This function is used to handle all the addressing accesses, and it calls the corresponding function
+@param operandMode the addressing mode of the operand
+@param table the symbol list
+@param isDest wether the operand is a destination operand
+@param IC a pointer to the IC
+@param numberOfLine the current number of line proccesed in the input file
+@param outFile the .cmd file that we right our commands into
+@param extFile the .ext file that we right our externals into
+*/
+int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile);
+
+/*
+This function is the general function that handles command sentences
+by calling the corresponding function to how much operands the command takes
+@param table the symbol list
+@param command the command we are encoding
+@param IC a pointer to the IC
+@param numberOfLine the current number of line proccesed in the input file
+@param outFile the .cmd file that we right our commands into
+@param extFile the .ext file that we right our externals into
+*/
+int encodeCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile, FILE* extFile);
+
+/*
+This function terminates the second phase
+it closes files, frees memory, and delete files
+
+@param fileName the name of the file
+@param table the symbol list
+@param inputFile the am file we read and encode
+@param entFile the .ent file we created to store our entities
+@param extFile the .ext file we created to store out externals calls
+*/
+void terminateSecondPhase(char* fileName, symbolTable table, FILE* inputFile,  FILE* entFile,  FILE* extFile);
+
+/*
+This function handles the final output files, by combining them into the .ob file
+
+@param fileName the name of the file
+@param cmdFile the .cmd file that stores all the commands
+@param dataFile the .data file that stores all the data instuctions
+@param status a struct contains our flags
+*/
+void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flags* status);
+
+
+/*
+This function opens all the files needed for the second phase
+
+@param fileName the name of the file
+@param inputFile a pointer to the input file
+@param cmdFile a pointer to the .cmd file, which stores all the encoding for commands
+@param dataFile a pointer to the .data file that stores all the data instuctions
+@param entFile a pointer to the .ent file, which stores all of the entites 
+@param extFile a pointer to the .ext file, which stores all of the external calls
+@param status a struct contains our flags
+*/
 void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile, FILE** entFile, FILE** extFile, flags* status);
 
 
-int encodeCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile, FILE* extFile);
-void terminateSecondPhase(char* fileName, symbolTable table, FILE* inputFile,  FILE* entFIle,  FILE* extFile);
-void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flags* status);
+/*
+This function handles the encoding of the assembler
+
+@param fileName the name of the input file
+@param table the symbol list of the first iteration
+@param status a struct contains our flags
+*/
+int encodeAssembly(char* fileName, symbolTable table, flags* status);
 
 #endif
 

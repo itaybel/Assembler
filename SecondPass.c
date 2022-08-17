@@ -173,7 +173,7 @@ int encodeOneOperandsCommand(symbolTable table, char *command, int *IC,int numbe
 
     writeToFile(inBase32, outFile, *IC);
     
-    return handleAccesses(operandMode, table, TRUE,  operand, IC,  numberOfLine, outFile, extFile);
+    return handleAddressingAccesses(operandMode, table, TRUE,  operand, IC,  numberOfLine, outFile, extFile);
 }   
 
 
@@ -206,7 +206,7 @@ int encodeTwoOperandsCommand(symbolTable table, char *command, int *IC,int numbe
         return 0;
     }
     /* if one of them has returned an error, we need to return an error, thats why we use the || operator */
-    return handleAccesses(operand1Mode, table, FALSE, operand1, IC,  numberOfLine, outFile, extFile) || handleAccesses(operand2Mode, table, TRUE,  operand2, IC, numberOfLine, outFile, extFile);
+    return handleAddressingAccesses(operand1Mode, table, FALSE, operand1, IC,  numberOfLine, outFile, extFile) || handleAddressingAccesses(operand2Mode, table, TRUE,  operand2, IC, numberOfLine, outFile, extFile);
 }   
 
 int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFile){
@@ -222,7 +222,6 @@ int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFi
 
 
     toBase32(operandToInt << 2, inBase32);
-
     writeToFile(inBase32, outFile, *IC);
         
     return 0;
@@ -240,8 +239,8 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
         return 1;
     }else{
         *IC = *IC + 1;
-        /* parsing the extra words */
-        if(getType(foundSymbol) == EXTERNAL_SYMBOL){
+
+        if(getType(foundSymbol) == EXTERNAL_SYMBOL){ /* if its an external operand, we write it to the ext file */
             ARE = 1;
             toBase32(*IC, inBase32);
             fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
@@ -288,7 +287,7 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
     return 0;
 }
 
-int handleAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
+int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
     char inBase32[2] = {0};
 
     switch(operandMode){
@@ -357,6 +356,8 @@ void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FI
     deleteFile(fileName, "cmd");
     deleteFile(fileName, "data");
 }
+
+
 void handleFinalOutputFiles(char* fileName, FILE* cmdFile, FILE* dataFile,  flags* status){
     char c;
     FILE* obFile = openFile(fileName, "ob" , "w");
