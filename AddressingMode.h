@@ -22,19 +22,43 @@ typedef enum addressingMode{
     error = -1
 } addressingMode;
 
-
+/*
+This function checks if a given string is an instruction name
+@param name - the string to be checked
+@return wether its a valid instruction (.data/.string/.struct/.entry/.extern)
+*/
 int isInstructionName(char *name);
 
-
+/*
+This function checks if a given string is a reserved word in assembly
+@param name - the string to be checked
+@return wether its a reserved word
+*/
 int reservedWord(char *name);
 
-
+/*
+This function checks if the addressing mode of a given string is an immediate
+@param name - the string to be checked
+@return wether the strings's addressing mode is immediate
+*/
 int immediateAddressCheck(char *string);
 
-
+/*
+This function returns the index of the first occurrence of a given delimiter
+@param name - the string to be searched on
+@param delim - the delimiter to search for
+@return the index of the first occurrence of the given delimiter or 0 if it weren't found
+*/
 int getFirstDelimIndex(char *str, char delim);
 
-enum addressingMode getAddressingMode(char *address, int getAddressingMode);
+
+/*
+This function returns the addressing mode of a given operand
+@param operand - the operand to get its addressing mode
+@param numberOfLine - the current line proccesed in the input file
+@return the addressing mode of the given operand
+*/
+enum addressingMode getAddressingMode(char *operand, int numberOfLine);
 
 
 #endif

@@ -54,16 +54,7 @@ int immediateAddressCheck(char *string){/*we can use strtol instead of this func
     if (string[0] == '-' || string[0] == '+') { /*if string starts with +/-, it's OK */
         string++;
     }
-    for(i = 0; string[i] != '\0'; i++){
-        /*Just make sure that everything is a digit until the end*/
-
-        if(!isdigit(string[i])){
-            return 0;
-            /*return false*/
-
-        }
-    }
-    return 1;
+    return isNumber(string);
 
 }
 
@@ -84,7 +75,7 @@ int getFirstDelimIndex(char *str, char delim){/*S1.1 .*/
 
 
 
-addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    mov    S1.1 ,LENGTH"*/
+addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    mov    S1.1 ,LENGTH"*/
 
 
     int labelEnd = 0;
@@ -93,14 +84,14 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
 
     /*if nothing, just return none */
 
-    if (address[0] == '\0') {
+    if (operand[0] == '\0') {
         return error;
     }
 
     /*if address starts with # and a number right after that, it's immediately addressed = 0 */
 
-    if (address[0] == '#') {
-        if(immediateAddressCheck(address + 1)){
+    if (operand[0] == '#') {
+        if(immediateAddressCheck(operand + 1)){
             return immediateAddress;
         }else{
             throwError("Invalid immediate address number!", numberOfLine);
@@ -110,13 +101,13 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
 
         /*if its name of register from registerTable, its directRegisterAddress = 3 */
 
-    else if (isRegisterName(address)) {
+    else if (isRegisterName(operand)) {
         return directRegisterAddress;
     }
 
         /*if address is a valid label name, it's directAddressed = 1 */
 
-    else if (validLabelName(address)) {
+    else if (validLabelName(operand)) {
         return directAddress;
     }
 
@@ -124,10 +115,10 @@ addressingMode getAddressingMode(char *address, int numberOfLine) {/* MAIN:    m
 
     else{/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
     
-        labelEnd = getFirstDelimIndex(address,'.');
-        strncpy(parsedLabel, address, labelEnd);
+        labelEnd = getFirstDelimIndex(operand,'.');
+        strncpy(parsedLabel, operand, labelEnd);
         if(validLabelName(parsedLabel)){/*S1.1*/
-            if((address[labelEnd+1] == '1' || address[labelEnd + 1] == '2') && containsOnlyBlanks(address + (labelEnd+2))){
+            if((operand[labelEnd+1] == '1' || operand[labelEnd + 1] == '2') && containsOnlyBlanks(operand + (labelEnd+2))){
                 return addressAccess;
             }
             /*if(firstCharIsDot(address) && (address[1] == '1' || address[1] == '2')){

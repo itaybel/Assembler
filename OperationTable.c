@@ -12,12 +12,12 @@ static const struct  operationConsts{
     int sourceOperand;
     int destinationOperand;
 } operationTable[] = {{"mov",0,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
-                      {"cmp",1,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
-                      {"add",2,2, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS,SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
-                      {"sub",3,2,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"cmp",1,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"add",2,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"sub",3,2, FIRST_ADDRESS | SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"not",4,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
-                      {"clr",5,1, FIRST_ADDRESS | SECOND_ADDRESS,SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
-                      {"lea",6,2,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"clr",5,1,    SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
+                      {"lea",6,2,0,  SECOND_ADDRESS | THIRD_ADDRESS , SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"inc",7,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"dec",8,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"jmp",9,1,0,  SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
@@ -82,7 +82,7 @@ int getOperandNum(char *name){
 }
 
 
-int getSourceOperand(char *name, int sourceOperand){
+int getSourceOperand(char *name){
     int i = 0;
     int error = -1;
     char bit = 1;
@@ -90,20 +90,16 @@ int getSourceOperand(char *name, int sourceOperand){
 
     while (i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0) {
-            if (bit << sourceOperand & operationTable[i].sourceOperand){
-                printf("%s ",operationTable[i].name);
-                printf("and the operand number is: \n");
-                return sourceOperand;
-            }
+            return operationTable[i].sourceOperand;
         }
-        i++;
+         i++;
     }
-    printf("error! invalid sourceOperand for this operation name! the error name is: ");
     return error;
+    
 }
 
 
-int getDestinationOperand(char *name, int destinationOperand){
+int getDestinationOperand(char *name){
     int i = 0;
     int error = -1;
     char bit = 1;
@@ -111,15 +107,10 @@ int getDestinationOperand(char *name, int destinationOperand){
 
     while (i < NUM_OF_OPERATIONS){
         if(strcmp(name,operationTable[i].name) == 0) {
-            if (bit << destinationOperand & operationTable[i].destinationOperand){
-                printf("%s ",operationTable[i].name);
-                printf("and the operand number is: \n");
-                return destinationOperand;
-            }
+            return operationTable[i].destinationOperand;
         }
-        i++;
+         i++;
     }
-    printf("error! invalid destinationOperand for this operation name! the error name is: ");
     return error;
 }
 

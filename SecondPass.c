@@ -15,17 +15,21 @@ void writeToFile(char* content, FILE* file, int IC){
     
 }
 
-void toBase32(unsigned int num, char* base)
+void toBase32(int num, char* base)
 {
     
     
     const char base32chars[] = "!@#$%^&*<>abcdefghijklmnopqrstuv";
     unsigned int leftGroup = 0;
     unsigned int rightGroup = 0;
-    num &= ((1 << 10) - 1); /* appling bit masking , so that num / 32 will not be bigger than 32 */
 
-    leftGroup = num >> 5;
-    rightGroup = ((num << 5) & ((1 << 10) - 1)) >> 5; /* moving the 10 bits 5 places to the left, then reseting the left 5 bits, and moving the other 5 to the right back*/
+
+   /* num &= ((1 << 10) - 1);  appling bit masking , so that num / 32 will not be bigger than 32 */
+
+     leftGroup =  (num & (((1 << 5) - 1) << 5)); /* we will bitwise and the number and the mask: 1111100000 */
+     leftGroup >>= 5; /* shifting it back to be in the first 5 bits */
+     rightGroup = (num & ((1 << 5) - 1)); /* reseting any bits except the 5 at the right, and then m*/
+
     base[0] = base32chars[leftGroup];
     base[1] = base32chars[rightGroup];
 
@@ -160,17 +164,16 @@ int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFi
     char inBase32[2] = {0};
     char* end;
     int operandToInt = 0;
-    operandToInt = (unsigned int)strtol(operand + 1, &end, 10); /* we need the +1 to shift the # */ 
+    operandToInt = strtol(operand + 1, &end, 10); /* we need the +1 to shift the # */ 
     if (end == operand + 1 || (*end != ' ' && *end != '\t' && *end != '\n' && *end != '\0')){
         throwError("invalid number", numberOfLine);
         return 1;
     }
     *IC = *IC + 1;
-    printf("got number: %d\n", operandToInt);
+
+
     toBase32(operandToInt, inBase32);
-    unsigned int a = operandToInt;
-    a &= ((1 << 10) - 1); /* appling bit masking , so that num / 32 will not be bigger than 32 */
-    printf("%d-%u\n", a, a);
+
     writeToFile(inBase32, outFile, *IC);
         
     return 0;
@@ -236,7 +239,7 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
     return 0;
 }
 
-int handleAccesses(addressingMode operandMode, symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
+int handleAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
     char inBase32[2] = {0};
 
     switch(operandMode){
@@ -253,8 +256,11 @@ int handleAccesses(addressingMode operandMode, symbolTable table, char* operand,
         case directRegisterAddress:
 
             *IC = *IC + 1;
-            printf("found register: %s-%d\n", operand, getRegisterNum(operand) << 2);
-            toBase32(getRegisterNum(operand) << 6, inBase32);
+            if(isDest){
+                toBase32(getRegisterNum(operand) << 2, inBase32);
+            }else{
+                toBase32(getRegisterNum(operand) << 6, inBase32);
+            }
             writeToFile(inBase32, outFile, *IC);
                                
             
@@ -288,7 +294,7 @@ int parseOneOperandsCommand(symbolTable table, char *command, int *IC,int number
     
     
     
-    return handleAccesses(operandMode, table,  operand, IC,  numberOfLine, outFile, extFile);
+    return handleAccesses(operandMode, table, TRUE,  operand, IC,  numberOfLine, outFile, extFile);
 }   
 
 
@@ -329,7 +335,7 @@ int parseTwoOperandsCommand(symbolTable table, char *command, int *IC,int number
     }
 
     /* if one of them has returned an error, we need to return an error, thats why we use the || operator */
-    return handleAccesses(operand1Mode, table,  operand1, IC,  numberOfLine, outFile, extFile) || handleAccesses(operand2Mode, table,  operand2, IC, numberOfLine, outFile, extFile);
+    return handleAccesses(operand1Mode, table, FALSE, operand1, IC,  numberOfLine, outFile, extFile) || handleAccesses(operand2Mode, table, TRUE,  operand2, IC, numberOfLine, outFile, extFile);
 }   
 
 
@@ -416,10 +422,11 @@ void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile
     if(status->foundExtern){
         *extFile = openFile(fileName, "ext", "w");
     }
-    toBase32(status->finalIC , ICBase32);
+    
+    toBase32(status->finalIC - 100 , ICBase32);
     toBase32(status->finalDC , DCBase32);
     printf("Final IC: %d\nFinal DC: %d\n", status->finalIC, status->finalDC);
-    fprintf(*cmdFile, "%.2s\t%.2s\n\n", ICBase32, DCBase32);
+    fprintf(*cmdFile, "%c\t%c\n\n", ICBase32[1], DCBase32[1]);
 }
 
 int encodeAssembly(char* fileName, symbolTable table, flags* status){

@@ -39,7 +39,7 @@ This function receives the operationName and if the name is valid it returns the
 @param sourceOperand - the sourceOperand of the operationTable
 @return int of the sourceOperand
 */
-int getSourceOperand(char *name, int sourceOperand);
+int getSourceOperand(char *name);
 
 
 
@@ -49,7 +49,7 @@ This function receives the operationName and if the name is valid it returns the
 @param destinationOperand - the destinationOperand of the operationTable
 @return int of the destinationOperand
 */
-int getDestinationOperand(char *name, int destinationOperand);
+int getDestinationOperand(char *name);
 
 
 #endif

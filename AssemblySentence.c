@@ -39,7 +39,7 @@ int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTabl
 
     while ((token = strtok(NULL, " \t\n\v\f\r,")) != NULL)
     {
-        printf("token is: %s\n", token);
+       
         foundNumbers = 1;
         if (isNumber(token))
         {
@@ -65,13 +65,14 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     char *token = NULL;
 
     token = strtok(NULL," \t\n\v\f\r");
-    if(token == NULL){
-        throwError("Invalid definition of a string!", numberOfLine);
-        return 0;
-    }
+    
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
+    }
+    if(token == NULL){
+        throwError("Invalid definition of a string!", numberOfLine);
+        return 0;
     }
     while (token[i] != '\n' && token[i] != '\0' && !found_valid_string)
     {
@@ -95,7 +96,7 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     {
         token = strtok(NULL, ""); /* getting the remining string */
         *DC = *DC + string_length;
-        printf("updated dc because of string length: %d\n", string_length);
+      
 
         if(!containsOnlyBlanks(token)){
             throwError("Found invalid text after string", numberOfLine);
@@ -164,7 +165,7 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
     label = strtok(NULL, " \t\n\v\f\r");
     if (validLabelName(label))
     {
-        printf("Inserting : %s-%d", label, *DC);
+        
         InsertSymbolNode(table, label, *DC);
         setType(*table, EXTERNAL_SYMBOL);
         /*  *DC = *DC + 1; */
@@ -184,9 +185,9 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
     return 1;
 }
 
-int checkValidOperand(char* operand, int numberOfLine){
+int checkValidOperand(char* operand , int numberOfLine){
     int i = 0;
-    if(operand == NULL || strlen(operand) == 0) {
+    if(operand == NULL || strlen(operand) == 0) { /* if its empty */
         throwError("Missing operand", numberOfLine);
         return 0;
     }
@@ -195,11 +196,11 @@ int checkValidOperand(char* operand, int numberOfLine){
         return 0;
     }
     for(i = 0; i < strlen(operand); i++){
-        if(operand[i] == ','){
+        if(operand[i] == ','){ /* if it found extra commas in the operand , we got invalid amount of operands (since we are only looking for 1 comma at a line)*/
             throwError("Invalid amount of operands", numberOfLine);
             return 0;
         }
-        if(operand[i] == ' ' || operand[i] == '\t'){
+        if(operand[i] == ' ' || operand[i] == '\t'){ /* if it found blanks in an operand*/
             throwError("Found invalid characters in the operand", numberOfLine);
             return 0;
         }
@@ -210,23 +211,23 @@ int checkValidOperand(char* operand, int numberOfLine){
 
 int isValidCommandSentence(int operandNum, char* restOfLine , int numberOfLine, char* firstOperand, char* secondOperand){
     int i = 0, j = 0;
-    if(operandNum == 0){
-        if(containsOnlyBlanks(restOfLine)){
+    if(operandNum == 0){ /* if the command doesn't require any operands */
+        if(containsOnlyBlanks(restOfLine)){ 
             return 1;
         }else{
-            throwError("A none operands command has got extra text", numberOfLine);
+            throwError("none operands command has got extra text", numberOfLine);
             return 0;
         }
     }
-    else if(operandNum == 1){
+    else if(operandNum == 1){ /* if the command require one operand */
         removeSpacesAndTabs(restOfLine);
-        for(i = 0; i < strlen(restOfLine); i++){
+        for(i = 0; i < strlen(restOfLine); i++){ /* we fill the string with all the characters until the first comma */
             firstOperand[i] = restOfLine[i];
         }
         return checkValidOperand(firstOperand, numberOfLine);
     }
-    else{
-        for(i = 0; i < strlen(restOfLine) && restOfLine[i] != ','; i++){
+    else{ /* if the command require two operands */
+        for(i = 0; i < strlen(restOfLine) && restOfLine[i] != ','; i++){ /* we fill the string with all the characters until the first comma */
             firstOperand[i] = restOfLine[i];
         }
         
@@ -237,7 +238,7 @@ int isValidCommandSentence(int operandNum, char* restOfLine , int numberOfLine, 
             return 0;
         }
         
-        for(++i; i < strlen(restOfLine) - 1; i++){
+        for(++i; i < strlen(restOfLine) - 1; i++){ /* we fill the string with all the characters from the first comma to the end*/
             secondOperand[j] = restOfLine[i];
             j++;
         }
@@ -247,7 +248,7 @@ int isValidCommandSentence(int operandNum, char* restOfLine , int numberOfLine, 
     }
 }
 
-int handleCommandSentence(int operandNum , int* IC, int numberOfLine, char* firstOperand, char* secondOperand){
+int UpdateICforCommandSentence(char* command, int operandNum , int* IC, int numberOfLine, char* firstOperand, char* secondOperand){
 
     addressingMode prevOperand = immediateAddress;
     addressingMode curr = immediateAddress;
@@ -257,6 +258,10 @@ int handleCommandSentence(int operandNum , int* IC, int numberOfLine, char* firs
          if(curr == error){
             return 1;
         } 
+        if(!(getDestinationOperand(command) & (1 << curr))){
+            throwError("Invalid addressing mode for destination operand", numberOfLine);
+            return 1;
+        }
         iCCounter(curr, prevOperand, IC);
     }else if(operandNum == 2){
         prevOperand = getAddressingMode(firstOperand, numberOfLine);
@@ -264,13 +269,24 @@ int handleCommandSentence(int operandNum , int* IC, int numberOfLine, char* firs
          if(curr == error || prevOperand == error){
             return 1;
         } 
-        iCCounter(curr, 0, IC);
+        if(!(getSourceOperand(command) & (1 << curr))){
+            throwError("Invalid addressing mode for source operand", numberOfLine);
+            return 1;
+        }
+        
+        iCCounter(prevOperand, 0, IC);/* zero is just a default addressing node, to specifiy we don't have a previous operand */
+        if(!(getDestinationOperand(command) & (1 << curr))){
+            throwError("Invalid addressing mode for destination operand", numberOfLine);
+            return 1;
+        }
         iCCounter(curr, prevOperand, IC);
+        printf("after second operand IC: %d\n\n\n", *IC);
     }
     return 0;
 }
 
 int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol) {
+    
     int opNumber = 0;
     char* restOfFile;
     char firstOperand[MAX_LINE_LENGTH] = {0};
@@ -281,7 +297,7 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
     if(!isValidCommandSentence(opNumber, restOfFile, numberOfLine, firstOperand, secondOperand)){
         return 1;
     }
-	return handleCommandSentence(opNumber, IC, numberOfLine, firstOperand, secondOperand);
+	return UpdateICforCommandSentence(command, opNumber, IC, numberOfLine, firstOperand, secondOperand);
   
 }
 
@@ -363,12 +379,12 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
-        
+        numberOfLine++;
        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
 
-        numberOfLine++;
+        
         /* storing a copy of the line, since strtok will be changing it */
         /* subString recives the first string*/
         firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
@@ -408,6 +424,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
                 if(doCommandSentence(firstWord, &IC, numberOfLine, symbol)){
                     status ->error = 1;
                 }
+                printf("after command -%s- IC is: %d\n", firstWord, IC);
                
         }else{
                 throwError("Invalid InstructionName", numberOfLine);
