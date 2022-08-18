@@ -3,7 +3,6 @@
 
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "Utility/GeneralFunctions.h"
 
 #define ENTRY_INDEX 4
 #define MAX_LINE_LENGTH 82
