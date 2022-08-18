@@ -94,7 +94,7 @@ int convertToNumber(char* numberString, int* number);
 
 
 
-int validData(char* string, int *DC,int numberOfLine)
+int validData(char* string, int *DC,int numberOfLine);
   
   
 
