@@ -168,7 +168,10 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
 
     if (validLabelName(label))
     {
-        
+        if(findInTable(*table, label) != NULL){
+            throwError("Found multiple definition of the same symbol", numberOfLine);
+            return 0;
+        }
         InsertSymbolNode(table, label, *DC);
         setType(*table, EXTERNAL_SYMBOL);
         /*  *DC = *DC + 1; */
@@ -397,6 +400,11 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             if(validLabelName(firstWord)){
 
                 label = cutColonFromLabel(line, firstWord);
+                if(findInTable(table, label) != NULL){
+                    throwError("Found multiple definition of the same symbol", numberOfLine);
+                    status->error = 1;
+                    continue;
+                }
                 InsertSymbolNode(&table, label, IC);
 		setType((symbolTable) label,CODE_SYMBOL);    
                 symbol = table;
