@@ -101,9 +101,9 @@ int convertToNumber(char* numberString, int* number){
 
 
 
-int validData(char* string, int *DC,int numberOfLine){
+int validComma(char* string, int *DC,int numberOfLine){
     int i = 0;
-    
+
     for(i = 0; i < strlen(string)-1;i++){
 
         if(string[0] != ',' && string[strlen(string) -1] != ',') {
@@ -116,10 +116,14 @@ int validData(char* string, int *DC,int numberOfLine){
                 (*DC)++;
                 continue;
 
-            } else {
+            }else {
                 throwError("Found an invalid number in .data instruction!", numberOfLine);
                 return 0;
             }
+
+        }else {
+            throwError("Found an invalid number in .data instruction!", numberOfLine);
+            return 0;
         }
     }
     (*DC)++;
