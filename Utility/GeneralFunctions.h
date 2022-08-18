@@ -92,6 +92,12 @@ This function converts a given string to int
 */
 int convertToNumber(char* numberString, int* number);
 
+
+
+int validData(char* string, int *DC,int numberOfLine)
+  
+  
+
 /*
 This function allocates memory of a specific size
 @param size - the size of the memory block to be allocated
