@@ -2,7 +2,7 @@
 #ifndef PREASSEMBLER_H
 #define PREASSEMBLER_H
 #include "../Utility/GeneralFunctions.h"
-#include "MacroTable.c"
+#include "MacroTable.h"
 #include <stdio.h>
 #include <stdlib.h>
 

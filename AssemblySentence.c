@@ -4,7 +4,7 @@
 #include "AssemblySentence.h"
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-#include "GeneralFunctions.h"
+#include "Utility/GeneralFunctions.h"
 #include "OperationTable.h"
 
 

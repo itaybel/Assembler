@@ -11,8 +11,8 @@ This function is used to write the content of a macro to the output file
 void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile){
     int i = 0;
 
-    fseek(inputFile, macro->startIndex, SEEK_SET);
-    for(i = 0; i < macro->length; i++){
+    fseek(inputFile, getStartIndex(macro), SEEK_SET);
+    for(i = 0; i < getLength(macro); i++){
         fputc(fgetc(inputFile), outputFile);
     }
 }
@@ -25,25 +25,33 @@ This function is used to look for new macros defintions and add them to the macr
 */
 int addToMacroList(macroNode* head, char* line, FILE* inputFile){
     char* command;
+    int macroContentLength = 0;
     macroNode newMacroNode =  NULL;
-
-    command = strtok(line, " "); /* get the first word in the line. */
+    int previousLineFtell = 0;
+    command = strtok(line, " \t\n\v\f\r"); /* get the first word in the line. */
 
     if(command != NULL && strcmp(command, "macro") == 0){ /* if the line starts with "macro" , which means a new macro declartion is made*/
         command = strtok(NULL, "\n"); /* extracting the next field , which will be the name of the macro */
+        removeSpacesAndTabs(command);
         newMacroNode = createMacroNode(command);
-        newMacroNode->startIndex = ftell(inputFile);
+
+        setStartIndex(newMacroNode, ftell(inputFile));
+
         while(!feof(inputFile)){
             fgets(line, MAX_LINE_LENGTH, inputFile);
             line[strcspn(line, "\n")] = 0;
             command = strtok(line, " \t\n\v\f\r");
+            removeSpacesAndTabs(line);
             if(strcmp(command, "endmacro") == 0) {
                 break;
             }
+            previousLineFtell = ftell(inputFile);
         }
-        newMacroNode->length = ((int)ftell(inputFile) - (strlen("endmacro") + 1)- newMacroNode->startIndex); /* we need to substract the length of endmacro since we don't want it to be in the output file */
+        macroContentLength = (previousLineFtell - getStartIndex(newMacroNode)); /* we need to substract the length of endmacro since we don't want it to be in the output file */
+        setLength(newMacroNode, macroContentLength);
         InsertMacroNode(head, newMacroNode);
-        
+        previousLineFtell = ftell(inputFile);
+
         return 1;
     }
 
@@ -75,7 +83,8 @@ int preAssemble(char* file_name){
             strcpy(originaLine, line);
 
             if(!addToMacroList(&macroTable, line, inputFile)){ /* if we didn't add any new macros to the list */
-                command = strtok(line, " \n"); /* get the first word in the line. */
+                command = strtok(line, " \t\n\v\f\r"); /* get the first word in the line. */
+                printf("command is: -%s-\n", command);
                 if((foundNode = (SearchNode(macroTable, command))) != NULL ){ /* if its a macro call */
                     tempPos = (int)ftell(inputFile);
                     WriteMacroToOutputFile(foundNode, inputFile, outputFile); /* we write the macro's code instead of the macro call */

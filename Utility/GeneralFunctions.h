@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
+#include <ctype.h>
 #define MAX_FILE_NAME_LENGTH 255
 #define MAX_LINE_LENGTH 82
 
@@ -92,10 +93,8 @@ This function converts a given string to int
 */
 int convertToNumber(char* numberString, int* number);
 
+int validComma(char* string, int *DC,int numberOfLine);
 
-
-int validData(char* string, int *DC,int numberOfLine);
-  
   
 
 /*

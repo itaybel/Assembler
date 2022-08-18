@@ -1,8 +1,5 @@
-#include <stdio.h>
+
 #include "Assembler.h"
-#include "PreAssembler/PreAssembler.h"
-#include "AssemblySentence.h"
-#include "SecondPass.h"
 int main(int argc, char** argv){
       
     int i = 0;
@@ -15,7 +12,7 @@ int main(int argc, char** argv){
     }
     for(i = 1; i < argc; i++){
         status = (flags*)calloc(1, sizeof(flags));
-        /* preAssemble(argv[i]); */
+        preAssemble(argv[i]); 
         table = createSymbolTable(argv[i], status);
         if(status->error){
             free(status);

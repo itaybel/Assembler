@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "SecondPass.h"
+#include "Utility/GeneralFunctions.h"
 
 void writeToFile(char* content, FILE* file, int IC){
     char base32Address[2] = {0};
@@ -309,8 +310,7 @@ int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int 
             }else{
                 toBase32(getRegisterNum(operand) << 6, inBase32);
             }
-            writeToFile(inBase32, outFile, *IC);
-                               
+            writeToFile(inBase32, outFile, *IC);           
             
             return 0;
         break;
@@ -323,8 +323,6 @@ int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int 
     }
     return 1;
 }
-
-
 
 
 int encodeCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile) {

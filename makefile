@@ -1,7 +1,7 @@
 
 
-#OBJS = Assembler.o MacroTable.o  PreAssembler.o GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
-OBJS = Assembler.o  GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
+OBJS = Assembler.o MacroTable.o  PreAssembler.o GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
+#OBJS = Assembler.o  GeneralFunctions.o OperationTable.o RegisterTable.o AddressingMode.o AssemblySentence.o SymbolTable.o SecondPass.o
 ASSEMBLER_FILES = *.ob *.ext *.ent *.o
 Assembler: $(OBJS)
 	gcc -g -ansi -Wall -pedantic $(OBJS) -o Assembler

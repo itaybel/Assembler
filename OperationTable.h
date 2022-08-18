@@ -1,6 +1,11 @@
-#ifndef UNTITLED4_OPERATIONTABLE_H
-#define UNTITLED4_OPERATIONTABLE_H
+#ifndef OPERATIONTABLE_H
+#define OPERATIONTABLE_H
+
+#include <stdio.h>
+#include <string.h>
+
 #define NUM_OF_OPERATIONS 16
+
 #define FIRST_ADDRESS 1
 #define SECOND_ADDRESS 2
 #define THIRD_ADDRESS 4

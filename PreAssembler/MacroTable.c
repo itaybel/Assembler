@@ -13,16 +13,6 @@ struct MNode{
 
 
 /*
-This function is used to compare macros with a specified name
-@param macro - the macro to be compared
-@param name - the name to compare with
-@return wether the given macro has the given name
-*/
-int compareMacro(void* macro, void* name){
-    return strcmp(((macroNode)macro)->name, (char*)name);
-}
-
-/*
 This function is used to allocate memory and create a new macro node
 @param name - the name of the macro
 @return a pointer to the new empty macro
@@ -98,4 +88,28 @@ void freeMacroList(struct MNode* node){
         free(node->name);
         free(node);
     }
+}
+
+
+   char* name;
+    int startIndex;
+    int length;
+    struct MNode* next;
+
+char* getName(struct MNode* node){
+    return node->name;
+}
+int getStartIndex(struct MNode* node){
+    return node->startIndex;
+}
+
+int getLength(struct MNode* node){
+    return node->length;
+}
+
+void setStartIndex(struct MNode* node, int startIndex){
+    node->startIndex = startIndex;
+}
+void setLength(struct MNode* node, int length){
+    node->length = length;
 }
