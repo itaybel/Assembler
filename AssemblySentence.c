@@ -31,30 +31,23 @@ int foundCommentSentence(char* line){
 int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol)
 {
     char *token = NULL;
-    int foundNumbers = 0;
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
     }
 
-    while ((token = strtok(NULL, " \t\n\v\f\r,")) != NULL)
-    {
-       
-        foundNumbers = 1;
-        if (isNumber(token))
-        {
-            (*DC)++;
-        }
-        else
-        {
+        token = strtok(NULL, " \t\n\v\f\r");
+
+        if(validComma(token,  DC, numberOfLine)) {
+            return 1;
+        }else {
             throwError("Found an invalid number in .data instruction!", numberOfLine);
             return 0;
         }
-    }
-    if(!foundNumbers){
+   /* if(!foundNumbers){
         throwError("found a .data instruction without any numbers", numberOfLine);
     }
-    return foundNumbers;
+    return foundNumbers;*/
 }
 
 int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
@@ -396,12 +389,8 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             continue;
         }
 
-        
-        /* storing a copy of the line, since strtok will be changing it */
         /* subString recives the first string*/
         firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
-
-        
 
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
         	
@@ -409,6 +398,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
 
                 label = cutColonFromLabel(line, firstWord);
                 InsertSymbolNode(&table, label, IC);
+		setType((symbolTable) label,CODE_SYMBOL);    
                 symbol = table;
                 firstWord = strtok(NULL, " \t\n\v\f\r");
                 if(firstWord == NULL){
