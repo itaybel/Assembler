@@ -100,6 +100,33 @@ int convertToNumber(char* numberString, int* number){
 }
 
 
+
+int validData(char* string, int *DC,int numberOfLine){
+    int i = 0;
+    
+    for(i = 0; i < strlen(string)-1;i++){
+
+        if(string[0] != ',' && string[strlen(string) -1] != ',') {
+
+            if (isdigit(string[i]) || string[i] == '-' || string[i] == '+') {
+                continue;
+            }
+
+            if (string[i] == ',' && string[i + 1] != ',') {
+                (*DC)++;
+                continue;
+
+            } else {
+                throwError("Found an invalid number in .data instruction!", numberOfLine);
+                return 0;
+            }
+        }
+    }
+    (*DC)++;
+    return 1;
+}
+
+
 void *checkMalloc(int size) {
     void *ptr = malloc(size);
     if (ptr == NULL) {
