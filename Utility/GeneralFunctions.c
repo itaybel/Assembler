@@ -53,7 +53,9 @@ int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
     	return 1;
     }
     for(i = 0; i < strlen(line); i++){
-        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') return 0;
+        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') {
+            return 0;
+        }
     }
     return 1;
 }
@@ -72,17 +74,20 @@ int firstCharIsDot(char *line){
 
 
 
-char* cutColonFromLabel(char *line, char *firstWord) {
+void cutColonFromLabel(char *labelName) {
 
-    line[strlen(firstWord) - 1] = '\0';
-    return line;
+    labelName[strlen(labelName) - 1] = '\0';
 }
 
 
 /*checks if the char is number for doData function*/
 int isNumber(char *number){
+    char numberCopy[MAX_LINE_LENGTH] = {0};
     char *temp = NULL;
-    strtol(number,&temp,10);
+    strcpy(numberCopy, number);
+    removeSpacesAndTabs(numberCopy);
+    
+    strtol(numberCopy,&temp,10);
     if(*temp == '\0'){
         return 1;
     }
@@ -101,38 +106,27 @@ int convertToNumber(char* numberString, int* number){
 
 
 
-int validComma(char* string, int *DC,int numberOfLine){
+void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2])
+{
     int i = 0;
+    int j = 0;
+    for (i = 0; i < strlen(line); i++)
+    {
+        parsedLine[j] = line[i];
+        if (line[i] == ',')
+        {
 
-    for(i = 0; i < strlen(string)-1;i++){
-
-        if(string[0] != ',' && string[strlen(string) -1] != ',') {
-
-            if (isdigit(string[i]) || string[i] == '-' || string[i] == '+') {
-                continue;
-            }
-
-            if (string[i] == ',' && string[i + 1] != ',') {
-                (*DC)++;
-                continue;
-
-            }else {
-                throwError("Found an invalid number in .data instruction!", numberOfLine);
-                return 0;
-            }
-
-        }else {
-            throwError("Found an invalid number in .data instruction!", numberOfLine);
-            return 0;
+            parsedLine[j + 1] = ' ';
+            j++;
         }
+
+        j++;
     }
-    (*DC)++;
-    return 1;
 }
 
-
-void *checkMalloc(int size) {
-    void *ptr = malloc(size);
+void *checkMalloc(size_t size) {
+    void* ptr = NULL;
+    ptr = malloc(size);
     if (ptr == NULL) {
         printf("Error: Fatal: Memory allocation failed.");
         exit(1);

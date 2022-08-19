@@ -163,7 +163,7 @@ void printSymbol(symbolTable table){
 }
 
 
-void updateTable(symbolTable table, int IC){
+void updateDataSymbols(symbolTable table, int IC){
 
     while(table != NULL) {
         if (table->type == DATA_SYMBOL || table->type == STRUCT_SYMBOL) {

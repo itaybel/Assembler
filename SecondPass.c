@@ -17,7 +17,7 @@ void toBase32(int num, char* base)
     const char base32chars[] = "!@#$%^&*<>abcdefghijklmnopqrstuv";
     unsigned int leftGroup = 0;
     unsigned int rightGroup = 0;
-
+    
     leftGroup =  (num & (((1 << 5) - 1) << 5)); /* we will bitwise and the number and the mask: 1111100000 */
     leftGroup >>= 5; /* shifting it back to be in the first 5 bits */
     rightGroup = (num & ((1 << 5) - 1)); /* reseting any bits except the 5 at the right, and then m*/
@@ -242,12 +242,12 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
         *IC = *IC + 1;
 
         if(getType(foundSymbol) == EXTERNAL_SYMBOL){ /* if its an external operand, we write it to the ext file */
-            ARE = 1;
+            ARE = 1; /* 01 */
             toBase32(*IC, inBase32);
             fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
         }
         else {
-            ARE = 2;
+            ARE = 2; /* 10 */
         }
         
         toBase32(getAddress(foundSymbol) << 2 | ARE, inBase32);
@@ -345,12 +345,13 @@ int encodeCommandSentence(symbolTable table, char *command, int *IC,int numberOf
 
 }
 
-void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FILE* entFile,  FILE* extFile){
-    freeTable(table);
+void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FILE* entFile,  FILE* extFile, FILE* cmdFile, FILE* dataFile){
+    
     fclose(inputFile);
     if(entFile != NULL) fclose(entFile);
     if(extFile != NULL) fclose(extFile);
-
+    fclose(cmdFile);
+    fclose(dataFile);
     deleteFile(fileName, "cmd");
     deleteFile(fileName, "data");
 }
@@ -444,7 +445,8 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         }
         
         if(status->error){
-            terminateSecondPhase(fileName, table, inputFile , entFile ,extFile);
+            
+            terminateSecondPhase(fileName, table, inputFile , entFile ,extFile, cmdFile, dataFile);
             deleteFile(fileName, "ent");
             deleteFile(fileName, "ext");
             return 1;
@@ -454,6 +456,6 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
     }
     printf("Second pass has been finished successfully.\n");
     handleFinalOutputFiles(fileName, cmdFile, dataFile, status);
-    terminateSecondPhase(fileName, table, inputFile, entFile  ,extFile);
+    terminateSecondPhase(fileName, table, inputFile, entFile  ,extFile, cmdFile, dataFile);
     return 0;
 }

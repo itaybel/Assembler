@@ -19,7 +19,7 @@ This function is used to allocate memory and create a new macro node
 */
 macroNode createMacroNode(char* name){
 
-    macroNode new_node = checkMalloc(sizeof(struct MNode));
+    macroNode new_node = (macroNode)checkMalloc(sizeof(struct MNode));
 
     new_node -> name = (char*)malloc((strlen(name) + 1) * sizeof(char));
     strcpy(new_node->name, name);
@@ -65,9 +65,10 @@ This function is used to search for a specific macro in a linked list
 */
 struct MNode* SearchNode(struct MNode* head, char *name){
 
+    if(head == NULL) return NULL;
     while(head != NULL){
 
-        if(strcmp(head -> name, name) == 0){
+        if(name != NULL && strcmp(head -> name, name) == 0){
             return head;
         }
         head = head -> next;

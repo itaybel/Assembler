@@ -176,8 +176,10 @@ it closes files, frees memory, and delete files
 @param inputFile the am file we read and encode
 @param entFile the .ent file we created to store our entities
 @param extFile the .ext file we created to store out externals calls
+@param cmdFile the .cmd file we created to store our commands encoding
+@param dataFile the .data file we created to store out data encoding
 */
-void terminateSecondPhase(char* fileName, symbolTable table, FILE* inputFile,  FILE* entFile,  FILE* extFile);
+void terminateSecondPhase(char* fileName,symbolTable table, FILE* inputFile,  FILE* entFile,  FILE* extFile, FILE* cmdFile, FILE* dataFile);
 
 /*
 This function handles the final output files, by combining them into the .ob file

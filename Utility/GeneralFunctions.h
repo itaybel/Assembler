@@ -71,12 +71,10 @@ This function checks if the first character in a line is a dot
 int firstCharIsDot(char *line);
 
 /*
-This function cuts the part of the string that ends with a colon
-@param line - the line to change
-@param firstWord - the part to slice of the string
-@return the sliced part of the string
+This function deletes the colon from a label 
+@param labelName - the label
 */
-char* cutColonFromLabel(char* line, char *firstWord);
+void cutColonFromLabel(char *labelName);
 
 /*
 This function checks if a string represents a valid number
@@ -95,6 +93,9 @@ int convertToNumber(char* numberString, int* number);
 
 int validComma(char* string, int *DC,int numberOfLine);
 
+void addSpacesAfterCommas(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
+
+void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
   
 
 /*
@@ -102,7 +103,9 @@ This function allocates memory of a specific size
 @param size - the size of the memory block to be allocated
 @return a pointer to the allocated memory
 */
-void *checkMalloc(int size);
+void *checkMalloc(size_t size);
+
+
 
 
 #endif

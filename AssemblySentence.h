@@ -86,6 +86,20 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
 int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOfLine,symbolTable symbol);
 
 void iCCounter(addressingMode address,addressingMode prevAddress, int *IC);
+
+/*
+This function handles a label definition, and creates a new node in the symbol list
+
+@param table a pointer to the symbol list
+@param labelName the name of the label to be created
+@param status a struct containing flags about the state of the program
+@param IC a pointer to the IC
+@param numberOfLine the current line proccesed in the input file
+@return the new created symbol node (will be empty at this point, until changed later)
+*/
+symbolTable handleLabelDefinition(symbolTable* table,  char* labelName, flags* status, int IC, int numberOfLine);
+
+
 symbolTable createSymbolTable(char* fileName, flags* status);
 
 

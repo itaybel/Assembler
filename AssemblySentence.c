@@ -28,26 +28,48 @@ int foundCommentSentence(char* line){
 }
 
 
-int doData(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol)
+int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
 {
-    char *token = NULL;
+    char *restOfLine = NULL;
+    int foundNumbers = 0;
+    char parsedLine[MAX_LINE_LENGTH * 2] = {0};
+    char *nextNumber = NULL;
+
+    restOfLine = strtok(NULL, "");
+
+    fixDataInstruction(restOfLine, parsedLine);
+    nextNumber = strtok(parsedLine, ",");
+
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
     }
 
-        token = strtok(NULL, " \t\n\v\f\r");
+    while (nextNumber != NULL)
+    {
+        foundNumbers = 1;
+        if (containsOnlyBlanks(nextNumber))
+        {
+            printf("Invalid commas found in .data instruction!");
+            return 0;
 
-        if(validComma(token,  DC, numberOfLine)) {
-            return 1;
-        }else {
-            throwError("Found an invalid number in .data instruction!", numberOfLine);
+        }else if (isNumber(nextNumber))
+        {
+            (*DC)++;
+        }
+        
+        else
+        {
+            printf("Found an invalid number in .data instruction!");
             return 0;
         }
-   /* if(!foundNumbers){
+        nextNumber = strtok(NULL, ",");
+    }
+    if (!foundNumbers)
+    {
         throwError("found a .data instruction without any numbers", numberOfLine);
     }
-    return foundNumbers;*/
+    return foundNumbers;
 }
 
 int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
@@ -356,7 +378,28 @@ void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
 
 }
 
-
+symbolTable handleLabelDefinition(symbolTable* table,  char* labelName, flags* status, int IC, int numberOfLine){
+    symbolTable symbol = NULL;
+    if(validLabelName(labelName)){
+        cutColonFromLabel(labelName);
+        if(findInTable(*table, labelName) != NULL){
+            throwError("Found multiple definition of the same label", numberOfLine);
+            status->error = 1;
+        }
+        if(reservedWord(labelName)){
+            throwError("label can't be a reserved word", numberOfLine);
+            status->error = 1;
+        }
+        InsertSymbolNode(table, labelName, IC);
+        setType(*table,CODE_SYMBOL);    
+        symbol = *table;
+        
+    }else{
+        printf("Error occured at line %d: Invalid label name: '%s'\n", numberOfLine, labelName);
+        status->error = 1;
+    }
+    return symbol;
+}
 
     
 symbolTable createSymbolTable(char* fileName, flags* status) {
@@ -364,14 +407,11 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
     FILE *inputFile = NULL;
     char line[MAX_LINE_LENGTH] = {0};
     char *firstWord = NULL;
-    char *label = NULL;
     symbolTable symbol = NULL;
     int numberOfLine = 0;
     symbolTable table = NULL;
     int IC = 100;
     int DC = 0;
-
-
 
     inputFile = openFile(fileName, "am", "r");
     if (inputFile == NULL){
@@ -391,66 +431,45 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
             continue;
         }
-
         /* subString recives the first string*/
         firstWord = strtok(line, " \t\n\v\f\r");/*XYZ:*/
-
+        
         if (isLabel(firstWord)) {/* if subString is label XYZ: we cuting the colon(:) from it,*/
-        	
-            if(validLabelName(firstWord)){
+            symbol = handleLabelDefinition(&table, firstWord, status, IC, numberOfLine);
+            firstWord = strtok(NULL, " \t\n\v\f\r");
 
-                label = cutColonFromLabel(line, firstWord);
-                if(findInTable(table, label) != NULL){
-                    throwError("Found multiple definition of the same symbol", numberOfLine);
-                    status->error = 1;
-                    continue;
-                }
-                InsertSymbolNode(&table, label, IC);
-		setType((symbolTable) label,CODE_SYMBOL);    
-                symbol = table;
-                firstWord = strtok(NULL, " \t\n\v\f\r");
-                if(firstWord == NULL){
-                    throwError("Found an empty label declaration", numberOfLine);
-                    status->error = 1;
-                    continue;
-                }
-            }else{
-                throwError("Invalid label name", numberOfLine);
+            if(firstWord == NULL || containsOnlyBlanks(firstWord)){
+                throwError("Found an empty label declaration", numberOfLine);
                 status->error = 1;
-                continue;
             }
+
+            if(status->error) continue;
+
         }
-
         if (firstCharIsDot(firstWord)) {
-            if(strcmp(firstWord, ".entry") == 0) {
-                status ->foundEntry = 1;
-            }
-            if(strcmp(firstWord, ".entry") == 0) status->foundEntry = 1;
+            if(strcmp(firstWord, ".entry") == 0) status ->foundEntry = 1;
             if(strcmp(firstWord, ".extern") == 0) status->foundExtern = 1;
-            if(!validInstructions(&table, firstWord, &DC, numberOfLine, symbol)){
-                status->error = 1;
-                continue;
-            }
-          
+
+            if(!validInstructions(&table, firstWord, &DC, numberOfLine, symbol)) status->error = 1;
+
         } else {
             if(isOperationName(firstWord)){
-            
                 IC++;
                 /* if it occured an error */
                 if(doCommandSentence(firstWord, &IC, numberOfLine, symbol)){
                     status ->error = 1;
                 }
                
-        }else{
-                throwError("Invalid InstructionName", numberOfLine);
-                status ->error = 1;
+            }else{
+                    printf("Error occured at line %d: Invalid command: '%s'\n", numberOfLine, firstWord);
+                    status ->error = 1;
             }
         }
         
     }
     printf("\n\nerror flag is: %d\n", status ->error );
     
-    updateTable(table,IC);
+    updateDataSymbols(table,IC);
     printSymbol(table);
     status->finalIC = IC;
     status->finalDC = DC;

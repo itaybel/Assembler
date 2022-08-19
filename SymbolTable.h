@@ -43,7 +43,8 @@ symbolType getType(symbolTable symbol);
 char *getSymbol(symbolTable symbol);
 
 void printSymbol(symbolTable table);
-void updateTable(symbolTable table, int IC);
+
+void updateDataSymbols(symbolTable table, int IC);
 /**
  * Deallocates all the memory required by the table.
  * @param table The table to deallocate
