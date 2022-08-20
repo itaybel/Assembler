@@ -46,21 +46,19 @@ void throwError(char* errorMsg, int numberOfLine){
     printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
 }
 
-int containsOnlyBlanks(char line[MAX_LINE_LENGTH]){
 
+
+int foundEmptySentence(char* line){
     int i = 0;
-    if(line == NULL){ 
-    	return 1;
+
+    if(line == NULL){
+        return 1;
     }
     for(i = 0; i < strlen(line); i++){
-        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n') {
-            return 0;
-        }
+        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n' && line[i] != EOF) return 0;
     }
     return 1;
 }
-
-
 
 
 int firstCharIsDot(char *line){

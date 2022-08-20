@@ -39,10 +39,11 @@ int addToMacroList(macroNode* head, char* line, FILE* inputFile){
 
         while(!feof(inputFile)){
             fgets(line, MAX_LINE_LENGTH, inputFile);
-            line[strcspn(line, "\n")] = 0;
+
             command = strtok(line, " \t\n\v\f\r");
-            removeSpacesAndTabs(line);
-            if(strcmp(command, "endmacro") == 0) {
+            removeSpacesAndTabs(command);
+            printf("line is: -%s-\n", command);
+            if(!foundEmptySentence(command) && strcmp(command, "endmacro") == 0) {
                 break;
             }
             previousLineFtell = ftell(inputFile);
@@ -66,8 +67,8 @@ This function is opening up the macros for the assembler
 int preAssemble(char* file_name){
         FILE *inputFile = openFile(file_name , "as", "r"), *outputFile = NULL;
         macroNode macroTable = NULL, foundNode = NULL;
-        char line[MAX_LINE_LENGTH] = {0};
-        char* command = NULL, *originaLine = NULL;
+        char line[MAX_LINE_LENGTH] = {0}, lineCopy[MAX_LINE_LENGTH] = {0};
+        char* command = NULL;
         int tempPos = 0;
 
         if(inputFile == NULL) {
@@ -82,26 +83,21 @@ int preAssemble(char* file_name){
         }
 
         while (fgets(line, MAX_LINE_LENGTH, inputFile)) { /* iterating through each line of the input file */
-
-            originaLine = (char *)malloc(strlen(line) + 1);/* storing a copy of the line, since strtok will be changing it */
-            if(originaLine == NULL) {
-                printf("Couldn't allocate memory, terminating program...\n");
-                return 1;
-            }
-            strcpy(originaLine, line);
+            printf("line is: %s\n", line);
+            strcpy(lineCopy, line);
 
             if(!addToMacroList(&macroTable, line, inputFile)){ /* if we didn't add any new macros to the list */
                 command = strtok(line, " \t\n\v\f\r"); /* get the first word in the line. */
+
                 if((foundNode = (SearchNode(macroTable, command))) != NULL ){ /* if its a macro call */
                     tempPos = (int)ftell(inputFile);
                     WriteMacroToOutputFile(foundNode, inputFile, outputFile); /* we write the macro's code instead of the macro call */
                     fseek(inputFile, tempPos, SEEK_SET);
                 }
                 else{
-                    fprintf(outputFile, "%s", originaLine);
+                    fprintf(outputFile, "%s", lineCopy);
                 }
             }
-            free(originaLine);
             
         }
         

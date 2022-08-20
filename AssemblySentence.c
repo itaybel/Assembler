@@ -9,17 +9,6 @@
 
 
 
-int foundEmptySentence(char* line){
-    int i = 0;
-
-    if(line == NULL){
-        return 1;
-    }
-    for(i = 0; i < strlen(line); i++){
-        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n' && line[i] != EOF) return 0;
-    }
-    return 1;
-}
 
 
 
@@ -48,7 +37,7 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
     while (nextNumber != NULL)
     {
         foundNumbers = 1;
-        if (containsOnlyBlanks(nextNumber))
+        if (foundEmptySentence(nextNumber))
         {
             printf("Invalid commas found in .data instruction!");
             return 0;
@@ -89,7 +78,7 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
     }
-    if(restOfLine == NULL || containsOnlyBlanks(restOfLine)){
+    if(restOfLine == NULL || foundEmptySentence(restOfLine)){
         throwError("Invalid definition of a string!", numberOfLine);
         return 0;
     }
@@ -240,7 +229,7 @@ int checkValidOperand(char* operand , int numberOfLine){
 int isValidCommandSentence(int operandNum, char* restOfLine , int numberOfLine, char* firstOperand, char* secondOperand){
     int i = 0, j = 0;
     if(operandNum == 0){ /* if the command doesn't require any operands */
-        if(containsOnlyBlanks(restOfLine)){ 
+        if(foundEmptySentence(restOfLine)){ 
             return 1;
         }else{
             throwError("none operands command has got extra text", numberOfLine);
@@ -438,7 +427,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             symbol = handleLabelDefinition(&table, firstWord, status, IC, numberOfLine);
             firstWord = strtok(NULL, " \t\n\v\f\r");
 
-            if(firstWord == NULL || containsOnlyBlanks(firstWord)){
+            if(firstWord == NULL || foundEmptySentence(firstWord)){
                 throwError("Found an empty label declaration", numberOfLine);
                 status->error = 1;
             }

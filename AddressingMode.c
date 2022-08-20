@@ -90,7 +90,7 @@ addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    m
     /*if address starts with # and a number right after that, it's immediately addressed = 0 */
 
     if (operand[0] == '#') {
-        if(immediateAddressCheck(operand + 1)){
+        if(isNumber(operand + 1)){
             return immediateAddress;
         }else{
             throwError("Invalid immediate address number!", numberOfLine);
@@ -117,7 +117,7 @@ addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    m
         labelEnd = getFirstDelimIndex(operand,'.');
         strncpy(parsedLabel, operand, labelEnd);
         if(validLabelName(parsedLabel)){/*S1.1*/
-            if((operand[labelEnd+1] == '1' || operand[labelEnd + 1] == '2') && containsOnlyBlanks(operand + (labelEnd+2))){
+            if((operand[labelEnd+1] == '1' || operand[labelEnd + 1] == '2') && foundEmptySentence(operand + (labelEnd+2))){
                 return addressAccess;
             }
             /*if(firstCharIsDot(address) && (address[1] == '1' || address[1] == '2')){

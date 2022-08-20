@@ -19,7 +19,7 @@ typedef struct flags {
 } flags;
 
 
-int foundEmptySentence(char* file_name);
+
 
 int foundCommentSentence(char* file_name);
 

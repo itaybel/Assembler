@@ -1,25 +1,13 @@
-.entry LIST
-.extern W
-
-MAIN: 	add r3, LIST
-LOOP: 	prn #48
-	lea STR, K
-	inc r6
-	mov r3, W
-	sub r1, r4
-	bne END
-	cmp val1, #-6
-	bne END
-	dec K
-mov #10000000, r1
-.data 1, 2,3, 3
-.entry MAIN
-	sub LOOP, r4
-END:    rts
-STR:   .string "abcd"
-.data 6, -9
-       .data -100
-LIST: .data 5
-.entry K
-K: .data 31
-.extern val1
+MAIN:    mov    S1.1 ,LENGTH
+         add    r2,STR
+LOOP:    jmp    END
+         prn    #-5
+         sub    r1, r4
+                inc     k
+                mov     s1.2 ,r3
+         bne    LOOP
+END:     hlt
+STR:     .string "abcdef"
+LENGTH:  .data  6,-9,15
+K:       .data  22
+S1:      .struct 8, "ab"

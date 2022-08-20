@@ -92,11 +92,6 @@ void freeMacroList(struct MNode* node){
 }
 
 
-   char* name;
-    int startIndex;
-    int length;
-    struct MNode* next;
-
 char* getName(struct MNode* node){
     return node->name;
 }

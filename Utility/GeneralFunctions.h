@@ -55,12 +55,6 @@ This function throws an error and prints it on the screen
 */
 void throwError(char* errorMsg, int numberOfLine);
 
-/*
-This function checks if a line contains only blanks (spaces/tabs)
-@param line - the line to check
-@return wether it found a none blank character in the string
-*/
-int containsOnlyBlanks(char line[MAX_LINE_LENGTH]);
 
 
 /*
@@ -91,13 +85,14 @@ This function converts a given string to int
 */
 int convertToNumber(char* numberString, int* number);
 
-int validComma(char* string, int *DC,int numberOfLine);
-
-void addSpacesAfterCommas(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
-
+/*
+This function fixs the data instruction by adding spaces after a "," to handle more errors with strtok.
+@param line - the string to be fixed
+@param parsedLine a pointer to the string which will contain the fixed line
+*/
 void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
   
-
+int foundEmptySentence(char* file_name);
 /*
 This function allocates memory of a specific size
 @param size - the size of the memory block to be allocated
