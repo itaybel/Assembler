@@ -108,7 +108,11 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
         if((symbol = findInTable(table, token)) == NULL){
             throwError("Found an entry declaration of an undefined label", numberOfLine);
             status->error = 1;
-        }else{
+        }else if(getType(symbol) == EXTERNAL_SYMBOL){
+            throwError("Found an entry declaration of an extern label", numberOfLine);
+            status->error = 1;
+        }
+        else{
             toBase32(getAddress(symbol) , inBase32);
             fprintf(entFile, "%s\t%.2s\n", getSymbol(symbol),inBase32);
         }
@@ -400,7 +404,6 @@ void openFiles(char* fileName, FILE** inputFile, FILE** cmdFile, FILE** dataFile
         DCBase32[0] = DCBase32[1];
         DCBase32[1] = '\0';
     }
-    printf("Final IC: %d\nFinal DC: %d\n", status->finalIC, status->finalDC);
     fprintf(*cmdFile, "%.2s\t%.2s\n\n", ICBase32, DCBase32);
 }
 

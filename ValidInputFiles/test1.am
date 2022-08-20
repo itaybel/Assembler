@@ -3,8 +3,8 @@ MAIN:    mov    S1.1 ,LENGTH
 LOOP:    jmp    END
          prn    #-5
          sub    r1, r4
-                inc     k
-                mov     s1.2 ,r3
+                inc     K
+                mov     S1.2 ,r3
          bne    LOOP
 END:     hlt
 STR:     .string "abcdef"

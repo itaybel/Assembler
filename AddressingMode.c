@@ -10,14 +10,13 @@
 
 static const struct instructionTableName{
     const char *name;
-    const char *message;
 
 }instructionsTable[] = {
-        {".data",   "DATA_INSTRUCTION"},
-        {".string", "STRING_INSTRUCTION"},
-        {".struct", "STRUCT_INSTRUCTION"},
-        {".entry",  "ENTRY_INSTRUCTION"},
-        {".extern", "EXTERN_INSTRUCTION",},
+        {".data"},
+        {".string"},
+        {".struct"},
+        {".entry"},
+        {".extern"},
         /*{NULL,     "ERROR_INSTRUCTION"}* it will have problem when we will compare name between NULL*/
 };
 
@@ -32,30 +31,13 @@ int isInstructionName(char *name) {
         }
         i++;
     }
-
     return 0;
 
 }
 
 
 
-int reservedWord(char *name) {
 
-    /*check if register or instructionname or lable */
-
-    return (isRegisterName(name)  || isInstructionName(name) || isOperationName(name));
-
-}
-
-
-
-int immediateAddressCheck(char *string){/*we can use strtol instead of this function*/
-    if (string[0] == '-' || string[0] == '+') { /*if string starts with +/-, it's OK */
-        string++;
-    }
-    return isNumber(string);
-
-}
 
 /*str != NULL*/
 

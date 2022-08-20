@@ -29,19 +29,9 @@ This function checks if a given string is an instruction name
 */
 int isInstructionName(char *name);
 
-/*
-This function checks if a given string is a reserved word in assembly
-@param name - the string to be checked
-@return wether its a reserved word
-*/
-int reservedWord(char *name);
 
-/*
-This function checks if the addressing mode of a given string is an immediate
-@param name - the string to be checked
-@return wether the strings's addressing mode is immediate
-*/
-int immediateAddressCheck(char *string);
+
+
 
 /*
 This function returns the index of the first occurrence of a given delimiter

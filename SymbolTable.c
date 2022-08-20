@@ -13,8 +13,8 @@ struct symbol {
     symbolTable next;
     /** Address of the symbol */
     int address;
-    /** Key (symbol name) is a string (aka char*) */
-    char *key;
+    /** name (symbol name) is a string (aka char*) */
+    char *name;
     /** Symbol type */
     int type;
 };
@@ -74,29 +74,29 @@ void setAddress(symbolTable symbol, int address){
 
 
 
-int compareSymbol(symbolTable symbol, char *key){
-    return strcmp((symbol)->key, key);
+int compareSymbol(symbolTable symbol, char *name){
+    return strcmp((symbol)->name, name);
 }
 
-symbolTable findInTable(symbolTable symbol, char *key){
+symbolTable findInTable(symbolTable symbol, char *name){
     if(symbol != NULL){
-        if(strcmp(symbol->key, key) == 0){
+        if(strcmp(symbol->name, name) == 0){
             return symbol;
         }
-        return findInTable(symbol->next, key);
+        return findInTable(symbol->next, name);
     }
     return NULL;
 }
 
-symbolTable createSymbol(char* key,int address){
+symbolTable createSymbol(char* name,int address){
 
     symbolTable new_node = malloc(sizeof(struct symbol));
     /*if(new_node == NULL){
         printf("Error, couldn't allocate memory");
         return  NULL;
     }*/
-    new_node -> key = (char*)malloc((strlen(key) + 1) * sizeof(char));
-    strcpy(new_node->key, key);
+    new_node -> name = (char*)malloc((strlen(name) + 1) * sizeof(char));
+    strcpy(new_node->name, name);
     new_node -> address = address;
     new_node -> next = NULL;
     new_node->type = 0;
@@ -149,18 +149,9 @@ symbolType getType(symbolTable symbol){
 
 
 char *getSymbol(symbolTable symbol){
-    return symbol->key;
+    return symbol->name;
 }
 
-void printSymbol(symbolTable table){
-
-    while(table != NULL){
-        
-        printf("%s | %d\n",table->key, table->address);
-        /*printf("%d",table->type);*/
-        table = table->next;
-    }
-}
 
 
 void updateDataSymbols(symbolTable table, int IC){
@@ -175,7 +166,7 @@ void updateDataSymbols(symbolTable table, int IC){
 
 
 void freeNode(symbolTable node){
-    free(node->key);
+    free(node->name);
     free(node);
 }
 

@@ -16,9 +16,10 @@ int main(int argc, char** argv){
 
         if(status->error) continue;
 
+
         table = createSymbolTable(argv[i], status);
         if(status->error){
-            deleteFile(argv[i], "am");
+           /* deleteFile(argv[i], "am"); */
             free(status);
             continue;
         }

@@ -13,7 +13,10 @@
 
 
 int foundCommentSentence(char* line){
-    return line[0] == ';';
+    char lineCopy[MAX_LINE_LENGTH] = {0};
+    strcpy(lineCopy, line);
+    removeSpacesAndTabs(lineCopy);
+    return lineCopy[0] == ';';
 }
 
 
@@ -39,7 +42,7 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
         foundNumbers = 1;
         if (foundEmptySentence(nextNumber))
         {
-            printf("Invalid commas found in .data instruction!");
+            throwError("Invalid commas found in .data instruction!", numberOfLine);
             return 0;
 
         }else if (isNumber(nextNumber))
@@ -49,7 +52,7 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
         
         else
         {
-            printf("Found an invalid number in .data instruction!");
+            throwError("Found an invalid number in .data instruction!", numberOfLine);
             return 0;
         }
         nextNumber = strtok(NULL, ",");
@@ -456,10 +459,9 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
         }
         
     }
-    printf("\n\nerror flag is: %d\n", status ->error );
+    printf("error flag is: %d\n", status ->error );
     
     updateDataSymbols(table,IC);
-    printSymbol(table);
     status->finalIC = IC;
     status->finalDC = DC;
     fclose(inputFile);

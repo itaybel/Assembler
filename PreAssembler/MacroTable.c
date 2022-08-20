@@ -12,11 +12,7 @@ struct MNode{
 };
 
 
-/*
-This function is used to allocate memory and create a new macro node
-@param name - the name of the macro
-@return a pointer to the new empty macro
-*/
+
 macroNode createMacroNode(char* name){
 
     macroNode new_node = (macroNode)checkMalloc(sizeof(struct MNode));
@@ -32,37 +28,24 @@ macroNode createMacroNode(char* name){
 
 
 
-
-/*
-This function is used insert a new macro to the macro list
-@param head_ref - the current head of the linked list
-@param new_data - the name of the new macro to be added
-*/
-void InsertMacroNode(struct MNode** head_ref, struct MNode* new_node)
+void InsertMacroNode(struct MNode** head, struct MNode* newNode)
 {
 
-    if (!(*head_ref)) /* if the list is empty */
+    if (!(*head)) /* if the list is empty */
     {
-        *head_ref = new_node;
+        *head = newNode;
 
     }else{
 
         /*Make next of new node as head*/
-        new_node->next = (*head_ref);
+        newNode->next = (*head);
 
         /*move the head to point to the new node*/
 
-        (*head_ref)  = new_node;
+        (*head)  = newNode;
     }
 }
 
-
-/*
-This function is used to search for a specific macro in a linked list
-@param head - the current head of the linked list
-@param name - the name to search
-@return the found node, NULL if it couldn't be found
-*/
 struct MNode* SearchNode(struct MNode* head, char *name){
 
     if(head == NULL) return NULL;
@@ -78,11 +61,6 @@ struct MNode* SearchNode(struct MNode* head, char *name){
 
 
 
-/*
-This function is used to free the macro list
-@param head - the current node in the linked list
-@return none
-*/
 void freeMacroList(struct MNode* node){
     if(node != NULL){
         freeMacroList(node->next);
@@ -91,6 +69,19 @@ void freeMacroList(struct MNode* node){
     }
 }
 
+int isValidMacroName(char* name){
+    int i = 0;
+
+    if (isalpha(name[0]) && strlen(name) <= MAX_LENGTH && !(reservedWord(name))){
+        for (i = 0; i < strlen(name); i++) {/*use loop to check isalnum if the word is alphanumeric*/
+            if (!isalnum(name[i])) {
+                return 0;
+            } 
+        }
+        return 1;
+    }
+    return 0;
+}
 
 char* getName(struct MNode* node){
     return node->name;

@@ -27,6 +27,7 @@ void deleteFile(char* file_name, char* file_extension){
 
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     int i = 0, j = 0;
+    if(line == NULL) return;
     for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--); /* removing all the spaces from the right */
         
     line[i + 1] = '\0';
@@ -47,6 +48,12 @@ void throwError(char* errorMsg, int numberOfLine){
 }
 
 
+int reservedWord(char *name) {
+
+    /*check if register or instructionname or lable */
+    return (isRegisterName(name)  || isInstructionName(name) || isOperationName(name));
+
+}
 
 int foundEmptySentence(char* line){
     int i = 0;
@@ -84,6 +91,7 @@ int isNumber(char *number){
     char *temp = NULL;
     strcpy(numberCopy, number);
     removeSpacesAndTabs(numberCopy);
+    
     
     strtol(numberCopy,&temp,10);
     if(*temp == '\0'){

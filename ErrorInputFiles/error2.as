@@ -7,14 +7,14 @@ MAIN:
 thiss        					 is 				a     try			
 		add r5  	 	 	,STR
 LOOP: 	jmp W23
-		macro r3
+		macro hi
 		inc K
 			
 		mov S1.2 ,r3
 		endmacro
 		prn #-5.644
 		sub r1, r4
-		r3
+		hi
 		bne L3
 END:	hlt
 STR:	.string "abc432894723ewhd!@#@def"

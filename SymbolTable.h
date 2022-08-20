@@ -29,11 +29,11 @@ int isLabel(char *name);
 
 void setType(symbolTable symbol,symbolType type);
 
-int compareSymbol(symbolTable symbol, char *key);
+int compareSymbol(symbolTable symbol, char *name);
 void freeNode(symbolTable node);
 
 void setAddress(symbolTable symbol, int address);
-symbolTable createSymbol(char* key,int address);
+symbolTable createSymbol(char* name,int address);
 void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data);
 
 int getAddress(symbolTable symbol);
@@ -42,7 +42,6 @@ symbolType getType(symbolTable symbol);
 
 char *getSymbol(symbolTable symbol);
 
-void printSymbol(symbolTable table);
 
 void updateDataSymbols(symbolTable table, int IC);
 /**
@@ -51,6 +50,6 @@ void updateDataSymbols(symbolTable table, int IC);
  */
 void freeTable(symbolTable table);
 void shiftHead(symbolTable* head);
-symbolTable findInTable(symbolTable symbol, char *key);
+symbolTable findInTable(symbolTable symbol, char *name);
 
 #endif

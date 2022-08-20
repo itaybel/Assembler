@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "string.h"
 #include <ctype.h>
+#include "../AddressingMode.h"
 #define MAX_FILE_NAME_LENGTH 255
 #define MAX_LINE_LENGTH 82
 
@@ -55,7 +56,12 @@ This function throws an error and prints it on the screen
 */
 void throwError(char* errorMsg, int numberOfLine);
 
-
+/*
+This function checks if a given string is a reserved word in assembly
+@param name - the string to be checked
+@return wether its a reserved word
+*/
+int reservedWord(char *name);
 
 /*
 This function checks if the first character in a line is a dot
