@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "string.h"
-#include "../AddressingMode"
+#include "../AddressingMode.h"
 #include "../GeneralFunctions.h"
 #include "../OperationTable.h"
-#include ".//RegisterTable.h"
+#include "../RegisterTable.h"
 
 void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension){
     strcat(fileWithExtension, fileName); /* we copy the file name to the beginning of the string */
