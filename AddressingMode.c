@@ -5,6 +5,7 @@
 #include "AddressingMode.h"
 #include "Utility/GeneralFunctions.h"
 #include "AssemblySentence.h"
+#include "RegisterTable.h"
 
 
 
