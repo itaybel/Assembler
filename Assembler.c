@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "PreAssembler/PreAssembler.h"
+#include "../Utility/GeneralFunctions.h"
 #include "AssemblySentence.h"
 #include "SecondPass.h"
 
