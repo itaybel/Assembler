@@ -1,5 +1,4 @@
 #include "MacroTable.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
 #include "../Utility/GeneralFunctions.h"
