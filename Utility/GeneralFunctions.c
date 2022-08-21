@@ -1,19 +1,24 @@
-#include "GeneralFunctions.h"
+#include <stdlib.h>
+#include "string.h"
+#include "../AddressingMode"
+#include "../GeneralFunctions.h"
+#include "../OperationTable.h"
+#include ".//RegisterTable.h"
 
 void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension){
     strcat(fileWithExtension, fileName); /* we copy the file name to the beginning of the string */
     fileWithExtension[strlen(fileName)] = '.'; /* then we add a "." */
     strcat(fileWithExtension + (strlen(fileName)) + 1, extension); /* we add the file extension after the "." */
-} 
+}
 
-FILE* openFile(char* file_name, char* file_extention, char* mode){
+FILE* openFile(char* file_name, char* fileExtention, char* mode){
     char fileNameWithExtension[MAX_FILE_NAME_LENGTH] = {0};
     FILE* fileToOpen;
 
-    getFileWithExtension(file_name, file_extention, fileNameWithExtension);
-    
+    getFileWithExtension(file_name, fileExtention, fileNameWithExtension);
+
     fileToOpen = fopen(fileNameWithExtension,mode);
-    
+
     return fileToOpen;
 }
 
@@ -30,7 +35,7 @@ void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     if(line == NULL) return;
 
     /* removing all the spaces from the right */
-    for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--); 
+    for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--);
     line[i + 1] = '\0';
 
     /* removing all the spaces from the left */
@@ -41,20 +46,20 @@ void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
         line[i] = line[j];
         j++;
     }
-    
+
     line[j] = '\0';
-   
+
 }
 
 
 void throwError(char* errorMsg, int numberOfLine){
     PRINT_RED();
-    printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
+    printf("Error occurred at line %d: %s\n", numberOfLine, errorMsg);
     CLEAR_COLOR();
 }
 void throwWarning(char* warningMsg, int numberOfLine){
     PRINT_YELLOW();
-    printf("Warning occured at line %d: %s\n", numberOfLine, warningMsg);
+    printf("Warning occurred at line %d: %s\n", numberOfLine, warningMsg);
     CLEAR_COLOR();
 }
 
@@ -62,7 +67,7 @@ void throwWarning(char* warningMsg, int numberOfLine){
 
 int reservedWord(char *word) {
 
-    /*check if register or instructionname or a command */
+    /*check if register or instructionName or a command */
     return (isRegisterName(word)  || isInstructionName(word) || isOperationName(word));
 
 }
@@ -102,8 +107,8 @@ int isNumber(char *number){
     char *temp = NULL;
     strcpy(numberCopy, number);
     removeSpacesAndTabs(numberCopy);
-    
-    
+
+
     strtol(numberCopy,&temp,10);
     if(*temp == '\0'){ /* if strtok cut the whole string, it means that the string represents a number */
         return 1;
@@ -120,4 +125,3 @@ int convertToNumber(char* numberString, int* number){
         return 1;
     }
 }
-
