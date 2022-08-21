@@ -46,6 +46,5 @@ int getRegisterNum(char *name){
         }
         i++;
     }
-    printf("Error!, this name doest not exist in the OperationTable!");
     return 0;
 }

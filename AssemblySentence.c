@@ -21,9 +21,25 @@ int checkFirstCharacter(char* line, char c){
     return lineCopy[0] == c;
 }
 
+void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2])
+{
+    int i = 0;
+    int j = 0;
+    for (i = 0; i < strlen(line); i++)
+    {
+        parsedLine[j] = line[i];
+        if (line[i] == ',') /* if we found a comma, we add a space right after it */
+        {
 
+            parsedLine[j + 1] = ' ';
+            j++;
+        }
 
-int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
+        j++;
+    }
+}
+
+int doData(symbolTable* table, char *line, int *DC, int numberOfLine, symbolTable symbol)
 {
     char *restOfLine = NULL;
     int foundNumbers = 0;
@@ -33,6 +49,8 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
+    }else{
+        
     }
 
     if(foundEmptySentence(restOfLine)){
@@ -72,7 +90,7 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
     return foundNumbers;
 }
 
-int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
+int doString(symbolTable* table, char *line, int *DC, int numberOfLine, symbolTable symbol)
 {
     int i = 0;
     int string_length = 0;
@@ -125,14 +143,13 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     throwError("Found invalid string", numberOfLine);
     return 0;
 }
-int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol) {
+int doStruct(symbolTable* table, char *line, int *DC, int numberOfLine, symbolTable symbol) {
 
-    char *token = command;
+    char *token = line;
      if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, STRUCT_SYMBOL);
     }
-
     token = strtok(NULL," \t\n\v\f\r,");
     
     if(token != NULL) {
@@ -152,9 +169,13 @@ int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     }
 }
 
-int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol){
+int doEntry(symbolTable* table,char *line, int *DC,int numberOfLine,symbolTable symbol){
     char* label;
     label = strtok(NULL, " \t\n\v\f\r");
+    if(symbol != NULL){
+        throwError("Found a new symbol declration before .entry!", numberOfLine);
+        return 0;
+    }
     if (label == NULL)
     {
         throwError("Found .entry without specifing a label", numberOfLine);
@@ -168,12 +189,13 @@ int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTab
 }
 
 
-int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolTable symbol){
+int doExtern(symbolTable* table,char *line, int *DC,int numberOfLine, symbolTable symbol){
 
     char *label;
     char *token;
     if (symbol != NULL)
     { /* if its a declration like this: HELLO: .extern A, then we delete the symbol HELLO */
+        throwWarning("found an extern instruction with a symbol declared to it. new symbol got deleted.",  numberOfLine);
         shiftHead(table);
     }
     label = strtok(NULL, " \t\n\v\f\r");
@@ -212,7 +234,7 @@ int checkValidOperand(char* operand , int numberOfLine){
         throwError("Missing operand", numberOfLine);
         return 0;
     }
-    if(operand[0] == ','){
+    if(operand[0] == ','){ /* if it starts with a comma, it means that there was a comma before, which means the line contains 2 commas */
         throwError("Multiple consecutive commas found", numberOfLine);
         return 0;
     }
@@ -279,7 +301,7 @@ int UpdateICforCommandSentence(char* command, int operandNum , int* IC, int numb
          if(curr == error){
             return 1;
         } 
-        if(!(getDestinationOperand(command) & (1 << curr))){
+        if(!(getDestinationOperand(command) & (1 << curr))){ /* if the bit at position curr is off */
             throwError("Invalid addressing mode for destination operand", numberOfLine);
             return 1;
         }
@@ -290,7 +312,7 @@ int UpdateICforCommandSentence(char* command, int operandNum , int* IC, int numb
          if(curr == error || prevOperand == error){
             return 1;
         } 
-        if(!(getSourceOperand(command) & (1 << curr))){
+        if(!(getSourceOperand(command) & (1 << curr))){ /* if the bit at position curr is off */
             throwError("Invalid addressing mode for source operand", numberOfLine);
             return 1;
         }
@@ -340,6 +362,11 @@ int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOf
     {
         if(strcmp(instructionFunc[i].name, instruction) == 0){
             
+            if(!strcmp(instruction, ".entry") && !(strcmp(instruction, ".extern"))){
+                if(symbol == NULL){
+                    throwWarning("found an instruction without any label declared to it",  numberOfLine);
+                }
+            }
             isError = instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
             return isError;
             
@@ -387,7 +414,9 @@ symbolTable handleLabelDefinition(symbolTable* table,  char* labelName, flags* s
         symbol = *table;
         
     }else{
+        PRINT_RED();
         printf("Error occured at line %d: Invalid label name: '%s'\n", numberOfLine, labelName);
+        CLEAR_COLOR();
         status->error = 1;
     }
     return symbol;
@@ -411,7 +440,9 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
         status ->error = 1;
         return NULL;
     }
-    printf("Started first phase on the file: %s...\n",  fileName);
+    PRINT_WHITE();
+    printf("Started first iteration on the file: %s...\n",  fileName);
+    CLEAR_COLOR();
 
     while (!feof(inputFile)) {
 
@@ -455,20 +486,28 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
                 }
                
             }else{
+                    PRINT_RED();
                     printf("Error occured at line %d: Invalid command: '%s'\n", numberOfLine, firstWord);
+                    CLEAR_COLOR();
                     status ->error = 1;
             }
         }
         
     }
-    printf("error flag is: %d\n", status ->error );
+    
     updateDataSymbols(table,IC);
     status->finalIC = IC;
     status->finalDC = DC;
     fclose(inputFile);
     if(status ->error ){
+        PRINT_RED();
+        printf("First iteration on file: %s.am failed!\n", fileName); 
+        CLEAR_COLOR();
         freeTable(table);
         return NULL;
     }
+    PRINT_GREEN();
+    printf("Finished first iteration on file: %s.am!\n", fileName); 
+    CLEAR_COLOR();
     return table;
 }

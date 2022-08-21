@@ -16,7 +16,7 @@ struct symbol {
     /** name (symbol name) is a string (aka char*) */
     char *name;
     /** Symbol type */
-    int type;
+    symbolType type;
 };
 
 
@@ -62,11 +62,6 @@ void setAddress(symbolTable symbol, int address){
 }
 
 
-
-int compareSymbol(symbolTable symbol, char *name){
-    return strcmp((symbol)->name, name);
-}
-
 symbolTable findInTable(symbolTable symbol, char *name){
     if(symbol != NULL){
         if(strcmp(symbol->name, name) == 0){
@@ -97,30 +92,29 @@ void shiftHead(symbolTable* head){
 } 
 
 
-void InsertSymbolNode(symbolTable* head_ref, char *label, int new_data)
+void InsertSymbolNode(symbolTable* head, char *label, int address)
 {
 
 /* Allocate node*/
 
-    symbolTable new_node = createSymbol(label,new_data);
+    symbolTable newNode = createSymbol(label,address);
 
-    if (!(*head_ref))
+    if (!(*head))
 
 /* if the list is empty */
 
     {
-        *head_ref = new_node;
+        *head = newNode;
 
     }else{
 
 /*Make next of new node as head*/
 
-        new_node->next = (*head_ref);
-
+        newNode->next = (*head);
 
 /*move the head to point to the new node*/
 
-        (*head_ref)  = new_node;
+        (*head)  = newNode;
     }
 }
 
@@ -134,7 +128,7 @@ symbolType getType(symbolTable symbol){
 }
 
 
-char *getSymbol(symbolTable symbol){
+char *getSymbolName(symbolTable symbol){
     return symbol->name;
 }
 
@@ -143,7 +137,7 @@ char *getSymbol(symbolTable symbol){
 void updateDataSymbols(symbolTable table, int IC){
 
     while(table != NULL) {
-        if (table->type == DATA_SYMBOL || table->type == STRUCT_SYMBOL) {
+        if (table->type == DATA_SYMBOL || table->type == STRUCT_SYMBOL) { /* if its a data instruction */
             table->address += IC;
         }
     table = table->next;

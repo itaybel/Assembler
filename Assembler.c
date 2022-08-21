@@ -10,7 +10,9 @@ int main(int argc, char** argv){
     flags* status = NULL; 
 
     if(argc < 2){
+        PRINT_RED();
         printf("Error - Invalid number of arguments was passed!\n");
+        CLEAR_COLOR();
         return 0;
     }
     for(i = 1; i < argc; i++){
@@ -25,7 +27,7 @@ int main(int argc, char** argv){
 
         table = createSymbolTable(argv[i], status);
         if(status->error){
-           /* deleteFile(argv[i], "am"); */
+            deleteFile(argv[i], "am"); 
             free(status);
             continue;
         }

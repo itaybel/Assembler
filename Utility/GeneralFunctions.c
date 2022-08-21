@@ -48,14 +48,22 @@ void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
 
 
 void throwError(char* errorMsg, int numberOfLine){
+    PRINT_RED();
     printf("Error occured at line %d: %s\n", numberOfLine, errorMsg);
+    CLEAR_COLOR();
+}
+void throwWarning(char* warningMsg, int numberOfLine){
+    PRINT_YELLOW();
+    printf("Warning occured at line %d: %s\n", numberOfLine, warningMsg);
+    CLEAR_COLOR();
 }
 
 
-int reservedWord(char *name) {
+
+int reservedWord(char *word) {
 
     /*check if register or instructionname or a command */
-    return (isRegisterName(name)  || isInstructionName(name) || isOperationName(name));
+    return (isRegisterName(word)  || isInstructionName(word) || isOperationName(word));
 
 }
 
@@ -113,22 +121,3 @@ int convertToNumber(char* numberString, int* number){
     }
 }
 
-
-
-void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2])
-{
-    int i = 0;
-    int j = 0;
-    for (i = 0; i < strlen(line); i++)
-    {
-        parsedLine[j] = line[i];
-        if (line[i] == ',') /* if we found a comma, we add a space right after it */
-        {
-
-            parsedLine[j + 1] = ' ';
-            j++;
-        }
-
-        j++;
-    }
-}

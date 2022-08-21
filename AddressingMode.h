@@ -30,8 +30,6 @@ int isInstructionName(char *name);
 
 
 
-
-
 /*
 This function returns the index of the first occurrence of a given delimiter
 @param name - the string to be searched on

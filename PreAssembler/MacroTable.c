@@ -49,7 +49,7 @@ void InsertMacroNode(struct MNode** head, struct MNode* newNode)
 struct MNode* SearchNode(macroNode head, char *name){
 
     while(head != NULL){
-        printf("macro name: %s\n", head->name);
+        
         if(name != NULL && head->name && strcmp(head -> name, name) == 0){
             return head;
         }

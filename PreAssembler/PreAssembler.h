@@ -17,16 +17,18 @@ This function is used to write the content of a macro to the output file
 void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile);
 
 /*
-This function is used to look for new macros defintions and add them to the macro table.
+This function is used to create a new macro node, by extracting its name, and its conten
+fron the input file 
 @param head the head of the linked list of the macro table
 @param line the next line in the input file
 @param inputFile the input assembly file
-@return 1 if a new macro was added, 0 otherwise
+@return 1 if an error occoured , 0 otherwise
 */
 int addToMacroList(macroNode* head, char* line, FILE* inputFile);
 
 /*
-This function is opening up the macros for the assembler
+This function is the main function in the preAssembler, and it is used to
+handle all the macro definitions
 @param file_name the name of the input file
 @return 1 if an error occured, 0 if everything is ok
 */

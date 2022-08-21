@@ -10,8 +10,11 @@
 #define MAX_FILE_NAME_LENGTH 255
 #define MAX_LINE_LENGTH 82
 
-
-
+#define CLEAR_COLOR() printf("\033[0m")
+#define PRINT_WHITE() printf("\033[1;37m")
+#define PRINT_RED() printf("\033[1;31m")
+#define PRINT_YELLOW() printf("\033[1;33m")
+#define PRINT_GREEN() printf("\033[1;32m")
 
 /*
 This function takes a filename and its extension, concetrates them, and places it in fileWithExtension
@@ -57,11 +60,19 @@ This function throws an error and prints it on the screen
 void throwError(char* errorMsg, int numberOfLine);
 
 /*
+This function throws a warning and prints it on the screen
+@param warningMsg - the warning message to be printed
+@param numberOfLine - the number of line the warning was occurred at
+@return none
+*/
+void throwWarning(char* warningMsg, int numberOfLine);
+
+/*
 This function checks if a given string is a reserved word in assembly
-@param name - the string to be checked
+@param word - the string to be checked
 @return wether its a reserved word
 */
-int reservedWord(char *name);
+int reservedWord(char *word);
 
 /*
 This function checks if the first character in a line is a dot
@@ -91,13 +102,6 @@ This function converts a given string to int
 */
 int convertToNumber(char* numberString, int* number);
 
-/*
-This function fixs the data instruction by adding spaces after a "," to handle more errors with strtok.
-@param line - the string to be fixed
-@param parsedLine a pointer to the string which will contain the fixed line
-*/
-void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
-  
 /*
 This function checks if a given line is a empty
 @param line - the line to be checked

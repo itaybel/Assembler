@@ -59,7 +59,6 @@ int getOperationOpcode(char *name){
         }
         i++;
     }
-    printf("Error!, this name doest not exist in the OperationTable!");
     return error;
 }
 
@@ -76,7 +75,6 @@ int getOperandNum(char *name){
         }
         i++;
     }
-    printf("Error!, this name doest not exist in the OperationTable!");
     return error;
 }
 

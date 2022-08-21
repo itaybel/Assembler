@@ -114,7 +114,7 @@ int handleEntryAndExtern(char* firstWord, symbolTable table, int numberOfLine, F
         }
         else{
             toBase32(getAddress(symbol) , inBase32);
-            fprintf(entFile, "%s\t%.2s\n", getSymbol(symbol),inBase32);
+            fprintf(entFile, "%s\t%.2s\n", getSymbolName(symbol),inBase32);
         }
         return 1;
     }
@@ -248,7 +248,7 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
         if(getType(foundSymbol) == EXTERNAL_SYMBOL){ /* if its an external operand, we write it to the ext file */
             ARE = 1; /* 01 */
             toBase32(*IC, inBase32);
-            fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
+            fprintf(extFile, "%s\t%.2s\n", getSymbolName(foundSymbol), inBase32);
         }
         else {
             ARE = 2; /* 10 */
@@ -283,7 +283,7 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
     if(getType(foundSymbol) == EXTERNAL_SYMBOL){ /* if its an external operand, we write it to the ext file */
             ARE = 1; /* 01 */
             toBase32(*IC, inBase32);
-            fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
+            fprintf(extFile, "%s\t%.2s\n", getSymbolName(foundSymbol), inBase32);
         }
         else {
             ARE = 2; /* 10 */
@@ -427,9 +427,11 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
     int IC = 99;
 
     openFiles(fileName, &inputFile, &cmdFile, &dataFile, &entFile, &extFile, status);
-    
-    printf("Started second phase on the file: %s...\n",  fileName);
-    
+
+    PRINT_WHITE();    
+    printf("Started second iteration on the file: %s...\n",  fileName);
+    CLEAR_COLOR();
+
     while (!feof(inputFile)) {
 
         /* iterating through each line of the input file */
@@ -462,12 +464,15 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
             terminateSecondPhase(fileName, table, inputFile , entFile ,extFile, cmdFile, dataFile);
             deleteFile(fileName, "ent");
             deleteFile(fileName, "ext");
+            deleteFile(fileName, "am");
             return 1;
 
         }
         memset(line, 0, MAX_LINE_LENGTH);
     }
+    PRINT_GREEN();
     printf("Second pass has been finished successfully.\n");
+    CLEAR_COLOR();
     handleFinalOutputFiles(fileName, cmdFile, dataFile, status);
     terminateSecondPhase(fileName, table, inputFile, entFile  ,extFile, cmdFile, dataFile);
     return 0;

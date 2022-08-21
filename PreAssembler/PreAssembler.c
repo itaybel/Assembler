@@ -44,7 +44,9 @@ int addToMacroList(macroNode* head, char* line, FILE* inputFile){
         return 0;
 
     }
+    PRINT_RED();
     printf("Found an invalid macro name: '%s'\n", macroName);
+    CLEAR_COLOR();
     return 1;
 
 
@@ -59,16 +61,22 @@ int preAssemble(char* fileName){
         int tempPos = 0;
 
         if(inputFile == NULL) {
+            PRINT_RED();
             printf("Couldn't open file %s.as, terminating program...\n", fileName);
+            CLEAR_COLOR();
             return 1;
         }
         
         if((outputFile = openFile(fileName , "am", "w")) == NULL) {
             fclose(inputFile);
+            PRINT_RED();
             printf("Couldn't open file %s.am, terminating program...\n", fileName);
+            CLEAR_COLOR();
             return 1;
         }
-        printf("Started PreAssembler on the file: %s.as\n------------\n", fileName);
+        PRINT_WHITE();
+        printf("Started PreAssembler on the file: %s.as\n", fileName);
+        CLEAR_COLOR();
         while (fgets(line, MAX_LINE_LENGTH, inputFile)) { /* iterating through each line of the input file */
             strcpy(lineCopy, line);
             command = strtok(line, " \t\n\v\f\r"); /* get the first word in the line. */
@@ -95,9 +103,12 @@ int preAssemble(char* fileName){
         fclose(outputFile);
         freeMacroList(macroTable);
         if(error){
-            printf("PreAssembler on file: %s.as failed!\n------------\n", fileName); 
+            PRINT_RED();
+            printf("PreAssembler on file: %s.as failed!\n", fileName); 
         }else{
-            printf("Finished PreAssembler on file: %s.as\n------------\n", fileName); 
+            PRINT_GREEN();
+            printf("Finished PreAssembler on file: %s.as\n", fileName); 
         }
+        CLEAR_COLOR();
         return error;
 }

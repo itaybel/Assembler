@@ -1,6 +1,7 @@
 MAIN: 	mov S1.1 ,LENGTH
 add 	r2,STR
 LOOP: 	jmp END
+HELLO: .extern A2
 	macro m1
 	inc K
 	mov S1.2 ,r3
@@ -12,5 +13,5 @@ LOOP: 	jmp END
 END: 	hlt
 STR: 	.string "abcdef"
 LENGTH: .data 6,-9,15
-K: 	.data 22
+.data 22
 S1: 	.struct 8, "ab"
