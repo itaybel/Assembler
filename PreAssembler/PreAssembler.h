@@ -1,11 +1,11 @@
 
 #ifndef PREASSEMBLER_H
 #define PREASSEMBLER_H
+#include <stdio.h>
 #include "../Utility/GeneralFunctions.h"
 #include "MacroTable.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+
 
 /*
 This function is used to write the content of a macro to the output file
@@ -17,12 +17,12 @@ This function is used to write the content of a macro to the output file
 void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile);
 
 /*
-This function is used to create a new macro node, by extracting its name, and its conten
-fron the input file 
+This function is used to create a new macro node, by extracting its name, and its content
+from the input file
 @param head the head of the linked list of the macro table
 @param line the next line in the input file
 @param inputFile the input assembly file
-@return 1 if an error occoured , 0 otherwise
+@return 1 if an error occurred , 0 otherwise
 */
 int addToMacroList(macroNode* head, char* line, FILE* inputFile);
 
