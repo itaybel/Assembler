@@ -12,8 +12,8 @@ void WriteMacroToOutputFile(macroNode macro, FILE* inputFile, FILE* outputFile){
 }
 
 int addToMacroList(macroNode* head, char* line, FILE* inputFile){
-    char* command;
-    char* macroName;
+    char* command = NULL;
+    char* macroName = NULL;
     int macroContentLength = 0;
     macroNode newMacroNode =  NULL;
     int previousLineFtell = 0;

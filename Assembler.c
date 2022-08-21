@@ -7,7 +7,7 @@ int main(int argc, char** argv){
       
     int i = 0;
     symbolTable table = NULL;
-    flags* status; 
+    flags* status = NULL; 
 
     if(argc < 2){
         printf("Error - Invalid number of arguments was passed!\n");
@@ -17,7 +17,10 @@ int main(int argc, char** argv){
         status = (flags*)calloc(1, sizeof(flags));
         status->error = preAssemble(argv[i]); 
 
-        if(status->error) continue;
+        if(status->error) {
+            free(status);
+            continue;
+        }
 
 
         table = createSymbolTable(argv[i], status);
