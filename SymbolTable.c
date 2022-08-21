@@ -1,9 +1,7 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "SymbolTable.h"
-#include "AddressingMode.h"
 #include "Utility/GeneralFunctions.h"
 
 
@@ -37,23 +35,19 @@ int validLabelName(char *name) {
         for (i = 0; i < strlen(name) && name[i] != ':'; i++) {/*use loop to check isalnum if the word is alphanumeric*/
             if (!isalnum(name[i])) {
                 return 0;
-            } 
+            }
         }
-        
+
         return 1;
     }
     return 0;
 }
 
 
-
-
 void setType(symbolTable symbol,symbolType type){
 
     symbol->type = type;
 }
-
-
 
 
 void setAddress(symbolTable symbol, int address){
@@ -88,8 +82,8 @@ symbolTable createSymbol(char* name,int address){
 void shiftHead(symbolTable* head){
     symbolTable temp = *head;
     *head = (*head)->next;
-    freeNode(temp); 
-} 
+    freeNode(temp);
+}
 
 
 void InsertSymbolNode(symbolTable* head, char *label, int address)
@@ -133,14 +127,13 @@ char *getSymbolName(symbolTable symbol){
 }
 
 
-
 void updateDataSymbols(symbolTable table, int IC){
 
     while(table != NULL) {
         if (table->type == DATA_SYMBOL || table->type == STRUCT_SYMBOL) { /* if its a data instruction */
             table->address += IC;
         }
-    table = table->next;
+        table = table->next;
     }
 }
 
