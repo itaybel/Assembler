@@ -12,12 +12,15 @@
 
 
 
-int foundCommentSentence(char* line){
+int checkFirstCharacter(char* line, char c){
+
     char lineCopy[MAX_LINE_LENGTH] = {0};
     strcpy(lineCopy, line);
     removeSpacesAndTabs(lineCopy);
-    return lineCopy[0] == ';';
+
+    return lineCopy[0] == c;
 }
+
 
 
 int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolTable symbol)
@@ -26,19 +29,26 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
     int foundNumbers = 0;
     char parsedLine[MAX_LINE_LENGTH * 2] = {0};
     char *nextNumber = NULL;
-
     restOfLine = strtok(NULL, "");
-
-    fixDataInstruction(restOfLine, parsedLine);
-    nextNumber = strtok(parsedLine, ",");
-
     if (symbol != NULL) {
         setAddress(symbol,*DC);
         setType(symbol, DATA_SYMBOL);
     }
 
+    if(foundEmptySentence(restOfLine)){
+        throwError("Missing numbers in .data instruction", numberOfLine);
+        return 0;
+    }
+    if(checkFirstCharacter(restOfLine, ',')){
+        throwError("Invalid ',' at the beginning of .data instruction", numberOfLine);
+        return 0;
+    }
+    fixDataInstruction(restOfLine, parsedLine); /* adding spaces after commas, so we can catch comma errors */
+    nextNumber = strtok(parsedLine, ",");
+
     while (nextNumber != NULL)
     {
+        
         foundNumbers = 1;
         if (foundEmptySentence(nextNumber))
         {
@@ -48,9 +58,7 @@ int doData(symbolTable* table, char *command, int *DC, int numberOfLine, symbolT
         }else if (isNumber(nextNumber))
         {
             (*DC)++;
-        }
-        
-        else
+        }else
         {
             throwError("Found an invalid number in .data instruction!", numberOfLine);
             return 0;
@@ -106,16 +114,13 @@ int doString(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
     }
     if (found_valid_string)
     {
-        
         *DC = *DC + string_length;
-      
-
+        
         if(i != strlen(restOfLine)){
             throwError("Found invalid text after string", numberOfLine);
             return 0;
         }
         return 1;
-        
     }
     throwError("Found invalid string", numberOfLine);
     return 0;
@@ -145,9 +150,7 @@ int doStruct(symbolTable* table, char *command, int *DC, int numberOfLine, symbo
         throwError(".struct got invalid amount of operands!", numberOfLine);
         return 0;
     }
-
 }
-
 
 int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTable symbol){
     char* label;
@@ -163,7 +166,6 @@ int doEntry(symbolTable* table,char *command, int *DC,int numberOfLine,symbolTab
     }
     return 0;
 }
-
 
 
 int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolTable symbol){
@@ -195,7 +197,6 @@ int doExtern(symbolTable* table,char *command, int *DC,int numberOfLine, symbolT
         throwError("Found invalid Label in Extern instruction!", numberOfLine);
         return 0;
     }
-
     token = strtok(NULL, " \t\n\v\f\r,");
     if (token != NULL)
     {
@@ -314,7 +315,7 @@ int doCommandSentence(char *command, int *IC,int numberOfLine,symbolTable symbol
 
     opNumber = getOperandNum(command);
     restOfFile = strtok(NULL, "");
-    if(!isValidCommandSentence(opNumber, restOfFile, numberOfLine, firstOperand, secondOperand)){
+    if(restOfFile != NULL && !isValidCommandSentence(opNumber, restOfFile, numberOfLine, firstOperand, secondOperand)){
         return 1;
     }
 	return UpdateICforCommandSentence(command, opNumber, IC, numberOfLine, firstOperand, secondOperand);
@@ -341,6 +342,7 @@ int validInstructions(symbolTable* table,char *instruction,int *DC, int numberOf
             
             isError = instructionFunc[i].doInstructions(table, instruction, DC, numberOfLine,symbol);
             return isError;
+            
         }
 
     }
@@ -366,8 +368,6 @@ void iCCounter(addressingMode address,addressingMode prevAddress, int *IC){
     if (address== addressAccess) {/*firstWord = add #4, s.1,*/
         (*IC) += 2;
     }
-
-
 }
 
 symbolTable handleLabelDefinition(symbolTable* table,  char* labelName, flags* status, int IC, int numberOfLine){
@@ -420,7 +420,7 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
         /* iterating through each line of the input file */
         fgets(line, MAX_LINE_LENGTH, inputFile); /* MAIN:    mov    S1.1 ,LENGTH*/
         numberOfLine++;
-       if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
+       if (foundEmptySentence(line) || checkFirstCharacter(line, ';')) {/* if line is empty or comment continue to the next line*/
             continue;
         }
         /* subString recives the first string*/
@@ -433,11 +433,13 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
             if(firstWord == NULL || foundEmptySentence(firstWord)){
                 throwError("Found an empty label declaration", numberOfLine);
                 status->error = 1;
+                continue;
             }
 
-            if(status->error) continue;
+            
 
         }
+
         if (firstCharIsDot(firstWord)) {
             if(strcmp(firstWord, ".entry") == 0) status ->foundEntry = 1;
             if(strcmp(firstWord, ".extern") == 0) status->foundExtern = 1;
@@ -460,7 +462,6 @@ symbolTable createSymbolTable(char* fileName, flags* status) {
         
     }
     printf("error flag is: %d\n", status ->error );
-    
     updateDataSymbols(table,IC);
     status->finalIC = IC;
     status->finalDC = DC;

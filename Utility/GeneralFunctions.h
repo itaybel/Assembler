@@ -98,13 +98,13 @@ This function fixs the data instruction by adding spaces after a "," to handle m
 */
 void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2]);
   
-int foundEmptySentence(char* file_name);
 /*
-This function allocates memory of a specific size
-@param size - the size of the memory block to be allocated
-@return a pointer to the allocated memory
+This function checks if a given line is a empty
+@param line - the line to be checked
+@return wether the given line is empty which means if it contains only blanks
 */
-void *checkMalloc(size_t size);
+int foundEmptySentence(char* line);
+
 
 
 

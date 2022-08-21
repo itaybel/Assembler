@@ -1,10 +1,10 @@
 #include "GeneralFunctions.h"
 
 void getFileWithExtension(char* fileName, char* extension, char* fileWithExtension){
-    strcat(fileWithExtension, fileName);
-    fileWithExtension[strlen(fileName)] = '.';
-    strcat(fileWithExtension + (strlen(fileName)) + 1, extension);
-}
+    strcat(fileWithExtension, fileName); /* we copy the file name to the beginning of the string */
+    fileWithExtension[strlen(fileName)] = '.'; /* then we add a "." */
+    strcat(fileWithExtension + (strlen(fileName)) + 1, extension); /* we add the file extension after the "." */
+} 
 
 FILE* openFile(char* file_name, char* file_extention, char* mode){
     char fileNameWithExtension[MAX_FILE_NAME_LENGTH] = {0};
@@ -28,9 +28,13 @@ void deleteFile(char* file_name, char* file_extension){
 void removeSpacesAndTabs(char line[MAX_LINE_LENGTH]){
     int i = 0, j = 0;
     if(line == NULL) return;
-    for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--); /* removing all the spaces from the right */
-        
+
+    /* removing all the spaces from the right */
+    for (i = strlen(line) - 1; (line[i] == ' ' || line[i] == '\t' || line[i] == EOF || line[i] == '\n') && i > 0; i--); 
     line[i + 1] = '\0';
+
+    /* removing all the spaces from the left */
+
     for(i = 0;  (line[i] == ' ' || line[i] == '\t'|| line[i] == EOF || line[i] == '\n') && i < strlen(line) ; i++);
     j = i;
     for(i = 0; j <= strlen(line); i++){ /* shifting all the chars to the left */
@@ -50,7 +54,7 @@ void throwError(char* errorMsg, int numberOfLine){
 
 int reservedWord(char *name) {
 
-    /*check if register or instructionname or lable */
+    /*check if register or instructionname or a command */
     return (isRegisterName(name)  || isInstructionName(name) || isOperationName(name));
 
 }
@@ -62,7 +66,7 @@ int foundEmptySentence(char* line){
         return 1;
     }
     for(i = 0; i < strlen(line); i++){
-        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n' && line[i] != EOF) return 0;
+        if(line[i] != ' ' && line[i] != '\t' && line[i] != '\n' && line[i] != EOF) return 0; /* if we found a none blank character, it means the ine isn't empty */
     }
     return 1;
 }
@@ -72,7 +76,7 @@ int firstCharIsDot(char *line){
 
     int i = 0;
     if(line == NULL) return 0;
-    for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++);
+    for(i = 0; i < strlen(line) && (line[i] == ' ' || line[i] == '\t'); i++); /* skipping all the blanks at the beginning */
     return (strlen(line) == 0 || line[i] == '.');
 
 }
@@ -85,7 +89,6 @@ void cutColonFromLabel(char *labelName) {
 }
 
 
-/*checks if the char is number for doData function*/
 int isNumber(char *number){
     char numberCopy[MAX_LINE_LENGTH] = {0};
     char *temp = NULL;
@@ -94,7 +97,7 @@ int isNumber(char *number){
     
     
     strtol(numberCopy,&temp,10);
-    if(*temp == '\0'){
+    if(*temp == '\0'){ /* if strtok cut the whole string, it means that the string represents a number */
         return 1;
     }
     return 0;
@@ -119,7 +122,7 @@ void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2])
     for (i = 0; i < strlen(line); i++)
     {
         parsedLine[j] = line[i];
-        if (line[i] == ',')
+        if (line[i] == ',') /* if we found a comma, we add a space right after it */
         {
 
             parsedLine[j + 1] = ' ';
@@ -128,14 +131,4 @@ void fixDataInstruction(char *line, char parsedLine[MAX_LINE_LENGTH * 2])
 
         j++;
     }
-}
-
-void *checkMalloc(size_t size) {
-    void* ptr = NULL;
-    ptr = malloc(size);
-    if (ptr == NULL) {
-        printf("Error: Fatal: Memory allocation failed.");
-        exit(1);
-    }
-    return ptr;
 }

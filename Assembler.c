@@ -1,5 +1,8 @@
+#include <stdio.h>
+#include "PreAssembler/PreAssembler.h"
+#include "AssemblySentence.h"
+#include "SecondPass.h"
 
-#include "Assembler.h"
 int main(int argc, char** argv){
       
     int i = 0;
@@ -7,7 +10,7 @@ int main(int argc, char** argv){
     flags* status; 
 
     if(argc < 2){
-        printf("Error - Invalid number of arguments was passed!");
+        printf("Error - Invalid number of arguments was passed!\n");
         return 0;
     }
     for(i = 1; i < argc; i++){

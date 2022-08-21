@@ -21,8 +21,6 @@ static const struct instructionTableName{
 };
 
 
-
-
 int isInstructionName(char *name) {
     int i = 0;
     while( i < NUM_OF_ADDRESS_MODE) {
@@ -36,12 +34,7 @@ int isInstructionName(char *name) {
 }
 
 
-
-
-
-/*str != NULL*/
-
-int getFirstDelimIndex(char *str, char delim){/*S1.1 .*/
+int getFirstDelimIndex(char *str, char delim){
     int i = 0;
 
     for(i = 0; i< strlen(str);i++){
@@ -61,7 +54,6 @@ addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    m
 
     int labelEnd = 0;
     char parsedLabel[MAX_LENGTH] = {0};
-    /*result = strtok(NULL, " \t\n\v\f\r");*/
 
     /*if nothing, just return none */
 
@@ -102,13 +94,9 @@ addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    m
             if((operand[labelEnd+1] == '1' || operand[labelEnd + 1] == '2') && foundEmptySentence(operand + (labelEnd+2))){
                 return addressAccess;
             }
-            /*if(firstCharIsDot(address) && (address[1] == '1' || address[1] == '2')){
-                *//*if the label is valid, and checks if after the dot the number are 1 or 2*//*
-                return addressAccess;
-            }*/
         }
     }
 
-    throwError("invalid addressing mode!", numberOfLine);
+    throwError("Found illegal operand", numberOfLine);
     return error;
 }

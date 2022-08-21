@@ -1,12 +1,11 @@
-#ifndef UNTITLED4_ADDRESSINGMODE_H
+#ifndef ADDRESSINGMODE_H
 
-#define UNTITLED4_ADDRESSINGMODE_H
+#define ADDRESSINGMODE_H
 #include "RegisterTable.h"
 #include "OperationTable.h"
 
 
 
-#define MAX_LABEL_LENGTH 30
 #define NUM_OF_ADDRESS_MODE 5
 
 

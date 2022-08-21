@@ -36,7 +36,7 @@ SymbolTable.o: SymbolTable.c SymbolTable.h
 	gcc -g -c -ansi -Wall -pedantic SymbolTable.c -o SymbolTable.o
 	
 
-Assembler.o: Assembler.c Assembler.h
+Assembler.o: Assembler.c 
 	gcc -g -c -ansi -Wall -pedantic Assembler.c -o Assembler.o
 
 SecondPass.o: SecondPass.c SecondPass.h

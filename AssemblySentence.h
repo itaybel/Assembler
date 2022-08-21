@@ -1,10 +1,9 @@
-#ifndef UNTITLED4_ASSEMBLYSENTENCE_H
-#define UNTITLED4_ASSEMBLYSENTENCE_H
+#ifndef ASSEMBLYSENTENCE_H
+#define ASSEMBLYSENTENCE_H
 
 #include "SymbolTable.h"
 #include "AddressingMode.h"
 
-#define ENTRY_INDEX 4
 #define MAX_LINE_LENGTH 82
 #define TRUE 1
 #define FALSE 0
@@ -20,8 +19,13 @@ typedef struct flags {
 
 
 
-
-int foundCommentSentence(char* file_name);
+/*
+This function checks if a given line starts with a specific character
+@param line - the line to be checked
+@param c the character to check
+@return wether the line starts with that character
+*/
+int checkFirstCharacter(char* line, char c);
 
 
 

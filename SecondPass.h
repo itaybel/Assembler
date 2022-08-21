@@ -56,7 +56,7 @@ This function is used to handle entry and extern instructions
 @param firstWord the first word which is seperated by a space in the line
 @param table the symbol table
 @param numberOfLine the current number of line proccesed in the input file
-@param entFile the .ent file that we right our entities to
+@param entFile the .ent file that we write our entities to
 @param status a pointer to a struct which contains flags about the program
 @return wether it found an extern/entity instruction
 */
@@ -69,7 +69,7 @@ This function is used to encode struct instructions
 @param instruction the instruction of the line (.data/.string/.entity/.extern)
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .data file that we right our instructions into
+@param outFile the .data file that we write our instructions into
 */
 void handleInstructions(symbolTable table, char *instruction, int *IC, int numberOfLine, FILE* outFile);
 
@@ -82,7 +82,7 @@ This function is used to encode a none operands command
 @param command the command to be encoded
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
+@param outFile the .cmd file that we write our commands into
 */
 int encodeNoneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile) ;
 
@@ -92,8 +92,8 @@ This function is used to encode a one operands command
 @param command the command to be encoded
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
-@param extFile the .ext file that we right our externals into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
 int encodeOneOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile);
 
@@ -104,8 +104,8 @@ This function is used to encode a two operands command
 @param command the command to be encoded
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
-@param extFile the .ext file that we right our externals into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
 int encodeTwoOperandsCommand(symbolTable table, char *command, int *IC,int numberOfLine, FILE* outFile, FILE* extFile);
 
@@ -117,7 +117,7 @@ This function is used to encode an operand with a immediate address
 @param operand the operand to encode
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
+@param outFile the .cmd file that we write our commands into
 */
 int handleImmediateAddress(char* operand, int* IC, int numberOfLine, FILE* outFile);
 
@@ -128,8 +128,8 @@ This function is used to encode an operand with a direct address
 @param operand the operand to encode
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
-@param extFile the .ext file that we right our externals into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
 int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile);
 
@@ -139,9 +139,10 @@ This function is used to encode an operand with a address address
 @param operand the operand to encode
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
-int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile);
+int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile ,FILE* extFile);
 
 /*
 This function is used to handle all the addressing accesses, and it calls the corresponding function
@@ -150,8 +151,8 @@ This function is used to handle all the addressing accesses, and it calls the co
 @param isDest wether the operand is a destination operand
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
-@param extFile the .ext file that we right our externals into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
 int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int isDest , char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile);
 
@@ -162,8 +163,8 @@ by calling the corresponding function to how much operands the command takes
 @param command the command we are encoding
 @param IC a pointer to the IC
 @param numberOfLine the current number of line proccesed in the input file
-@param outFile the .cmd file that we right our commands into
-@param extFile the .ext file that we right our externals into
+@param outFile the .cmd file that we write our commands into
+@param extFile the .ext file that we write our externals into
 */
 int encodeCommandSentence(symbolTable table, char *command, int *IC,int numberOfLine, FILE* obFile, FILE* extFile);
 

@@ -1,6 +1,6 @@
 /* Implements a dynamically-allocated symbol table */
-#ifndef _TABLE_H
-#define _TABLE_H
+#ifndef TABLE_H
+#define TABLE_H
 #define MAX_LENGTH 30
 
 

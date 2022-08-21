@@ -17,7 +17,7 @@ This function is used insert a new macro to the macro list
 @param head the current head of the linked list
 @param newNode the new node to be inserted 
 */
-void InsertMacroNode(struct MNode** head, struct MNode* newNode);
+void InsertMacroNode(macroNode* head, macroNode newNode);
 
 /*
 This function is used to search for a specific macro in a linked list
@@ -47,34 +47,34 @@ This function is used to get the name of a macro node
 @param node the node to return its name
 @return the name of the macro
 */
-char* getName(struct MNode* node);
+char* getName(macroNode node);
 
 /*
 This function is used to get the start index of a macro 
 @param node the node to return its start index
 @return the start index of the macro
 */
-int getStartIndex(struct MNode* node);
+int getStartIndex(macroNode node);
 
 /*
 This function is used to get the length of a macro 
 @param node the node to return its length
 @return the length of the macro
 */
-int getLength(struct MNode* node);
+int getLength(macroNode node);
 
 /*
 This function is used to set the length of a macro 
 @param node the node to set its length
 @param startIndex the new start index of the macro
 */
-void setStartIndex(struct MNode* node, int startIndex);
+void setStartIndex(macroNode node, int startIndex);
 
 /*
 This function is used to set the length of a macro 
 @param node the node to set its length
 @param length the new length of the macro
 */
-void setLength(struct MNode* node, int length);
+void setLength(macroNode node, int length);
 
 #endif

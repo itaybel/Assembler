@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "SymbolTable.h"
 #include "AddressingMode.h"
-
+#include "Utility/GeneralFunctions.h"
 
 
 /** A single table symbol*/
@@ -46,17 +46,6 @@ int validLabelName(char *name) {
 }
 
 
-/*
-void *checkMalloc(int size) {
-    void *ptr = malloc(size);
-    if (ptr == NULL) {
-        printf("Error: Fatal: Memory allocation failed.");
-        exit(1);
-    }
-    return ptr;
-} */
-
-
 
 
 void setType(symbolTable symbol,symbolType type){
@@ -91,10 +80,7 @@ symbolTable findInTable(symbolTable symbol, char *name){
 symbolTable createSymbol(char* name,int address){
 
     symbolTable new_node = malloc(sizeof(struct symbol));
-    /*if(new_node == NULL){
-        printf("Error, couldn't allocate memory");
-        return  NULL;
-    }*/
+
     new_node -> name = (char*)malloc((strlen(name) + 1) * sizeof(char));
     strcpy(new_node->name, name);
     new_node -> address = address;

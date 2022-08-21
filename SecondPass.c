@@ -262,11 +262,12 @@ int handleDirectAddress(symbolTable table, char* operand, int* IC, int numberOfL
     return 0;
 }
 
-int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile){
+int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfLine, FILE* outFile, FILE* extFile){
 
     char parsedLabel[MAX_LENGTH] = {0};
     int labelEnd = 0;
     char inBase32[2] = {0};
+    int ARE = 0;
     symbolTable foundSymbol = NULL;
 
    
@@ -278,9 +279,18 @@ int handleAddressAccess(symbolTable table, char* operand, int* IC, int numberOfL
         throwError("Invalid label found", numberOfLine);
         return 1;
     }
+
+    if(getType(foundSymbol) == EXTERNAL_SYMBOL){ /* if its an external operand, we write it to the ext file */
+            ARE = 1; /* 01 */
+            toBase32(*IC, inBase32);
+            fprintf(extFile, "%s\t%.2s\n", getSymbol(foundSymbol), inBase32);
+        }
+        else {
+            ARE = 2; /* 10 */
+        }
     
     *IC = *IC + 1;
-    toBase32(getAddress(foundSymbol) << 2 | 2, inBase32);
+    toBase32(getAddress(foundSymbol) << 2 | ARE, inBase32);
    
     writeToFile(inBase32, outFile, *IC);
                    
@@ -303,7 +313,7 @@ int handleAddressingAccesses(addressingMode operandMode, symbolTable table, int 
             return handleDirectAddress(table, operand, IC, numberOfLine, outFile, extFile);
             break;
         case addressAccess:
-            return handleAddressAccess(table, operand, IC, numberOfLine, outFile);
+            return handleAddressAccess(table, operand, IC, numberOfLine, outFile, extFile);
         break;
 
         case directRegisterAddress:
@@ -427,7 +437,7 @@ int encodeAssembly(char* fileName, symbolTable table, flags* status){
         line[strcspn(line, "\n")] = 0;
         
         numberOfLine++;
-        if (foundEmptySentence(line) || foundCommentSentence(line)) {/* if line is empty or commend continue to the next line*/
+        if (foundEmptySentence(line) || checkFirstCharacter(line, ';')) {/* if line is empty or comment continue to the next line*/
             continue;
         }
 

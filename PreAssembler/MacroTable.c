@@ -14,9 +14,9 @@ struct MNode{
 
 
 macroNode createMacroNode(char* name){
-
-    macroNode new_node = (macroNode)checkMalloc(sizeof(struct MNode));
-
+    macroNode new_node = NULL;
+    new_node = (macroNode)malloc(sizeof(struct MNode));
+    
     new_node -> name = (char*)malloc((strlen(name) + 1) * sizeof(char));
     strcpy(new_node->name, name);
     new_node -> startIndex = 0;
@@ -46,9 +46,9 @@ void InsertMacroNode(struct MNode** head, struct MNode* newNode)
     }
 }
 
-struct MNode* SearchNode(struct MNode* head, char *name){
+struct MNode* SearchNode(macroNode head, char *name){
 
-    if(head == NULL) return NULL;
+
     while(head != NULL){
 
         if(name != NULL && strcmp(head -> name, name) == 0){
