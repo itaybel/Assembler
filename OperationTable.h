@@ -1,9 +1,6 @@
 #ifndef OPERATIONTABLE_H
 #define OPERATIONTABLE_H
 
-#include <stdio.h>
-#include <string.h>
-
 #define NUM_OF_OPERATIONS 16
 
 #define FIRST_ADDRESS 1
@@ -14,10 +11,9 @@
 /*
 This function is checking if the received name of the operationTable is valid or not.
 @param name - tha name of the operationTable
-@return int - wether it found that operation
+@return int - weather it found that operation
 */
 int isOperationName(char *name);
-
 
 
 /*
@@ -28,14 +24,12 @@ This function receives the operationName and if the name is valid it returns the
 int getOperationOpcode(char *name);
 
 
-
 /*
 This function receives the operationName and if the name is valid it returns the OperandNumber of the valid name.
 @param name - tha name of the operationTable
 @return int of the OperandNumber
 */
 int getOperandNum(char *name);
-
 
 
 /*
@@ -45,7 +39,6 @@ This function receives the operationName and if the name is valid it returns the
 @return int of the sourceOperand
 */
 int getSourceOperand(char *name);
-
 
 
 /*
