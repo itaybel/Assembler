@@ -17,7 +17,6 @@ static const struct instructionTableName{
         {".struct"},
         {".entry"},
         {".extern"},
-        /*{NULL,     "ERROR_INSTRUCTION"}* it will have problem when we will compare name between NULL*/
 };
 
 
@@ -86,8 +85,8 @@ addressingMode getAddressingMode(char *operand, int numberOfLine) {/* MAIN:    m
 
         /*if address is a valid label name & after the dot we have, it's addressAccess  = 2 */
 
-    else{/*need to check the string until the dot, for example if the string utnil the dot is lable, need to check if after the dot if its a number.*/
-    
+    else{/*checks the string until the dot, if its legal label we check if after the dot we have number 1 or 2 */
+
         labelEnd = getFirstDelimIndex(operand,'.');
         strncpy(parsedLabel, operand, labelEnd);
         if(validLabelName(parsedLabel)){/*S1.1*/
