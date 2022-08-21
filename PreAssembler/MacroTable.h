@@ -38,7 +38,7 @@ void freeMacroList(macroNode node);
 /*
 This function checks if a macro name is valid
 @param name the name of the macro
-@return wether its valid or not
+@return weather It's valid or not
 */
 int isValidMacroName(char* name);
 
