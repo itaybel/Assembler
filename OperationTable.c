@@ -1,4 +1,4 @@
-
+#include <string.h>
 #include "OperationTable.h"
 
 
@@ -26,7 +26,6 @@ static const struct  operationConsts{
                       {"jsr",13,1,0, SECOND_ADDRESS | THIRD_ADDRESS | FOURTH_ADDRESS},
                       {"rts",14,0,0,0},
                       {"hlt",15,0,0,0}};
-
 
 
 
