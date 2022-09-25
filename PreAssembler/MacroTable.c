@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "string.h"
 #include "../Utility/GeneralFunctions.h"
-
+#include <ctype.h>
 struct MNode{
     char* name;
     int startIndex;
@@ -22,7 +22,6 @@ macroNode createMacroNode(char* name){
     new_node -> length = 0;
 
     return new_node;
-
 }
 
 

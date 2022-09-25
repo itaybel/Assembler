@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "string.h"
 #include "../AddressingMode.h"
-#include "../GeneralFunctions.h"
+#include "GeneralFunctions.h"
 #include "../OperationTable.h"
 #include "../RegisterTable.h"
 
